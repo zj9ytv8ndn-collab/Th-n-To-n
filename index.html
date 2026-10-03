@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#efe6d0">
+<meta name="theme-color" content="#eef1f5">
 <title>BẢNG ĐỒ HUYỆT ĐẠO — Đường Kinh 14 Kinh Lạc</title>
 <style>
 :root{
@@ -309,6 +309,82 @@ details.qg[open]{box-shadow:var(--shadow-lg)}
 /* dropdown huyệt hay dùng */
 #hayDrop summary{display:flex;align-items:center;gap:6px}
 #hayDrop .mini{font-weight:600}
+
+
+/* ================= v6 · MEDICAL ANATOMY PRO ================= */
+/* Bảng màu lâm sàng: xám trung tính + teal y khoa */
+:root{
+ --bg:#eef1f5; --paper:#ffffff; --paper2:#f8fafc; --ink:#16202e; --ink2:#5c6b7e;
+ --red:#0e7490; --red2:#0891b2; --line:#dfe5ec; --card:#ffffff;
+ --shadow:0 1px 2px rgba(16,24,40,.05),0 6px 18px rgba(16,24,40,.06);
+ --shadow-lg:0 4px 10px rgba(16,24,40,.07),0 16px 36px rgba(16,24,40,.10);
+}
+[data-theme="dark"]{
+ --bg:#0b111c; --paper:#121b2b; --paper2:#17233a; --ink:#e8eef6; --ink2:#8fa0b5;
+ --red:#22b8cf; --red2:#3bc9db; --line:#233350; --card:#131e31;
+ --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.45);
+ --shadow-lg:0 4px 10px rgba(0,0,0,.5),0 16px 36px rgba(0,0,0,.55);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-feature-settings:"tnum" 1,"cv02" 1;letter-spacing:-.005em}
+/* --- Header: thanh tiêu đề lâm sàng + ấn triện --- */
+#hdr{background:color-mix(in srgb,var(--paper) 92%,transparent);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(16,24,40,.02),0 8px 22px rgba(16,24,40,.05);padding-top:calc(12px + env(safe-area-inset-top))}
+#hdr::after{display:none}
+#hdr .t1{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.14rem;letter-spacing:.1em;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:9px;text-shadow:none}
+#hdr .t1::before{content:"灸";display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(150deg,#b23a2e,#8f2b22);color:#fdf6ec;font-size:14px;font-family:Georgia,serif;box-shadow:0 2px 6px rgba(143,43,34,.35);letter-spacing:0}
+#hdr .t2{letter-spacing:.26em;font-size:.6rem;color:var(--ink2);margin-top:3px;font-weight:600}
+/* --- Section title: nhãn giải phẫu học --- */
+.sec{padding:18px 16px 6px}
+.sec h2{font-family:inherit;font-size:.8rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink2)}
+.sec h2::before{width:22px;height:2px;border-radius:2px;background:var(--red)}
+.sec .sub{font-size:.8rem;color:var(--ink2);margin-top:4px;letter-spacing:.01em}
+/* --- Card phẳng chuẩn y khoa --- */
+.card,.mcard,.aiB,details.qg{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.card{padding:14px;margin:12px}
+.aiB{border-left:none;box-shadow:var(--shadow);border-radius:14px}
+details.qg[open]{box-shadow:var(--shadow-lg)}
+/* --- Tabbar: đế trắng tinh, chỉ báo teal --- */
+#tabbar .in{background:color-mix(in srgb,var(--card) 96%,transparent);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow-lg)}
+.tab{color:var(--ink2);border-radius:14px}
+.tab.on{color:var(--red);background:color-mix(in srgb,var(--red) 10%,transparent);font-weight:800}
+/* --- Nút bấm: chính xác, góc vừa --- */
+.btn{border-radius:11px;border-color:var(--line);background:var(--paper2);font-weight:700;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.btn.red{background:linear-gradient(165deg,var(--red2),var(--red));border:none;box-shadow:0 4px 14px color-mix(in srgb,var(--red) 32%,transparent);letter-spacing:.02em}
+.toolbar .btn.sm{border:1px solid var(--line);background:var(--card)}
+/* --- Chip: viền mảnh, active đặc --- */
+.chip{border:1px solid var(--line);background:var(--paper2);color:var(--ink2);box-shadow:none;font-weight:700}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 3px 10px color-mix(in srgb,var(--red) 30%,transparent)}
+#viewChips .chip.on{background:linear-gradient(160deg,var(--red2),var(--red))}
+.merchip{border-radius:9px;border-color:var(--line);background:var(--paper2)}
+.merchip.on{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset}
+/* --- Input/select chuẩn form lâm sàng --- */
+.fld label{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.fld input,.fld select,.toolbar input,.qRow select{background:var(--paper2);border:1.5px solid var(--line);border-radius:10px}
+.fld input:focus,.fld select:focus,.toolbar input:focus,.qRow select:focus{border-color:var(--red);box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 15%,transparent)}
+input[type=range]::-webkit-slider-thumb{background:var(--red);border:2.5px solid #fff;box-shadow:0 1px 5px rgba(16,24,40,.3)}
+.sw input:checked + .tr{background:var(--red);border-color:var(--red)}
+/* --- Bản đồ giải phẫu: khung trắng chuẩn --- */
+#mapStage{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.toolbar input{border-radius:999px}
+.toolbar .btn.sm{box-shadow:var(--shadow)}
+.plbl{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:8px;font-weight:700;fill:#1f2937;stroke:#ffffff;stroke-width:2.8px;paint-order:stroke}
+/* --- Cảnh báo & ghi chú semantic chuẩn --- */
+.warnBox{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px}
+.noteBox{background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;border-radius:12px}
+.flagE{background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;border-radius:12px}
+.flagW{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:12px}
+.flagN{background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:12px}
+/* --- Sheet, toast, misc --- */
+#sheet .pnl{background:var(--paper);border-radius:24px 24px 0 0;box-shadow:0 -14px 44px rgba(10,15,25,.3)}
+.grab{background:var(--line)}
+.toast{background:#16202e;color:#eef2f7;border-radius:12px;box-shadow:var(--shadow-lg)}
+.badge{border-radius:6px}
+.scoreC b{color:var(--red)}
+.barRow .bl i{background:linear-gradient(90deg,var(--red2),var(--red))}
+.breathC{background:radial-gradient(circle at 35% 30%,#67e8f9,var(--red))}
+#app::before{background:radial-gradient(1000px 480px at 88% -8%,rgba(14,116,144,.05),transparent 62%),radial-gradient(800px 420px at -10% 32%,rgba(14,116,144,.035),transparent 60%)}
+.histLi,.li,.kv{border-color:var(--line)}
+.qOpt.ok{background:#f0fdf4;border-color:#86efac;color:#166534}
+.qOpt.bad{background:#fef2f2;border-color:#fca5a5;color:#991b1b}
 
 </style>
 </head>
