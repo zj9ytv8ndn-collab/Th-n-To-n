@@ -949,6 +949,8 @@ function buildBody(){
   scene.add(new THREE.AmbientLight(0xffffff,0.55));
   const key=new THREE.DirectionalLight(0xfff2dd,0.9);key.position.set(3,5,4);scene.add(key);
   const rim=new THREE.DirectionalLight(0x88aaff,0.5);rim.position.set(-4,2,-3);scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xe8f0ff,0x6b5236,0.55));
+  const fill=new THREE.DirectionalLight(0xffe8d0,0.35);fill.position.set(0,1.5,5);scene.add(fill);
   bodyGroup=new THREE.Group();scene.add(bodyGroup);
   organGroup=new THREE.Group();bodyGroup.add(organGroup);
   meridGroup=new THREE.Group();bodyGroup.add(meridGroup);
@@ -961,32 +963,78 @@ function buildBody(){
 }
 function skinMat(hex,op){const m=new THREE.MeshStandardMaterial({color:hex,roughness:0.62,metalness:0.05,transparent:true,opacity:op});SKIN_MATS.push(m);return m}
 function limb(mat,x,y,z,r1,r2,h){const g=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,18),mat);g.position.set(x,y,z);return g}
+function capsule(mat,r1,r2,len){
+  const g=new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,len,14),mat));
+  const s1=new THREE.Mesh(new THREE.SphereGeometry(r1,14,10),mat);s1.position.y=len/2;g.add(s1);
+  const s2=new THREE.Mesh(new THREE.SphereGeometry(r2,14,10),mat);s2.position.y=-len/2;g.add(s2);
+  return g;
+}
 function makeBody(gender){
   while(bodyGroup.children.length>3)bodyGroup.remove(bodyGroup.children[3]);
   SKIN_MATS.length=0;
   const male=gender==='male';
-  const mat=skinMat(male?0xe2b28c:0xe8bd9a,0.92);
-  const parts=new THREE.Group();
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.235,26,22),mat);head.position.set(0,3.06,0);head.scale.set(0.9,1.12,0.95);
-  const jaw=new THREE.Mesh(new THREE.SphereGeometry(0.155,18,14),mat);jaw.position.set(0,2.93,0.03);jaw.scale.set(0.85,0.72,0.9);
-  const neck=limb(mat,0,2.8,0,0.07,0.095,0.16);
-  const chest=limb(mat,0,2.36,0,male?0.36:0.33,male?0.335:0.315,0.5);
-  const ribc=limb(mat,0,2.08,0,male?0.33:0.315,male?0.30:0.30,0.28);
-  const belly=limb(mat,0,1.85,0,male?0.29:0.285,male?0.28:0.315,0.22);
-  const hips=limb(mat,0,1.60,0,male?0.285:0.305,male?0.265:0.315,0.22);
-  parts.add(head,jaw,neck,chest,ribc,belly,hips);
+  const mat=skinMat(male?0xdfa87e:0xe5b58f,0.85);
+  mat.roughness=0.55;
+  const P=new THREE.Group();
+  /* ===== HEAD ===== */
+  const H=new THREE.Group();H.position.set(0,3.02,0);
+  const cranium=new THREE.Mesh(new THREE.SphereGeometry(0.215,24,20),mat);cranium.position.y=0.055;cranium.scale.set(0.93,1.06,0.98);H.add(cranium);
+  const face=new THREE.Mesh(new THREE.SphereGeometry(0.185,22,18),mat);face.position.set(0,-0.03,0.045);face.scale.set(0.82,0.95,0.82);H.add(face);
+  const jaw=new THREE.Mesh(new THREE.SphereGeometry(0.135,18,14),mat);jaw.position.set(0,-0.135,0.035);jaw.scale.set(0.78,0.66,0.85);H.add(jaw);
+  const chin=new THREE.Mesh(new THREE.SphereGeometry(0.05,12,10),mat);chin.position.set(0,-0.205,0.055);chin.scale.set(1,0.7,0.9);H.add(chin);
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(0.028,0.07,10),mat);nose.position.set(0,-0.015,0.205);nose.rotation.x=Math.PI/2;H.add(nose);
   [-1,1].forEach(s=>{
-    const sh=limb(mat,s*0.455,2.48,0,0.085,0.07,0.4);sh.rotation.z=s*-0.09;
-    const ua=limb(mat,s*0.545,2.13,0.008,0.068,0.057,0.34);
-    const fa=limb(mat,s*0.58,1.77,0.015,0.054,0.047,0.32);
-    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.072,12,10),mat);hand.position.set(s*0.595,1.55,0.02);hand.scale.set(0.6,1.35,0.85);
-    const th=limb(mat,s*0.15,1.26,0,0.115,0.092,0.52);
-    const sn=limb(mat,s*0.155,0.6,0.004,0.08,0.064,0.58);
-    const ft=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.07,0.22),mat);ft.position.set(s*0.155,0.055,0.05);
-    parts.add(sh,ua,fa,hand,th,sn,ft);
+    const ear=new THREE.Mesh(new THREE.SphereGeometry(0.048,12,10),mat);ear.position.set(s*0.198,-0.02,-0.01);ear.scale.set(0.38,1,0.72);H.add(ear);
   });
-  bodyGroup.add(parts);
-  window._bodyParts=parts;
+  P.add(H);
+  /* ===== NECK + TRAPEZIUS ===== */
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.062,0.078,0.16,14),mat);neck.position.set(0,2.83,0);P.add(neck);
+  const trap=new THREE.Mesh(new THREE.SphereGeometry(0.115,18,12),mat);trap.position.set(0,2.7,0);trap.scale.set(male?2.35:2.05,0.6,1.15);P.add(trap);
+  /* ===== TORSO ===== */
+  const chest=new THREE.Mesh(new THREE.SphereGeometry(0.295,22,18),mat);chest.position.set(0,2.32,0);chest.scale.set(male?1.18:1.08,0.88,0.8);P.add(chest);
+  const pec=new THREE.Mesh(new THREE.SphereGeometry(0.19,16,12),mat);pec.position.set(0,2.33,0.1);pec.scale.set(male?1.35:1.2,0.62,0.62);P.add(pec);
+  const ribs=new THREE.Mesh(new THREE.SphereGeometry(0.255,20,16),mat);ribs.position.set(0,2.08,0);ribs.scale.set(1.06,0.82,0.74);P.add(ribs);
+  const waist=new THREE.Mesh(new THREE.SphereGeometry(0.215,18,14),mat);waist.position.set(0,1.87,0);waist.scale.set(1,0.72,0.7);P.add(waist);
+  const pelvis=new THREE.Mesh(new THREE.SphereGeometry(0.24,20,16),mat);pelvis.position.set(0,1.63,0);pelvis.scale.set(male?1.08:1.24,0.78,0.82);P.add(pelvis);
+  const glute=new THREE.Mesh(new THREE.SphereGeometry(0.2,16,12),mat);glute.position.set(0,1.62,-0.06);glute.scale.set(male?1.05:1.15,0.72,0.75);P.add(glute);
+  /* ===== ARMS ===== */
+  [-1,1].forEach(s=>{
+    const delt=new THREE.Mesh(new THREE.SphereGeometry(0.105,16,12),mat);delt.position.set(s*(male?0.43:0.40),2.51,0);delt.scale.set(1,1.15,1);P.add(delt);
+    const ua=capsule(mat,0.074,0.058,0.3);ua.position.set(s*(male?0.475:0.445),2.3,0);ua.rotation.z=s*-0.1;P.add(ua);
+    const elb=new THREE.Mesh(new THREE.SphereGeometry(0.062,14,10),mat);elb.position.set(s*(male?0.535:0.505),2.11,0.005);P.add(elb);
+    const fa=capsule(mat,0.056,0.044,0.27);fa.position.set(s*(male?0.565:0.535),1.9,0.012);fa.rotation.z=s*-0.045;P.add(fa);
+    const wrist=new THREE.Mesh(new THREE.SphereGeometry(0.042,12,10),mat);wrist.position.set(s*(male?0.585:0.555),1.745,0.02);P.add(wrist);
+    /* hand */
+    const hg=new THREE.Group();hg.position.set(s*(male?0.59:0.56),1.66,0.025);
+    const palm=new THREE.Mesh(new THREE.SphereGeometry(0.062,14,10),mat);palm.scale.set(0.72,1.3,0.5);palm.position.y=-0.045;hg.add(palm);
+    const fxs=[-0.026,-0.009,0.009,0.026],flens=[0.062,0.075,0.07,0.055];
+    fxs.forEach((fx,i)=>{
+      const f=capsule(mat,0.0115,0.0095,flens[i]);f.position.set(fx,-0.125,0.005);f.rotation.z=fx*-2.2;hg.add(f);
+    });
+    const th=capsule(mat,0.012,0.01,0.06);th.position.set(s*-0.052,-0.05,0.015);th.rotation.z=s*0.9;hg.add(th);
+    P.add(hg);
+  });
+  /* ===== LEGS ===== */
+  [-1,1].forEach(s=>{
+    const hip=new THREE.Mesh(new THREE.SphereGeometry(0.095,14,10),mat);hip.position.set(s*0.155,1.52,0);P.add(hip);
+    const th2=capsule(mat,0.104,0.078,0.42);th2.position.set(s*0.16,1.25,0);P.add(th2);
+    const knee=new THREE.Mesh(new THREE.SphereGeometry(0.072,14,10),mat);knee.position.set(s*0.162,0.975,0.008);P.add(knee);
+    const pat=new THREE.Mesh(new THREE.SphereGeometry(0.045,10,8),mat);pat.position.set(s*0.162,0.975,0.07);pat.scale.set(1,1.25,0.7);P.add(pat);
+    const shin=capsule(mat,0.068,0.048,0.42);shin.position.set(s*0.165,0.66,0.002);P.add(shin);
+    const ankle=new THREE.Mesh(new THREE.SphereGeometry(0.045,12,10),mat);ankle.position.set(s*0.168,0.42,0.005);P.add(ankle);
+    /* foot */
+    const fg=new THREE.Group();fg.position.set(s*0.168,0.15,0.035);
+    const heel=new THREE.Mesh(new THREE.SphereGeometry(0.052,12,10),mat);heel.position.set(0,0.005,-0.045);heel.scale.set(0.95,0.85,1);fg.add(heel);
+    const mid=new THREE.Mesh(new THREE.SphereGeometry(0.055,12,10),mat);mid.position.set(0,0.01,0.045);mid.scale.set(1.05,0.72,1.55);fg.add(mid);
+    const txs=[-0.035,-0.018,0,0.018,0.035],trs=[0.02,0.022,0.024,0.02,0.016];
+    txs.forEach((tx,i)=>{
+      const toe=new THREE.Mesh(new THREE.SphereGeometry(trs[i],8,6),mat);toe.position.set(tx,-0.012,0.135);fg.add(toe);
+    });
+    P.add(fg);
+  });
+  bodyGroup.add(P);
+  window._bodyParts=P;
 }
 
 function buildOrgans(){
@@ -1911,13 +1959,17 @@ function renderMerChips(){
   +'<div class="sub" style="margin-top:6px">Chọn một kinh để hiện nhãn tên huyệt + đường kinh nổi bật. Chạm chấm bất kỳ lúc nào để xem chi tiết đầy đủ.</div>';
 }
 function renderCharts(){
-  renderChartTabs();renderMerChips();
   const el=$('#chartBody');if(!el)return;
-  if(CH.tab==='front'||CH.tab==='back'||CH.tab==='side')el.innerHTML='<div class="card" style="padding:8px">'+bodySVG(CH.tab)+'</div>'+legendHTML();
-  else if(CH.tab==='head')el.innerHTML=headSVG();
-  else if(CH.tab==='limb')el.innerHTML=limbSVG();
-  else if(CH.tab==='rendu')el.innerHTML=renduSVG();
-  else el.innerHTML=famousTable();
+  try{
+    renderChartTabs();renderMerChips();
+    if(CH.tab==='front'||CH.tab==='back'||CH.tab==='side')el.innerHTML='<div class="card" style="padding:8px">'+bodySVG(CH.tab)+'</div>'+legendHTML();
+    else if(CH.tab==='head')el.innerHTML=headSVG();
+    else if(CH.tab==='limb')el.innerHTML=limbSVG();
+    else if(CH.tab==='rendu')el.innerHTML=renduSVG();
+    else el.innerHTML=famousTable();
+  }catch(e){
+    el.innerHTML='<div class="card warnBox" style="display:block">Lỗi hiển thị sơ đồ: '+e.message+'<br><span class="sub">Hãy tải lại trang (kéo xuống refresh). Nếu vẫn lỗi, xoá cache website.</span></div>';
+  }
 }
 /* ================= QUIZ MODULE ================= */
 let QZ={mode:'name2code',scope:'all',qs:[],i:0,score:0,streak:0,wrong:[]};
@@ -2131,7 +2183,7 @@ window.addEventListener('load',()=>{
     document.documentElement.style.setProperty('--r',S.r+'px');
     $('#setFont')&&($('#setFont').selectedIndex=S.font);
     renderSettings();applySettings();
-    buildBody();renderSymChips();
+    buildBody();renderSymChips();renderCharts();renderQuiz();renderPractice();
     $('#btnGender').textContent=PROFILE.gender==='male'?'♂':'♀';
     renderMetrics();renderScore();renderPointList();renderProfile();diagInit();renderRemind();
     if(!store.get('disclaimed',false)){
