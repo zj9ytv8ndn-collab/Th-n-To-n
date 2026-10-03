@@ -364,8 +364,7 @@ details.qg[open]{box-shadow:var(--shadow-lg)}
    </div>
   </div>
  </div>
- <div class="sec"><h2>Theo triệu chứng</h2><div class="sub">Chọn triệu chứng — các huyệt liên quan sẽ sáng lên trên bản đồ</div></div>
- <div class="hscroll" id="symChips" style="flex-wrap:wrap;overflow:visible;padding-bottom:2px"></div>
+ <details class="qg" id="symDrop"><summary>🔍 Theo triệu chứng <span class="mini">— gấp/mở</span></summary><div class="bd" style="padding-bottom:8px"><div class="hscroll" id="symChips" style="flex-wrap:wrap;overflow:visible;padding:2px 12px"></div></div></details>
  <details class="qg" id="hayDrop"><summary>🌟 Huyệt hay dùng <span class="mini">— gấp/mở</span></summary><div class="bd" style="padding-bottom:10px"><div style="display:flex;gap:7px;padding:2px 12px 6px"><select id="favSel" style="flex:1;min-width:0;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--paper2);color:var(--ink);font-size:.76rem"></select><button class="btn sm" style="height:38px;width:auto;padding:0 14px;border-radius:10px" onclick="addFav()">＋ Thêm</button></div><div id="hayList"></div></div></details>
  <div class="card noteBox">☞ <b>Cách dùng:</b> chạm vào <b>chấm tròn</b> để xem tên, vị trí và cách tìm huyệt. Chạm <b>chip màu</b> để ẩn/hiện từng đường kinh. Nét đứt chạy dọc đường kinh thể hiện chiều lưu hành của khí theo Đông Y. Thông tin mang tính giáo dục, không thay thế bác sĩ.</div>
 </section>
@@ -1130,6 +1129,11 @@ function delFav(c){DYS('fav',DY('fav',[]).filter(x=>x!==c));buildHay();toast('Đ
 function buildFavSel(){const s=document.getElementById('favSel');if(!s||s.options.length>1)return;
  s.innerHTML='<option value="">＋ Thêm huyệt khác vào danh sách…</option>'+DATA.slice().sort((a,b)=>a.c<b.c?-1:1).map(d=>'<option value="'+d.c+'">'+d.c+' · '+d.vi+'</option>').join('')}
 buildFavSel();
+
+/* ---- override buildSym: dropdown tự đóng sau khi chọn ---- */
+function buildSym(){
+ document.getElementById('symChips').innerHTML='<span class="chip'+(curSym?'':' on')+'" onclick="curSym=null;buildSym();renderMap();document.getElementById(\'symDrop\').open=false">Tất cả</span>'+SYMS.map(s=>'<span class="chip'+(curSym===s[0]?' on':'')+'" onclick="curSym=\''+s[0]+'\';buildSym();renderMap();document.getElementById(\'symDrop\').open=false">'+s[1]+'</span>').join('');
+}
 </script>
 </body>
 </html>
