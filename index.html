@@ -302,22 +302,8 @@ details.qg .bd{padding:0 13px 12px}
  <div class="card"><b style="font-size:.9rem">📜 Miễn trừ trách nhiệm</b>
   <div style="font-size:.72rem;color:var(--ink2);margin-top:5px">Ứng dụng phục vụ <b>giáo dục sức khỏe, theo dõi wellness và hỗ trợ tham khảo</b>. Không chẩn đoán, điều trị, chữa hay phòng bệnh; không thay thế bác sĩ/chuyên gia y tế có giấy phép. Diễn giải Đông Y là <b>mô hình truyền thống</b>, tách biệt với y học hiện đại. This application does not diagnose, treat, cure, or prevent disease.</div>
  </div>
+<div class="card" style="text-align:center;font-size:.66rem;color:var(--ink2)">BUILD 2026.10.04-v2 — đã sửa lỗi hiển thị tab</div>
 </section>
-</div>
-
-<nav id="tabbar"><div class="in">
- <button class="tab on" data-v="map" onclick="go('map')"><span class="ic">🗺</span>BẢN ĐỒ</button>
-  <button class="tab" data-v="body3d" onclick="goX('body3d')"><span class="ic">🧍</span>BODY 3D</button>
- <button class="tab" data-v="health" onclick="goX('health')"><span class="ic">❤️</span>SỨC KHỎE</button>
- <button class="tab" data-v="analysis" onclick="goX('analysis')"><span class="ic">🧠</span>PHÂN TÍCH</button>
- <button class="tab" data-v="plan" onclick="goX('plan')"><span class="ic">📋</span>KẾ HOẠCH</button>
- <button class="tab" data-v="report" onclick="goX('report')"><span class="ic">🖨</span>BÁO CÁO</button>
-<button class="tab" data-v="mer" onclick="go('mer')"><span class="ic">〰</span>KINH</button>
- <button class="tab" data-v="points" onclick="go('points')"><span class="ic">📍</span>HUYỆT</button>
- <button class="tab" data-v="quiz" onclick="go('quiz')"><span class="ic">🎓</span>QUIZ</button>
- <button class="tab" data-v="more" onclick="go('more')"><span class="ic">☰</span>KHÁC</button>
-</div></nav>
-
 
 <!-- ============ BODY 3D ============ -->
 <section class="view" id="v-body3d">
@@ -423,6 +409,22 @@ details.qg .bd{padding:0 13px 12px}
  <div class="card"><button class="btn" style="width:100%" onclick="shareReport()">📤 Chia sẻ với chuyên gia y tế</button></div>
  <div class="card warnBox">🩺 Nếu xuất hiện đau ngực, khó thở nặng, liệt nửa người, nói khó, hôn mê — <b>gọi 115 ngay</b>, không chờ phân tích.</div>
 </section>
+
+</div>
+
+<nav id="tabbar"><div class="in">
+ <button class="tab on" data-v="map" onclick="go('map')"><span class="ic">🗺</span>BẢN ĐỒ</button>
+  <button class="tab" data-v="body3d" onclick="goX('body3d')"><span class="ic">🧍</span>BODY 3D</button>
+ <button class="tab" data-v="health" onclick="goX('health')"><span class="ic">❤️</span>SỨC KHỎE</button>
+ <button class="tab" data-v="analysis" onclick="goX('analysis')"><span class="ic">🧠</span>PHÂN TÍCH</button>
+ <button class="tab" data-v="plan" onclick="goX('plan')"><span class="ic">📋</span>KẾ HOẠCH</button>
+ <button class="tab" data-v="report" onclick="goX('report')"><span class="ic">🖨</span>BÁO CÁO</button>
+<button class="tab" data-v="mer" onclick="go('mer')"><span class="ic">〰</span>KINH</button>
+ <button class="tab" data-v="points" onclick="go('points')"><span class="ic">📍</span>HUYỆT</button>
+ <button class="tab" data-v="quiz" onclick="go('quiz')"><span class="ic">🎓</span>QUIZ</button>
+ <button class="tab" data-v="more" onclick="go('more')"><span class="ic">☰</span>KHÁC</button>
+</div></nav>
+
 
 <div id="sheet"><div class="bk" onclick="closeSheet()"></div><div class="pnl"><div class="grab"></div><div id="sheetBody"></div></div></div>
 
