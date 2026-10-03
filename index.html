@@ -307,11 +307,11 @@ details.qg .bd{padding:0 13px 12px}
 
 <nav id="tabbar"><div class="in">
  <button class="tab on" data-v="map" onclick="go('map')"><span class="ic">🗺</span>BẢN ĐỒ</button>
-  <button class="tab" data-v="body3d" onclick="go('body3d')"><span class="ic">🧍</span>BODY 3D</button>
- <button class="tab" data-v="health" onclick="go('health')"><span class="ic">❤️</span>SỨC KHỎE</button>
- <button class="tab" data-v="analysis" onclick="go('analysis')"><span class="ic">🧠</span>PHÂN TÍCH</button>
- <button class="tab" data-v="plan" onclick="go('plan')"><span class="ic">📋</span>KẾ HOẠCH</button>
- <button class="tab" data-v="report" onclick="go('report')"><span class="ic">🖨</span>BÁO CÁO</button>
+  <button class="tab" data-v="body3d" onclick="goX('body3d')"><span class="ic">🧍</span>BODY 3D</button>
+ <button class="tab" data-v="health" onclick="goX('health')"><span class="ic">❤️</span>SỨC KHỎE</button>
+ <button class="tab" data-v="analysis" onclick="goX('analysis')"><span class="ic">🧠</span>PHÂN TÍCH</button>
+ <button class="tab" data-v="plan" onclick="goX('plan')"><span class="ic">📋</span>KẾ HOẠCH</button>
+ <button class="tab" data-v="report" onclick="goX('report')"><span class="ic">🖨</span>BÁO CÁO</button>
 <button class="tab" data-v="mer" onclick="go('mer')"><span class="ic">〰</span>KINH</button>
  <button class="tab" data-v="points" onclick="go('points')"><span class="ic">📍</span>HUYỆT</button>
  <button class="tab" data-v="quiz" onclick="go('quiz')"><span class="ic">🎓</span>QUIZ</button>
@@ -660,8 +660,7 @@ const todayStr=()=>new Date().toISOString().slice(0,10);
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2400)}
 
 /* ---- router override + lazy init ---- */
-const _go0=go;
-function go(v){_go0(v);
+function goX(v){go(v);
  if(v==='body3d')init3D();
  if(v==='health')renderHealth();
  if(v==='analysis')renderQuiz();
