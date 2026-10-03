@@ -330,6 +330,7 @@ function renderMap(){
  });
  const ms=matchSet();let shown=0;
  DATA.forEach(d=>{
+  if(!vis[d.m])return;
   const xy=d.v[curView];if(!xy)return;
   const inMain=!$('#q').value.trim()&&!curSym||ms.has(d.c);
   if(inMain)shown++;
