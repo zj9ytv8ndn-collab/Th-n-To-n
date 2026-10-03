@@ -181,6 +181,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 /* 3D point label */
 #ptLabel{position:absolute;display:none;z-index:5;background:color-mix(in srgb,var(--bg) 80%,transparent);border:1px solid var(--acc);color:var(--acc);font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:99px;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px);box-shadow:0 4px 14px rgba(0,0,0,.4)}
+
+/* 2D charts */
+.chartSvg{width:100%;height:auto;display:block;border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 4%,transparent),transparent 40%)}
+.chartDot{cursor:pointer}
+.chartDot:active{opacity:.6}
+.legendGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-top:8px}
+.legendItem{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--sub)}
+.legendItem i{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.famTable{width:100%;border-collapse:collapse;font-size:.78rem}
+.famTable th{color:var(--acc);text-align:left;padding:7px 6px;border-bottom:1.5px solid var(--line);font-size:.7rem;letter-spacing:.05em}
+.famTable td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.famTable tr:active{background:var(--card)}
+.chartCardTitle{font-size:.68rem;font-weight:800;color:var(--sub);letter-spacing:.1em;text-align:center;margin-top:6px}
 </style>
 </head>
 <body>
@@ -242,6 +255,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <h3 style="font-size:1rem;margin-bottom:6px">Bắt đầu chẩn đoán</h3>
     <div class="sub" style="margin-bottom:10px">Vọng · Văn · Vấn · Thiết — mô phỏng có cấu trúc theo biện chứng Đông Y, kết hợp diễn giải sinh lý hiện đại.</div>
     <button class="btn acc block" onclick="openView('diag')">Bắt đầu — Tứ Chẩn ➤</button>
+  </div>
+
+  <div class="card glass2" style="cursor:pointer;border:1px solid color-mix(in srgb,var(--acc) 45%,transparent)" onclick="openView('charts')">
+    <div class="row"><div style="font-size:30px">🗺</div><div class="grow"><b style="font-size:.98rem">Sơ đồ huyệt đạo 2D</b><div class="sub">Mặt trước · Mặt sau · Mặt bên · Đầu mặt · Tay chân · Nhâm Đốc · Huyệt hay dùng — phong cách bảng đồ y khoa, chạm huyệt để xem chi tiết</div></div><span style="color:var(--acc);font-size:1.3rem">›</span></div>
   </div>
 
   <div class="grid2" style="margin:0 14px">
@@ -407,6 +424,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <button class="tab" data-v="ai" onclick="openView('ai')"><span class="ic">🧠</span>AI</button>
   <button class="tab" data-v="more" onclick="openView('more')"><span class="ic">⋯</span>THÊM</button>
 </div></nav>
+
+<section class="view" id="v-charts">
+  <div class="sec"><h2>Sơ đồ huyệt đạo</h2><div class="sub">Bảng đồ y khoa — chọn kinh để hiện nhãn tên huyệt, chạm chấm để xem chi tiết</div></div>
+  <div class="hscroll" id="chartTabs"></div>
+  <div class="card" id="chartMerChips" style="padding:10px 12px"></div>
+  <div id="chartBody"></div>
+</section>
 
 <section class="view" id="v-quiz">
   <div class="sec"><h2>Quiz huyệt đạo</h2><div class="sub">Flashcard trắc nghiệm — ghi nhớ 361 huyệt theo tên, mã, vị trí</div></div>
@@ -904,6 +928,7 @@ function openView(v){
   if(v==='report')renderReportPrev();
   if(v==='practice')renderPractice();
   if(v==='quiz')renderQuiz();
+  if(v==='charts')renderCharts();
 }
 function openSheet(html){$('#sheetBody').innerHTML=html;$('#sheet').classList.add('on')}
 function closeSheet(){$('#sheet').classList.remove('on')}
@@ -1666,6 +1691,204 @@ function doWipe(){localStorage.clear();closeModal();location.reload()}
 
 
 
+
+/* ================= 2D MEDICAL CHARTS ================= */
+let CH={tab:'front',mer:'all'};
+const SKIN='#e9d0a8',SKIN_STROKE='#8a6a45';
+function mrColor(mr){return '#'+mr.color.toString(16).padStart(6,'0')}
+function ptSides(p){const pos=pointPos(p);return MERIDIANS.find(m=>m.id===p.m).side==='mid'?[pos]:[pos,new THREE.Vector3(-pos.x,pos.y,pos.z)]}
+function proj2(v,view){
+  if(view==='front')return{x:120-v.x*72,y:400-v.y*104};
+  if(view==='back')return{x:120+v.x*72,y:400-v.y*104};
+  return{x:120-v.z*72,y:400-v.y*104};
+}
+function silhouette(view){
+  if(view==='side'){
+    return '<g fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1.1">'
+    +'<circle cx="118" cy="56" r="20"/><path d="M133,52 L141,59 L133,64 Z" stroke-width="0.8"/>'
+    +'<path d="M96,92 Q87,138 93,184 Q97,216 102,242 L136,242 Q142,214 144,178 Q146,128 136,92 Q118,83 96,92 Z"/>'
+    +'<line x1="103" y1="104" x2="95" y2="224" stroke-width="11"/><circle cx="94" cy="231" r="7"/>'
+    +'<path d="M102,242 L120,242 L118,384 Q117,394 110,394 L105,394 Q99,392 100,382 Z"/>'
+    +'<path d="M122,242 L136,242 L138,382 Q139,392 133,394 L128,394 Q122,394 122,384 Z"/>'
+    +'<ellipse cx="113" cy="398" rx="19" ry="6"/></g>';
+  }
+  const back=view==='back';
+  let g='<g fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1.1">'
+  +'<circle cx="120" cy="56" r="21"/><path d="M110,74 L130,74 L133,92 L107,92 Z"/>'
+  +'<path d="M80,96 Q120,86 160,96 L153,176 Q149,206 141,218 L99,218 Q91,206 87,176 Z"/>'
+  +'<path d="M99,218 L141,218 L138,242 L102,242 Z"/>'
+  +'<line x1="84" y1="104" x2="75" y2="226" stroke-width="12"/><circle cx="74" cy="233" r="7.5"/>'
+  +'<line x1="156" y1="104" x2="165" y2="226" stroke-width="12"/><circle cx="166" cy="233" r="7.5"/>'
+  +'<path d="M102,242 L119,242 L117,384 Q116,394 109,394 L104,394 Q98,392 99,382 Z"/>'
+  +'<path d="M121,242 L138,242 L141,382 Q142,392 136,394 L131,394 Q124,394 123,384 Z"/>'
+  +'<ellipse cx="107" cy="398" rx="13" ry="6"/><ellipse cx="133" cy="398" rx="13" ry="6"/></g>';
+  if(back)g+='<line x1="120" y1="92" x2="120" y2="240" stroke="#a8875f" stroke-width="1" stroke-dasharray="3,3" fill="none"/>';
+  return g;
+}
+function bodySVG(view){
+  const pts=[];
+  ACUPOINTS.forEach(p=>{
+    const mr=MERIDIANS.find(m=>m.id===p.m);
+    ptSides(p).forEach(pos=>{
+      if(view==='side'&&pos.x<0)return;
+      const vis=view==='front'?pos.z>-0.06:view==='back'?pos.z<0.06:true;
+      if(!vis)return;
+      pts.push({p,pr:proj2(pos,view),mr});
+    });
+  });
+  let lines='';
+  MERIDIANS.forEach(mr=>{
+    if(CH.mer!=='all'&&CH.mer!==mr.id)return;
+    const sides=mr.side==='mid'?[1]:[1,-1];
+    sides.forEach(sg=>{
+      const poly=mr.path.map(w=>{const v=proj2(new THREE.Vector3(w[0]*sg,w[1],w[2]),view);return v.x.toFixed(1)+','+v.y.toFixed(1)}).join(' ');
+      lines+='<polyline points="'+poly+'" fill="none" stroke="'+mrColor(mr)+'" stroke-width="1.5" opacity="0.8"/>';
+    });
+  });
+  let dots='',labelPts=[];
+  pts.forEach(o=>{
+    const sel=CH.mer===o.mr.id;
+    dots+='<circle class="chartDot" cx="'+o.pr.x.toFixed(1)+'" cy="'+o.pr.y.toFixed(1)+'" r="'+(sel?3.2:2.1)+'" fill="'+mrColor(o.mr)+'" stroke="#fff" stroke-width="0.6" onclick="showPoint(\''+o.p.c+'\')"/>';
+    if(sel)labelPts.push(o);
+  });
+  let labels='';
+  labelPts.sort((a,b)=>a.pr.y-b.pr.y);
+  const cols=[{x:6,cur:12,anch:'start'},{x:62,cur:12,anch:'start'},{x:178,cur:12,anch:'start'},{x:234,cur:12,anch:'end'}];
+  labelPts.forEach((o,i)=>{
+    const col=cols[i%4];
+    const ly=Math.max(col.cur,Math.min(o.pr.y,412));
+    col.cur=ly+10;
+    const tx=col.anch==='end'?col.x-4:col.x+4;
+    labels+='<line x1="'+tx+'" y1="'+ly+'" x2="'+o.pr.x.toFixed(1)+'" y2="'+o.pr.y.toFixed(1)+'" stroke="#999" stroke-width="0.5" opacity="0.7"/>'
+    +'<text x="'+tx+'" y="'+(ly+2.5)+'" font-size="8.5" font-weight="600" fill="var(--txt)" text-anchor="'+col.anch+'">'+o.p.c+' '+o.p.vi+'</text>';
+  });
+  return '<svg viewBox="0 0 240 420" class="chartSvg">'+silhouette(view)+lines+dots+labels+'</svg>';
+}
+function legendHTML(){
+  return '<div class="card"><b style="font-size:.9rem">Chú thích kinh mạch</b><div class="legendGrid">'
+  +MERIDIANS.map(m=>'<div class="legendItem"><i style="background:'+mrColor(m)+'"></i>'+m.id+' · '+m.vi+'</div>').join('')+'</div>'
+  +'<div class="sub" style="margin-top:8px">Ký hiệu: <b>●</b> huyệt đạo · — đường kinh · chọn kinh ở thanh trên để hiện nhãn tên · chạm chấm để xem chi tiết</div></div>';
+}
+function headSVG(){
+  const modes=[['front','ĐẦU MẶT TRƯỚC'],['back','ĐẦU MẶT SAU'],['side','ĐẦU MẶT BÊN'],['top','ĐỈNH ĐẦU']];
+  let out='';
+  modes.forEach((md,pi)=>{
+    const x0=60+pi*120;
+    let inner='<circle cx="'+x0+'" cy="72" r="52" fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1.1"/>';
+    if(md[0]==='side'||md[0]==='back')inner+='<circle cx="'+(x0+44)+'" cy="76" r="7" fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1"/>';
+    if(md[0]==='side')inner+='<path d="M'+(x0+38)+',60 L'+(x0+50)+',68 L'+(x0+38)+',74 Z" fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="0.8"/>';
+    const lab=[];
+    ACUPOINTS.forEach(p=>{
+      const pos=pointPos(p);
+      if(pos.y<2.68)return;
+      if(md[0]==='side'&&pos.x<0)return;
+      let x,y;
+      const yy=126-(pos.y-2.68)*165;
+      if(md[0]==='front'){x=x0-pos.x*105;y=yy}
+      else if(md[0]==='back'){x=x0+pos.x*105;y=yy}
+      else if(md[0]==='side'){x=x0-pos.z*105;y=yy}
+      else{x=x0-pos.x*105;y=78+pos.z*95}
+      const mr=MERIDIANS.find(m=>m.id===p.m);
+      const sel=CH.mer===mr.id;
+      inner+='<circle class="chartDot" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(sel?2.6:1.8)+'" fill="'+mrColor(mr)+'" stroke="#fff" stroke-width="0.5" onclick="showPoint(\''+p.c+'\')"/>';
+      if(sel)lab.push({p,x,y});
+    });
+    lab.sort((a,b)=>a.y-b.y);
+    const cols=[{dx:-8,anch:'end',cur:20},{dx:8,anch:'start',cur:20}];
+    lab.forEach((o,i)=>{
+      const c=cols[i%2];
+      const ly=Math.max(c.cur,o.y-6);
+      c.cur=ly+10.5;
+      inner+='<line x1="'+(o.x+(c.anch==='end'?-3:3))+'" y1="'+ly+'" x2="'+o.x.toFixed(1)+'" y2="'+o.y.toFixed(1)+'" stroke="#999" stroke-width="0.5" opacity="0.7"/>'
+      +'<text x="'+(o.x+c.dx)+'" y="'+(ly+2.5)+'" font-size="8" font-weight="600" fill="var(--txt)" text-anchor="'+c.anch+'">'+o.p.c+'</text>';
+    });
+    out+='<div class="chartCardTitle">'+md[1]+'</div>'+inner;
+  });
+  return '<div class="card"><svg viewBox="0 0 480 152" class="chartSvg">'+out+'</svg></div>';
+}
+function limbSVG(){
+  let handPts=[],footPts=[];
+  ACUPOINTS.forEach(p=>{
+    const pos=pointPos(p);
+    const mr=MERIDIANS.find(m=>m.id===p.m);
+    if(pos.y>=1.36&&pos.y<=1.62&&Math.abs(pos.x)>0.3)ptSides(p).forEach(s2=>{
+      if(s2.x<0)return;
+      const sel=CH.mer===mr.id;
+      const x=110+(s2.x-0.45)*560,y=52+(1.60-s2.y)*820;
+      handPts.push({p,mr,x,y,sel});
+    });
+    if(pos.y<0.22&&pos.z>-0.05)ptSides(p).forEach(s2=>{
+      if(s2.x<0)return;
+      const sel=CH.mer===mr.id;
+      const x=340+(s2.x-0.22)*520,y=60+(0.20-s2.y)*480;
+      footPts.push({p,mr,x,y,sel});
+    });
+  });
+  let g='<g fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1.1">'
+  +'<path d="M70,180 Q66,110 78,62 Q82,48 92,50 L96,64 Q98,40 106,40 L109,62 Q112,34 120,34 L123,62 Q126,38 134,40 L137,64 Q142,46 150,52 L152,78 Q156,120 152,180 Q150,196 130,196 L92,196 Q74,196 70,180 Z"/>'
+  +'<path d="M300,80 Q296,40 322,34 Q352,28 368,44 Q382,60 378,92 Q376,120 368,140 Q362,158 346,160 L322,162 Q304,158 300,130 Z"/>'
+  +'<circle cx="384" cy="88" r="9"/></g>';
+  const draw=(arr,side)=>{
+    let d='',l='';
+    const labs=[];
+    arr.forEach(o=>{
+      d+='<circle class="chartDot" cx="'+o.x.toFixed(1)+'" cy="'+o.y.toFixed(1)+'" r="'+(o.sel?2.8:2)+'" fill="'+mrColor(o.mr)+'" stroke="#fff" stroke-width="0.5" onclick="showPoint(\''+o.p.c+'\')"/>';
+      if(o.sel)labs.push(o);
+    });
+    labs.sort((a,b)=>a.y-b.y);
+    const cols=[{dx:-6,anch:'end',cur:26},{dx:6,anch:'start',cur:26}];
+    labs.forEach((o,i)=>{const c=cols[i%2];const ly=Math.max(c.cur,o.y-5);c.cur=ly+11;
+      l+='<line x1="'+(o.x+(c.anch==='end'?-3:3))+'" y1="'+ly+'" x2="'+o.x.toFixed(1)+'" y2="'+o.y.toFixed(1)+'" stroke="#999" stroke-width="0.5" opacity="0.7"/><text x="'+(o.x+c.dx)+'" y="'+(ly+2.5)+'" font-size="8.5" font-weight="600" fill="var(--txt)" text-anchor="'+c.anch+'">'+o.p.c+'</text>'});
+    return d+l;
+  };
+  return '<div class="card"><div class="chartCardTitle">BÀN TAY (MẶT TRƯỚC)</div><div class="chartCardTitle" style="text-align:right;margin-top:-14px">BÀN CHÂN (LÒNG)</div><svg viewBox="0 0 470 210" class="chartSvg">'+g+draw(handPts)+draw(footPts)+'</svg></div>';
+}
+function renduSVG(){
+  const panel=(merId,cx,title)=>{
+    const pts=ACUPOINTS.filter(p=>p.m===merId).map(p=>({p,y:34+(3.3-pointPos(p).y)*112})).sort((a,b)=>a.y-b.y);
+    let s='<line x1="'+cx+'" y1="24" x2="'+cx+'" y2="396" stroke="#b09a78" stroke-width="1.4"/>'
+    +'<text x="'+cx+'" y="14" font-size="10" font-weight="800" fill="var(--acc)" text-anchor="middle">'+title+'</text>';
+    pts.forEach((o,i)=>{
+      const anch=i%2?'start':'end';
+      const tx=anch==='start'?cx+8:cx-8;
+      s+='<circle class="chartDot" cx="'+cx+'" cy="'+o.y.toFixed(1)+'" r="3" fill="'+mrColor(MERIDIANS.find(m=>m.id===merId))+'" stroke="#fff" stroke-width="0.6" onclick="showPoint(\''+o.p.c+'\')"/>'
+      +'<text x="'+tx+'" y="'+(o.y+3).toFixed(1)+'" font-size="8.5" font-weight="600" fill="var(--txt)" text-anchor="'+anch+'">'+o.p.c+' '+o.p.vi+'</text>';
+    });
+    return s;
+  };
+  return '<div class="card"><svg viewBox="0 0 480 420" class="chartSvg">'
+  +'<ellipse cx="120" cy="70" rx="30" ry="36" fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1.1"/>'
+  +'<ellipse cx="360" cy="70" rx="30" ry="36" fill="'+SKIN+'" stroke="'+SKIN_STROKE+'" stroke-width="1.1"/>'
+  +panel('CV',120,'NHÂM MẠCH · MẶT TRƯỚC')+panel('GV',360,'ĐỐC MẠCH · MẶT SAU')+'</svg></div>';
+}
+const FAMOUS=[['LI4','Mu bàn tay, giữa xương bàn ngón cái–trỏ','Giảm đau, hạ sốt, thông kinh · ⚠ thai kỳ'],['PC6','Mặt trong cẳng tay, 2 thốn trên cổ tay','Giảm buồn nôn, an thần, hồi hộp'],['ST36','Mặt ngoài chân, 3 thốn dưới khối xương bánh chè','Bổ khí, kiện tỳ, tăng sức khỏe · huyệt trường thọ'],['LR3','Mu bàn chân, sau khớp bàn ngón 1–2','Bình can tả hỏa, giảm đau đầu, ổn huyết áp'],['GB20','Hõm gáy, giữa cơ thang và xương chẩm','Trị đau đầu, cảm phong, cổ gáy cứng'],['CV6','Bụng dưới, 1.5 thốn dưới rốn','Bổ khí ích nguyên, củng cố chính khí'],['CV17','Ngực, giữa hai đầu ngực','Lý khí khoan trung, trị tức ngực hồi hộp'],['HT7','Mặt trong cổ tay, hõm cạnh xương đòn trong','Dưỡng tâm an thần, trị mất ngủ'],['ST25','Bụng, ngang rốn 2 thốn hai bên','Điều hòa ruột, trị tiêu chảy–táo bón'],['SP6','Mặt trong chân, 3 thốn trên mắt cá trong','Dưỡng huyết an thần · ⚠ thai kỳ'],['KI3','Hõm giữa mắt cá trong và gân gót','Bổ thận, trị ù tai, lưng gối mỏi'],['BL23','Lưng, ngang L2, 1.5 thốn hai bên cột sống','Bổ thận tráng dương, củng cố thắt lưng'],['GV20','Đỉnh đầu, giao điểm đường giữa và đường nối đỉnh tai','Nâng dương, an thần, trị chóng mặt'],['GV26','Rãnh giữa mũi và môi trên','Tỉnh não — sơ cứu hôn mê, ngất'],['LU7','Mặt trước cổ tay, trên gờ xương quay 1.5 thốn','Trị cảm phong, ho, đau đầu, cổ cứng'],['BL40','Hõm giữa gấp khoeo chân','Trị đau lưng, thấp nhiệt, khoeo co'],['SP9','Hõm dưới khối xương bánh chè trong','Lợi thấp, trị phù nề, tiểu khó'],['LI11','Ngoài nếp gấp khuỷu vuông góc','Thanh nhiệt giải độc, ổn huyết áp'],['GB34','Hõm dưới đầu ngoài xương bánh chè','Cường gân, trị chuột rút, đau sườn']];
+function famousTable(){
+  return '<div class="card" style="padding:8px 4px"><table class="famTable"><tr><th style="padding-left:12px">HUYỆT</th><th>VỊ TRÍ</th><th>CÔNG NĂNG CHỦ TRỊ (Đông Y)</th></tr>'
+  +FAMOUS.map(f=>{const p=ACUPOINTS.find(x=>x.c===f[0]);return '<tr onclick="showPoint(\''+f[0]+'\')"><td style="padding-left:12px;color:var(--acc);font-weight:800;white-space:nowrap">'+f[0]+'<br><span style="color:var(--txt);font-weight:600;font-size:.72rem">'+(p?p.vi:'')+'</span></td><td>'+f[1]+'</td><td>'+f[2]+'</td></tr>'}).join('')+'</table>'
+  +'<div class="sub" style="padding:8px 12px 4px">Ghi nhớ 19 huyệt này là nắm được ~70% ứng dụng thực hành thường ngày. Thông tin giáo dục theo tài liệu Đông Y.</div></div>';
+}
+function renderChartTabs(){
+  const tabs=[['front','Mặt trước'],['back','Mặt sau'],['side','Mặt bên'],['head','Đầu–mặt'],['limb','Tay–chân'],['rendu','Nhâm–Đốc'],['table','Huyệt hay dùng']];
+  $('#chartTabs').innerHTML=tabs.map(t=>'<span class="chip'+(CH.tab===t[0]?' on':'')+'" onclick="CH.tab=\''+t[0]+'\';renderCharts()">'+t[1]+'</span>').join('');
+}
+function renderMerChips(){
+  const show=['front','back','side','head','limb'].includes(CH.tab);
+  const el=$('#chartMerChips');
+  if(!show){el.innerHTML='';el.style.display='none';return}
+  el.style.display='block';
+  el.innerHTML='<div class="opts"><span class="chip'+(CH.mer==='all'?' on':'')+'" onclick="CH.mer=\'all\';renderCharts()">Tất cả (chấm)</span>'
+  +MERIDIANS.map(m=>'<span class="chip'+(CH.mer===m.id?' on':'')+'" onclick="CH.mer=\''+m.id+'\';renderCharts()">'+m.id+'</span>').join('')+'</div>'
+  +'<div class="sub" style="margin-top:6px">Chọn một kinh để hiện nhãn tên huyệt + đường kinh nổi bật. Chạm chấm bất kỳ lúc nào để xem chi tiết đầy đủ.</div>';
+}
+function renderCharts(){
+  renderChartTabs();renderMerChips();
+  const el=$('#chartBody');if(!el)return;
+  if(CH.tab==='front'||CH.tab==='back'||CH.tab==='side')el.innerHTML='<div class="card" style="padding:8px">'+bodySVG(CH.tab)+'</div>'+legendHTML();
+  else if(CH.tab==='head')el.innerHTML=headSVG();
+  else if(CH.tab==='limb')el.innerHTML=limbSVG();
+  else if(CH.tab==='rendu')el.innerHTML=renduSVG();
+  else el.innerHTML=famousTable();
+}
 /* ================= QUIZ MODULE ================= */
 let QZ={mode:'name2code',scope:'all',qs:[],i:0,score:0,streak:0,wrong:[]};
 function renderQuiz(){
