@@ -965,26 +965,30 @@ function makeBody(gender){
   while(bodyGroup.children.length>3)bodyGroup.remove(bodyGroup.children[3]);
   SKIN_MATS.length=0;
   const male=gender==='male';
-  const mat=skinMat(male?0xd9a47e:0xe0b08a,0.9);
+  const mat=skinMat(male?0xe2b28c:0xe8bd9a,0.92);
   const parts=new THREE.Group();
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.27,26,22),mat);head.position.set(0,3.02,0);head.scale.set(0.92,1.1,0.98);
-  const neck=limb(mat,0,2.76,0,0.09,0.11,0.16);
-  const chest=limb(mat,0,2.28,0,male?0.40:0.36,male?0.36:0.33,0.62);
-  const belly=limb(mat,0,1.86,0,male?0.34:0.32,male?0.32:0.36,0.40);
-  const hips=limb(mat,0,1.52,0,male?0.31:0.33,male?0.28:0.34,0.26);
-  parts.add(head,neck,chest,belly,hips);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.235,26,22),mat);head.position.set(0,3.06,0);head.scale.set(0.9,1.12,0.95);
+  const jaw=new THREE.Mesh(new THREE.SphereGeometry(0.155,18,14),mat);jaw.position.set(0,2.93,0.03);jaw.scale.set(0.85,0.72,0.9);
+  const neck=limb(mat,0,2.8,0,0.07,0.095,0.16);
+  const chest=limb(mat,0,2.36,0,male?0.36:0.33,male?0.335:0.315,0.5);
+  const ribc=limb(mat,0,2.08,0,male?0.33:0.315,male?0.30:0.30,0.28);
+  const belly=limb(mat,0,1.85,0,male?0.29:0.285,male?0.28:0.315,0.22);
+  const hips=limb(mat,0,1.60,0,male?0.285:0.305,male?0.265:0.315,0.22);
+  parts.add(head,jaw,neck,chest,ribc,belly,hips);
   [-1,1].forEach(s=>{
-    const sh=limb(mat,s*0.50,2.55,0,0.10,0.09,0.52);sh.rotation.z=s*-0.10;
-    const fa=limb(mat,s*0.585,2.02,0.02,0.085,0.075,0.50);
-    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.095,14,12),mat);hand.position.set(s*0.62,1.72,0.03);hand.scale.set(0.8,1.25,0.9);
-    const th=limb(mat,s*0.17,1.18,0,0.145,0.115,0.58);
-    const sn=limb(mat,s*0.175,0.52,0.01,0.105,0.085,0.60);
-    const ft=new THREE.Mesh(new THREE.BoxGeometry(0.13,0.09,0.26),mat);ft.position.set(s*0.175,0.075,0.07);
-    parts.add(sh,fa,hand,th,sn,ft);
+    const sh=limb(mat,s*0.455,2.48,0,0.085,0.07,0.4);sh.rotation.z=s*-0.09;
+    const ua=limb(mat,s*0.545,2.13,0.008,0.068,0.057,0.34);
+    const fa=limb(mat,s*0.58,1.77,0.015,0.054,0.047,0.32);
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.072,12,10),mat);hand.position.set(s*0.595,1.55,0.02);hand.scale.set(0.6,1.35,0.85);
+    const th=limb(mat,s*0.15,1.26,0,0.115,0.092,0.52);
+    const sn=limb(mat,s*0.155,0.6,0.004,0.08,0.064,0.58);
+    const ft=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.07,0.22),mat);ft.position.set(s*0.155,0.055,0.05);
+    parts.add(sh,ua,fa,hand,th,sn,ft);
   });
   bodyGroup.add(parts);
   window._bodyParts=parts;
 }
+
 function buildOrgans(){
   const mk=(c,r,x,y,z,sc)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,14),new THREE.MeshStandardMaterial({color:c,roughness:0.5,emissive:c,emissiveIntensity:0.25,transparent:true,opacity:0.92}));m.position.set(x,y,z);m.scale.set(...sc);organGroup.add(m);return m};
   mk(0xc0392b,0.13,0.16,2.30,0.10,[1,1.15,0.9]);           // tim
@@ -1011,32 +1015,38 @@ function buildMeridians(){
     const cs=meridCurve(mr);curves[mr.id]=cs;
     meridLines[mr.id]=[];
     Object.keys(cs).forEach(side=>{
-      const tube=new THREE.Mesh(new THREE.TubeGeometry(cs[side],64,0.011,6,false),new THREE.MeshBasicMaterial({color:mr.color,transparent:true,opacity:0.85}));
-      const glow=new THREE.Mesh(new THREE.TubeGeometry(cs[side],64,0.03,6,false),new THREE.MeshBasicMaterial({color:mr.color,transparent:true,opacity:0.14}));
-      tube.visible=false;glow.visible=false;
-      meridGroup.add(tube,glow);
-      meridLines[mr.id].push({tube,glow,side});
+      const geo=new THREE.BufferGeometry().setFromPoints(cs[side].getPoints(72));
+      const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:mr.color,transparent:true,opacity:0.62}));
+      line.visible=false;
+      meridGroup.add(line);
+      meridLines[mr.id].push({line,side});
     });
   });
 }
+let selRing=null,hoverPt=null;
 function buildPoints(){
   pointMeshes=[];
+  const hitMat=new THREE.MeshBasicMaterial({visible:false});
   ACUPOINTS.forEach(p=>{
     const mr=MERIDIANS.find(m=>m.id===p.m);
     const sides=mr.side==='mid'?['mid']:(p.side?[p.side]:['right','left']);
     sides.forEach(side=>{
       const cv=curves[mr.id][side];
-      const pos=p.pos?v3(p.pos):(side==='mid'?cv.getPoint(p.t):cv.getPoint(p.t));
+      const pos=p.pos?v3(p.pos):cv.getPoint(p.t);
       if(side==='left'&&p.pos)pos.x=-pos.x;
-      const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.036,12,10),new THREE.MeshBasicMaterial({color:mr.color}));
+      const mesh=new THREE.Mesh(new THREE.SphereGeometry(0.02,10,8),new THREE.MeshBasicMaterial({color:mr.color}));
       mesh.position.copy(pos);
-      const halo=new THREE.Mesh(new THREE.SphereGeometry(0.062,12,10),new THREE.MeshBasicMaterial({color:mr.color,transparent:true,opacity:0.25}));
-      mesh.add(halo);mesh.userData={code:p.c,side};
+      const hit=new THREE.Mesh(new THREE.SphereGeometry(0.06,6,5),hitMat);
+      mesh.add(hit);
+      mesh.userData={code:p.c,side};
       pointGroup.add(mesh);pointMeshes.push(mesh);
     });
   });
+  selRing=new THREE.Mesh(new THREE.RingGeometry(0.05,0.075,28),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.95,side:THREE.DoubleSide}));
+  selRing.visible=false;pointGroup.add(selRing);
   pointGroup.visible=false;
 }
+
 function setBodyMode(mode){
   curMode=mode;
   $$('#modeBar .chip').forEach(c=>c.classList.toggle('on',c.dataset.mode===mode));
@@ -1044,18 +1054,17 @@ function setBodyMode(mode){
   pointGroup.visible=showPts;
   organGroup.visible=(mode==='noi'||mode==='combo');
   Object.keys(meridLines).forEach(id=>meridLines[id].forEach(l=>{
-    l.tube.visible=showPts&&l.tube.userData.keep!==false;
-    l.glow.visible=showPts&&l.glow.userData.keep!==false;
+    l.line.visible=showPts&&l.line.userData.keep!==false;
   }));
   const conf={
-    da:{c:0xd9a47e,o:0.9},
+    da:{c:0xe2b28c,o:0.95},
     co:{c:0xb04a3a,o:0.92},
-    xuong:{c:0xe8e4d8,o:0.96},
-    noi:{c:0xd9a47e,o:0.07},
-    kinh:{c:0xd9a47e,o:0.16},
-    combo:{c:0xd9a47e,o:0.12}
+    xuong:{c:0xece7da,o:0.98},
+    noi:{c:0xe2b28c,o:0.06},
+    kinh:{c:0xe2b28c,o:0.3},
+    combo:{c:0xe2b28c,o:0.1}
   }[mode];
-  SKIN_MATS.forEach(m=>{m.color.setHex(mode==='xuong'?0xe8e4d8:mode==='co'?0xb04a3a:0xd9a47e);m.opacity=conf.o;m.roughness=mode==='xuong'?0.35:0.62});
+  SKIN_MATS.forEach(m=>{m.color.setHex(mode==='xuong'?0xece7da:mode==='co'?0xb04a3a:0xe2b28c);m.opacity=conf.o;m.roughness=mode==='xuong'?0.35:0.62});
 }
 function toggleSpin(){spinOn=!spinOn;$('#btnSpin').classList.toggle('on',!spinOn)}
 function toggleGender(){
@@ -1070,19 +1079,30 @@ function bindOrbit(el){
   const mouse=new THREE.Vector2();
   el.addEventListener('pointerdown',e=>{drag=true;moved=0;px=e.clientX;py=e.clientY});
   el.addEventListener('pointermove',e=>{
-    if(!drag)return;
+    if(!drag){
+      if(pointGroup.visible){
+        const r=el.getBoundingClientRect();
+        mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;
+        ray.setFromCamera(mouse,camera);
+        const hits=ray.intersectObjects(pointMeshes,true);
+        if(hits.length){let o=hits[0].object;while(o&&!o.userData.code)o=o.parent;hoverPt=o?o.userData.code:null}
+        else hoverPt=null;
+        el.style.cursor=hoverPt?'pointer':'grab';
+      }
+      return;
+    }
     const dx=e.clientX-px,dy=e.clientY-py;moved+=Math.abs(dx)+Math.abs(dy);
     camTheta-=dx*0.008;camPhi=Math.max(0.35,Math.min(2.6,camPhi-dy*0.006));
     px=e.clientX;py=e.clientY;
   });
   el.addEventListener('pointerup',e=>{
     drag=false;
-    if(moved<8&&curMode!=='da'){
+    if(moved<8&&pointGroup.visible){
       const r=el.getBoundingClientRect();
       mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;
       ray.setFromCamera(mouse,camera);
-      const hits=ray.intersectObjects(pointMeshes,false);
-      if(hits.length)showPoint(hits[0].object.userData.code);
+      const hits=ray.intersectObjects(pointMeshes,true);
+      if(hits.length){let o=hits[0].object;while(o&&!o.userData.code)o=o.parent;if(o)showPoint(o.userData.code)}
     }
   });
   el.addEventListener('wheel',e=>{e.preventDefault();camDist=Math.max(3.2,Math.min(9,camDist+e.deltaY*0.004))},{passive:false});
@@ -1107,16 +1127,26 @@ function animate(t){
   camera.lookAt(0,1.8,0);
   const breathe=1+Math.sin(clock3d*1.8)*0.012;
   if(window._bodyParts){window._bodyParts.scale.y=breathe;window._bodyParts.position.y=-(breathe-1)*1.8;}
-  pointMeshes.forEach((m,i)=>{const s=1+Math.sin(clock3d*3+i)*0.18;m.children[0].scale.setScalar(s)});
+  pointMeshes.forEach(m=>{
+    const t=m.userData.code;
+    const target=(t&&t===selectedPt)?2.6:((t&&t===hoverPt)?1.9:1);
+    m.scale.setScalar(m.scale.x+(target-m.scale.x)*0.25);
+  });
+  if(selRing){
+    const sm=pointMeshes.find(m=>m.userData.code===selectedPt);
+    if(sm&&selectedPt){selRing.visible=true;selRing.position.copy(sm.position);selRing.lookAt(camera.position);selRing.scale.setScalar(sm.scale.x)}
+    else selRing.visible=false;
+  }
   renderer.render(scene,camera);
   const lb=$('#ptLabel');
-  if(selectedPt&&lb){
-    const mesh=pointMeshes.find(m=>m.userData.code===selectedPt);
+  const lblPt=hoverPt||selectedPt;
+  if(lblPt&&lb){
+    const mesh=pointMeshes.find(m=>m.userData.code===lblPt);
     if(mesh){
       const v=mesh.position.clone().project(camera);
       if(v.z<1){
         const r=$('#stage').getBoundingClientRect();
-        lb.textContent=selectedPt+' · '+(ACUPOINTS.find(a=>a.c===selectedPt)||{}).vi;
+        lb.textContent=lblPt+' · '+(ACUPOINTS.find(a=>a.c===lblPt)||{}).vi;
         lb.style.display='block';
         lb.style.left=((v.x*0.5+0.5)*r.width+12)+'px';
         lb.style.top=((-v.y*0.5+0.5)*r.height-12)+'px';
@@ -1220,7 +1250,7 @@ function renderMeridians(){
   drawClockWheel();
 }
 function toggleMeridian(id,on){
-  meridLines[id].forEach(l=>{l.tube.userData.keep=on;l.glow.userData.keep=on;l.tube.visible=on&&(curMode==='kinh'||curMode==='combo');l.glow.visible=l.tube.visible});
+  meridLines[id].forEach(l=>{l.line.userData.keep=on;l.line.visible=on&&(curMode==='kinh'||curMode==='combo')});
   if(on){
     setBodyMode('kinh');
     const mr=MERIDIANS.find(m=>m.id===id);
@@ -1959,7 +1989,7 @@ function focusPoint(code){
   const len=Math.sqrt(dx*dx+dy*dy+dz*dz)||1;
   camPhi=Math.acos(Math.max(-1,Math.min(1,dy/len)));
   camDist=Math.max(2.4,Math.min(4.5,camDist));
-  selectedPt=code;
+  selectedPt=code;hoverPt=null;
   if(!pointGroup.visible)setBodyMode('kinh');
 }
 /* ================= DAILY REMINDERS ================= */
