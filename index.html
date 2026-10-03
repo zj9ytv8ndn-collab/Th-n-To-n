@@ -178,6 +178,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 #toast{position:fixed;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%) translateY(-140%);z-index:300;max-width:440px;width:calc(100% - 32px);background:color-mix(in srgb,var(--bg2) 92%,transparent);border:1px solid var(--acc);border-radius:16px;padding:13px 16px;backdrop-filter:blur(20px);box-shadow:var(--shadow);transition:transform .4s cubic-bezier(.2,.9,.25,1);font-size:.88rem}
 #toast.on{transform:translateX(-50%) translateY(0)}
 #toast b{color:var(--acc)}
+
+/* 3D point label */
+#ptLabel{position:absolute;display:none;z-index:5;background:color-mix(in srgb,var(--bg) 80%,transparent);border:1px solid var(--acc);color:var(--acc);font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:99px;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px);box-shadow:0 4px 14px rgba(0,0,0,.4)}
 </style>
 </head>
 <body>
@@ -193,6 +196,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <section class="view on" id="v-body">
   <div id="stageWrap">
     <canvas id="stage"></canvas>
+    <div id="ptLabel"></div>
     <div id="modeBar">
       <span class="chip on" data-mode="da" onclick="setBodyMode('da')">Da</span>
       <span class="chip" data-mode="co" onclick="setBodyMode('co')">Cơ</span>
@@ -247,6 +251,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="btn block" onclick="openView('plan')">🌿 Kế hoạch</button>
     <button class="btn block" onclick="openView('history')">📈 Xu hướng</button>
     <button class="btn block" onclick="openView('practice')">🧘 Luyện tập</button>
+    <button class="btn block" onclick="openView('quiz')">🎓 Quiz huyệt</button>
     <button class="btn block" onclick="openView('report')">📄 Báo cáo</button>
   </div>
 
@@ -256,6 +261,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- ============ ACUPOINTS ============ -->
 <section class="view" id="v-points">
   <div class="sec"><h2>Huyệt đạo</h2><div class="sub">Chạm cơ thể 3D hoặc tra cứu theo tên, mã, triệu chứng, kinh, vùng</div></div>
+  <div style="display:flex;gap:8px;margin:0 14px"><button class="btn sm grow" onclick="openView('quiz')">🎓 Quiz luyện nhớ huyệt</button></div>
   <div class="searchBox"><span class="sic">🔍</span><input id="ptSearch" placeholder="VD: ST36, Hợp Cốc, mất ngủ, đau đầu, Phế…" oninput="renderPointList()"></div>
   <div class="hscroll" id="ptFilters"></div>
   <div class="card" style="padding:0" id="ptList"></div>
@@ -402,6 +408,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <button class="tab" data-v="more" onclick="openView('more')"><span class="ic">⋯</span>THÊM</button>
 </div></nav>
 
+<section class="view" id="v-quiz">
+  <div class="sec"><h2>Quiz huyệt đạo</h2><div class="sub">Flashcard trắc nghiệm — ghi nhớ 361 huyệt theo tên, mã, vị trí</div></div>
+  <div class="card" id="quizSetup"></div>
+  <div id="quizGame"></div>
+</section>
+
 <section class="view" id="v-practice">
   <div class="sec"><h2>Luyện tập & thở</h2><div class="sub">Khí công · bài thở · ấn huyệt tự chăm — giáo dục lối sống, không phải phác đồ điều trị</div></div>
   <div class="card"><div class="row"><h3 class="grow" style="font-size:.95rem">Chuỗi ngày luyện tập</h3><span class="streakPill" id="streakPill">🔥 0 ngày</span></div></div>
@@ -491,7 +503,7 @@ const ACUPOINTS=[
 {c:"LI1",vi:"Thương Dương",cn:"商阳",py:"Shāngyáng",m:"LI",t:0.04,loc:"Mặt ngoài đầu ngón trỏ, cách móng góc 0.1 thốn.",find:"Góc ngoài móng ngón trỏ — theo truyền thống châm máu chữa hôn mê sốt.",use:"Truyền thống: thanh nhiệt tỉnh thần, tuyên phế lợi hầu — tỉnh huyệt; dùng sốt, viêm họng, tê tay.",ev:"T",warn:"Chỉ chuyên gia châm máu; day ấn nhẹ.",org:"Đại tràng · nhiệt",sym:["sốt","viêm họng","tê tay"]},
 {c:"LI15",vi:"Kiên Ngô",cn:"肩髃",py:"Jiānyú",m:"LI",t:0.78,loc:"Vai trước, hõm trước dưới mỏm vai khi gấp cánh tay.",find:"Gấp cánh tay vuông góc, hõm trước vai — ấn tức.",use:"Truyền thống: sơ phong thanh nhiệt, thông kinh hoạt lạc; dùng đau vai, cánh tay không giơ, liệt mặt ngoại cảm.",ev:"C",warn:"Viêm khớp vai cấp — không day mạnh.",org:"Vai · cánh tay",sym:["đau vai","vai","liệt mặt","tay"]},
 {c:"LI18",vi:"Phù Đột",cn:"扶突",py:"Fútū",m:"LI",t:0.92,loc:"Cổ bên, ngang sụn giáp, giữa cơ thang trước và sau.",find:"Ngang khấc cổ, giữa hai gân nổi — ấn tức.",use:"Truyền thống: lợi khí tuyên phế, thông lợi yết hầu; dùng ho suyễn, khàn tiếng, viêm yết hầu.",ev:"T",warn:"Vùng cổ nhiều mạch máu — tuyệt đối không tự châm kim, chỉ day ấn nông.",org:"Cổ · khí quản",sym:["khàn","viêm họng","ho","khó thở"]},
-{c:"ST2",vi:"Thừa Khấp",cn:"承泣",py:"Chéngqì",m:"ST",t:0.03,loc:"Mắt, ngang đồng tử khi nhìn thẳng, dưới mắt sát bờ xương hốc mắt.",find:"Ngang đồng tử, hõm dưới mắt — ấn nhẹ nhàng.",use:"Truyền thống: tán phong nhiệt, thông lợi mục khiếu; dùng mắt đỏ, chảy nước mắt, mờ mắt.",ev:"T",warn:"Vùng mắt — chỉ day ấn cực nhẹ, không dụng cụ.",org:"Mắt",sym:["mắt đỏ","mắt","chảy nước mắt"]},
+{c:"ST2",vi:"Tứ Bạch",cn:"四白",py:"Sìbái",m:"ST",t:0.03,loc:"Mặt, thẳng dưới Thừa Khấp 1 thốn, dưới mắt, bờ trong nơi bờ xương hốc mắt.",find:"Thẳng dưới đồng tử 1 thốn — ấn tức nhẹ.",use:"Truyền thống: thanh nhiệt minh mục, sơ phong hoạt lạc — hội Dương Minh, Nhâm Mạch; dùng mắt đỏ, đau mặt, liệt mặt, mờ mắt.",ev:"T",warn:"Vùng mắt — chỉ day ấn cực nhẹ, không dụng cụ.",org:"Mắt",sym:["mắt đỏ","mắt","chảy nước mắt"]},
 {c:"ST4",vi:"Địa Thương",cn:"地仓",py:"Dìcāng",m:"ST",t:0.09,loc:"Mặt, ngang khóe miệng, lệch ngoài 0.4 thốn.",find:"Ngang khóe miệng lệch ra — ấn tức nhẹ.",use:"Truyền thống: thư cân hoạt lạc — thường phối ST4–LI4 (Tứ Tức Không) cho liệt mặt ngoại cảm, méo miệng.",ev:"C",warn:"Da mặt mỏng — day ấn nông.",org:"Miệng · mặt",sym:["liệt mặt","méo miệng","răng"]},
 {c:"ST44",vi:"Nội Đình",cn:"内庭",py:"Nèitíng",m:"ST",t:0.96,loc:"Mu chân, hố giữa ngón chân 2 và 3, sau khớp bàn.",find:"Hõm sau khớp bàn ngón 2–3 — ấn tức.",use:"Truyền thống: thanh vị nhiệt, tư âm hóa thấp — vinh huyệt của Vị; dùng đau răng, ợ hơi, đau dạ dày, khát nhiều.",ev:"C",warn:"—",org:"Dạ dày · nhiệt",sym:["đau răng","ợ","dạ dày","khát","nhiệt"]},
 {c:"SP3",vi:"Thái Bạch",cn:"太白",py:"Tàibái",m:"SP",t:0.06,loc:"Bàn chân trong, hố sau khớp đầu xương bàn ngón cái.",find:"Hõm sau khớp đầu xương bàn ngón cái — ấn tức.",use:"Truyền thống: kiện tỳ hóa thấp, ích khí — nguyên huyệt của Tỳ; dùng chán ăn, đầy bụng, tiêu chảy, mệt.",ev:"C",warn:"—",org:"Tỳ · thổ",sym:["chán ăn","đầy bụng","tiêu chảy","mệt","thấp"]},
@@ -754,6 +766,67 @@ const ACUPOINTS=[
 {c:"CV15",vi:"Kiêu Vĩ",cn:"鸠尾",py:"Jiūwěi",m:"CV",pos:[0,2.3,0.3],loc:"Kiêm vĩ cốt dưới mỏm ức, 1 thốn dưới Cự Khuyết.",find:"Dưới mỏm ức — ấn nhẹ.",use:"Truyền thống: an thần định chí, khoan hung chỉ thống; dùng điên cuồng, đau tim, khí nghịch.",ev:"T",warn:"Xương ức — day cực nhẹ.",org:"Kiêm vĩ · tâm",sym:["thần kinh","tim","khí nghịch","đau tim"]},
 {c:"CV20",vi:"Hoa Cái",cn:"华盖",py:"Huágài",m:"CV",pos:[0,2.5,0.28],loc:"Ngực, ngang khoang sườn 1, mỏm ức trên.",find:"Trên ngực giữa — ấn tức.",use:"Truyền thống: tuyên phế chỉ khái; dùng ho suyễn, ngực tức, yết hầu đau.",ev:"T",warn:"Day nhẹ.",org:"Ngực · phế",sym:["ho","suyễn","ngực","yết hầu"]},
 {c:"CV23",vi:"Liêm Tuyền",cn:"廉泉",py:"Liánquán",m:"CV",pos:[0,2.8,0.2],loc:"Cổ trước, hõm trên sụn giáp, đường giữa.",find:"Hõm trên sụn giáp — ấn nhẹ hướng lên.",use:"Truyền thống: lợi yết thông khiếu, tả hỏa điều khí; dùng câm, khát, khó nuốt, khàn tiếng.",ev:"T",warn:"Day nhẹ hướng lên, không dùng lực mạnh.",org:"Cổ · yết",sym:["câm","khát","khó nuốt","khàn"]}
+,
+{c:"ST1",vi:"Thừa Khấp",cn:"承泣",py:"Chéngqì",m:"ST",pos:[0.06,2.97,0.26],loc:"Mắt, thẳng dưới đồng tử, sát bờ dưới hốc mắt.",find:"Thẳng dưới đồng tử — ấn cực nhẹ.",use:"Truyền thống: tán phong thanh nhiệt, thông lợi mục khiếu — hội huyệt Dương Dương, Nhâm Mạch; dùng mắt đỏ, chảy nước mắt, đau mắt.",ev:"T",warn:"Vùng mắt — tuyệt đối không tự châm, day rất nhẹ.",org:"Mắt",sym:["mắt","mắt đỏ","nước mắt"]},
+{c:"ST10",vi:"Thủy Đột",cn:"水突",py:"Shuǐtū",m:"ST",pos:[0.23,2.56,0.24],loc:"Cổ bên, giữa khấc cổ và sụn giáp, cơ thang trước.",find:"Giữa khấc cổ — ấn tức.",use:"Truyền thống: lợi khí tuyên phế, thông lợi yết hầu; dùng ho suyễn, khó nuốt, yết hầu đau.",ev:"T",warn:"Vùng cổ — không châm, day nông.",org:"Cổ · yết hầu",sym:["ho","khó nuốt","yết hầu","suyễn"]},
+{c:"ST11",vi:"Khí Xá",cn:"气舍",py:"Qìshě",m:"ST",pos:[0.2,2.58,0.2],loc:"Cổ gốc, hõm trên trong xương đòn, cơ thang trước.",find:"Hõm trên xương đòn — ấn tức.",use:"Truyền thống: lợi khí hàng nghịch, thông lợi tán kết; dùng khí nghịch, yết hầu, cổ hạch.",ev:"T",warn:"Vùng cổ — không châm, day nông.",org:"Cổ · khí",sym:["khí nghịch","yết hầu","hạch","cổ"]},
+{c:"ST17",vi:"Nhũ Trung",cn:"乳中",py:"Rǔzhōng",m:"ST",pos:[0.14,2.19,0.29],loc:"Chính giữa núm vú.",find:"Giữa núm vú — chỉ làm mốc đo, không can thiệp.",use:"Truyền thống: chủ yếu làm mốc định vị các huyệt ngực; không châm không cứu theo truyền thống.",ev:"T",warn:"KHÔNG châm, KHÔNG cứu, KHÔNG day mạnh — chỉ làm mốc.",org:"Ngực · mốc",sym:["mốc","vú"]},
+{c:"BL42",vi:"Phách Hộ",cn:"魄户",py:"Pòhù",m:"BL",pos:[0.27,2.4,-0.33],loc:"Lưng, ngang khoang sườn 3, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: tuyên phế tán hàn, cường cốt lưng; dùng ho suyễn, đau lưng, tự hãn.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · phách",sym:["ho","đau lưng","tự hãn","suyễn"]},
+{c:"BL44",vi:"Thần Đường",cn:"神堂",py:"Shéntáng",m:"BL",pos:[0.27,2.1,-0.32],loc:"Lưng, ngang khoang sườn 5, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: khoan hung lý khí, thông lợi kinh lạc; dùng ngực tức, tim hồi hộp, đau lưng.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · tâm",sym:["ngực","hồi hộp","đau lưng","tim"]},
+{c:"BL45",vi:"Ức Hy",cn:"譩嘻",py:"Yìxī",m:"BL",pos:[0.27,2.04,-0.31],loc:"Lưng, ngang khoang sườn 6, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: khoan hung chỉ thống, tuyên phế hàng nghịch; dùng ho suyễn, ngực tức, đau vai.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · phế",sym:["ho","ngực","đau vai","suyễn"]},
+{c:"BL46",vi:"Cách Quan",cn:"膈关",py:"Géguān",m:"BL",pos:[0.27,1.96,-0.31],loc:"Lưng, ngang khoang sườn 7, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: khoan hung giáng nghịch, tán hàn lý khí; dùng hiccup, khó nuốt, ợ, đau lưng.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · cách",sym:["hiccup","khó nuốt","ợ","lưng"]},
+{c:"BL47",vi:"Hồn Môn",cn:"魂门",py:"Húnmén",m:"BL",pos:[0.28,1.9,-0.3],loc:"Lưng, ngang khoang sườn 9, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: sơ can lợi đởm, cường tỳ khoan hung; dùng đau sườn, ngực tức, mất ngủ.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · can",sym:["sườn","ngực","mất ngủ","can"]},
+{c:"BL48",vi:"Dương Cương",cn:"阳纲",py:"Yánggāng",m:"BL",pos:[0.28,1.82,-0.3],loc:"Lưng, ngang khoang sườn 10, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: thanh lợi thấp nhiệt, hòa vị hóa thấp; dùng vàng da truyền thống, đầy bụng, tiêu chảy.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · đởm",sym:["vàng da","đầy bụng","tiêu chảy","mật"]},
+{c:"BL49",vi:"Ý Xá",cn:"意舍",py:"Yìshě",m:"BL",pos:[0.28,1.74,-0.31],loc:"Lưng, ngang khoang sườn 11, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: kiện tỳ hóa thấp, thanh nhiệt lợi thấp; dùng chán ăn, đầy bụng, tiểu đường truyền thống.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · tỳ",sym:["chán ăn","đầy bụng","tỳ","tiểu"]},
+{c:"BL50",vi:"Vị Thương",cn:"胃仓",py:"Wèicāng",m:"BL",pos:[0.28,1.66,-0.32],loc:"Lưng, ngang khoang sườn 12, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: hòa vị hóa thấp, tiêu thực đạo trệ; dùng đau dạ dày, đầy bụng, nôn.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · vị",sym:["dạ dày","đầy bụng","nôn","vị"]},
+{c:"BL51",vi:"Hoang Môn",cn:"肓门",py:"Huāngmén",m:"BL",pos:[0.28,1.58,-0.33],loc:"Lưng, ngang mức L1, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: lợi thấp thông hạ tiêu, điều kinh; dùng bí tiểu, đau lưng, vú đau.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · hoang",sym:["tiểu","đau lưng","vú","bí"]},
+{c:"BL53",vi:"Bao Hoang",cn:"胞肓",py:"Bāohuāng",m:"BL",pos:[0.29,1.48,-0.31],loc:"Mông, ngang S2, cách cột sống 3 thốn.",find:"Ba thốn ngoài cột sống — ấn tức.",use:"Truyền thống: lợi thấy thông hạ tiêu, cường yêu bổ thận; dùng tiểu khó, đau lưng cùng, phụ khoa.",ev:"T",warn:"Chỉ day ấn.",org:"Mông · bao",sym:["tiểu","lưng cùng","phụ khoa","thận"]},
+{c:"BL55",vi:"Hợp Dương",cn:"合阳",py:"Héyáng",m:"BL",pos:[0.285,0.62,-0.17],loc:"Cẳng chân sau, 2 thốn dưới BL40.",find:"Hai thốn dưới khoeo — ấn tức.",use:"Truyền thống: sơ phong thấp thông lạc, điều huyết an thần; dùng đau lưng tọa, khoeo đau, chân co.",ev:"T",warn:"—",org:"Cẳng chân sau",sym:["lưng tọa","khoeo","chân","gân"]},
+{c:"BL56",vi:"Thừa Cân",cn:"承筋",py:"Chéngjīn",m:"BL",pos:[0.28,0.58,-0.17],loc:"Cẳng chân sau, giữa gân kheo và BL57.",find:"Giữa gân kheo — ấn tức.",use:"Truyền thống: thư cân hoạt lạc, hóa thấp chỉ thống; dùng chuột rút, gân co cứng, trĩ.",ev:"T",warn:"—",org:"Cẳng chân · gân",sym:["chuột rút","gân","trĩ","co cứng"]},
+{c:"BL59",vi:"Phụ Dương",cn:"跗阳",py:"Fùyáng",m:"BL",pos:[0.34,0.4,-0.1],loc:"Cẳng chân sau ngoài, 3 thốn trên BL60.",find:"Ba thốn trên mắt cá ngoài — ấn tức.",use:"Truyền thống: sơ phong thanh nhiệt, thông kinh hoạt lạc — khách huyệt Dương Duy; dùng đau đầu, chân nặng, tê.",ev:"T",warn:"—",org:"Cẳng chân · duy",sym:["đau đầu","chân nặng","tê","duy mạch"]},
+{c:"BL61",vi:"Phố Sâm",cn:"仆参",py:"Pūcān",m:"BL",pos:[0.345,0.12,-0.1],loc:"Bàn chân ngoài, hõm dưới sau mắt cá ngoài, dưới gân gót.",find:"Hõm sau dưới mắt cá ngoài — ấn tức.",use:"Truyền thống: sơ phong thanh nhiệt, cường cân tráng cốt; dùng đau gót, chân yếu, chóng mặt.",ev:"T",warn:"—",org:"Gót chân",sym:["gót","chân yếu","chóng mặt","cốt"]},
+{c:"BL64",vi:"Cảnh Cốc",cn:"京骨",py:"Jīnggǔ",m:"BL",pos:[0.35,0.09,0.02],loc:"Bàn chân ngoài, hõm dưới ngoài mắt cá, dưới xương bàn ngoài.",find:"Hõm dưới mắt cá ngoài — ấn tức.",use:"Truyền thống: thanh nhiệt tả đầu mục, trấn kinh chỉ thống — nguyên huyệt của Bàng Quang; dùng đau đầu, tinh thần, chân nặng.",ev:"T",warn:"—",org:"Bàn chân ngoài",sym:["đau đầu","tinh thần","chân","nguyên"]},
+{c:"KI17",vi:"Thượng Khú",cn:"商曲",py:"Shāngqū",m:"KI",pos:[0.08,1.9,0.31],loc:"Bụng, 2 thốn trên rốn, 0.5 thốn ngoài.",find:"Hai thốn trên rốn — ấn tức.",use:"Truyền thống: hòa vị hàng nghịch, chỉ thống tích tụ; dùng đau dạ dày, bụng đầy, tiêu chảy.",ev:"T",warn:"Không day mạnh.",org:"Bụng · vị",sym:["dạ dày","đầy bụng","tiêu chảy","bụng"]},
+{c:"KI18",vi:"Thạch Quan",cn:"石关",py:"Shíguān",m:"KI",pos:[0.08,2.0,0.31],loc:"Bụng, 3 thốn trên rốn, 0.5 thốn ngoài.",find:"Ba thốn trên rốn — ấn tức.",use:"Truyền thống: ôn bổ nguyên dương, hòa vị hóa thấp; dùng đau dạ dày, khí nghịch, bất dục.",ev:"T",warn:"Không day mạnh.",org:"Bụng · thận",sym:["dạ dày","khí nghịch","dục","âm"]},
+{c:"KI19",vi:"Âm Đô",cn:"阴都",py:"Yīndū",m:"KI",pos:[0.09,2.1,0.31],loc:"Bụng, 4 thốn trên rốn, 0.5 thốn ngoài.",find:"Bốn thốn trên rốn — ấn tức.",use:"Truyền thống: ôn trung hàng nghịch, điều khí chỉ thống; dùng khí nghịch, đau dạ dày, tiêu chảy.",ev:"T",warn:"Không day mạnh.",org:"Bụng · âm",sym:["khí nghịch","dạ dày","tiêu chảy","bụng"]},
+{c:"KI20",vi:"Phúc Thông Cốc",cn:"腹通谷",py:"Fùtōnggǔ",m:"KI",pos:[0.1,2.14,0.3],loc:"Bụng, 5 thốn trên rốn, 0.5 thốn ngoài.",find:"Năm thốn trên rốn — ấn tức.",use:"Truyền thống: ôn trung hàng nghịch, điều khí hoạt huyết; dùng nôn, đau bụng, nghẹt thở truyền thống.",ev:"T",warn:"Không day mạnh.",org:"Bụng · thấy",sym:["nôn","đau bụng","khí","bụng"]},
+{c:"KI22",vi:"Bộ Lãng",cn:"步廊",py:"Bùláng",m:"KI",pos:[0.12,2.3,0.29],loc:"Ngực, ngang khoang sườn 5, 2 thốn ngoài Nhâm Mạch.",find:"Ngang sườn 5 — ấn tức.",use:"Truyền thống: khoan hung lý khí, hàng nghịch chỉ thống; dùng ngực tức, ho suyễn, nôn.",ev:"T",warn:"Không châm, day nông.",org:"Ngực · phế",sym:["ngực","ho","nôn","tức"]},
+{c:"KI23",vi:"Thần Phong",cn:"神封",py:"Shénfēng",m:"KI",pos:[0.13,2.38,0.28],loc:"Ngực, ngang khoang sườn 4, 2 thốn ngoài Nhâm Mạch.",find:"Ngang sườn 4 — ấn tức.",use:"Truyền thống: tuyên phế lý khí, an thần hàng nghịch; dùng ho, ngực tức, hồi hộp.",ev:"T",warn:"Không châm, day nông.",org:"Ngực · thần",sym:["ho","ngực","hồi hộp","tức"]},
+{c:"KI24",vi:"Linh Hư",cn:"灵墟",py:"Língxū",m:"KI",pos:[0.14,2.44,0.27],loc:"Ngực, ngang khoang sườn 3, 2 thốn ngoài Nhâm Mạch.",find:"Ngang sườn 3 — ấn tức.",use:"Truyền thống: tuyên phế lý khí, hóa đàm khoan hung; dùng ho suyễn, ngực tức, vú đau.",ev:"T",warn:"Không châm, day nông.",org:"Ngực · linh",sym:["ho","suyễn","ngực","vú"]},
+{c:"KI25",vi:"Thần Tang",cn:"神藏",py:"Shéncáng",m:"KI",pos:[0.15,2.48,0.26],loc:"Ngực, ngang khoang sườn 2, 2 thốn ngoài Nhâm Mạch.",find:"Ngang sườn 2 — ấn tức.",use:"Truyền thống: ôn bổ phế khí, an thần định chí; dùng ho, suyễn, hồi hộp, kinh giật.",ev:"T",warn:"Không châm, day nông.",org:"Ngực · thần",sym:["ho","suyễn","hồi hộp","kinh giật"]},
+{c:"KI26",vi:"Dung Trung",cn:"彧中",py:"Yùzhōng",m:"KI",pos:[0.16,2.5,0.25],loc:"Ngực, ngang khoang sườn 1, 2 thốn ngoài Nhâm Mạch.",find:"Ngang sườn 1 — ấn tức.",use:"Truyền thống: tuyên phế hóa đàm, khoan hung chỉ thống; dùng ho suyễn, yết hầu, ngực tức.",ev:"T",warn:"Không châm, day nông.",org:"Ngực · dung",sym:["ho","yết hầu","ngực","suyễn"]},
+{c:"TE12",vi:"Tiêu Tức",cn:"消泺",py:"Xiāoluò",m:"TE",pos:[0.64,2.04,-0.05],loc:"Mặt ngoài cánh tay, giữa khuỷu và vai, hõm khi gấp cánh tay.",find:"Hõm cánh tay ngoài — ấn tức.",use:"Truyền thống: thanh nhiệt tả hỏa, sơ phong thông lạc; dùng đau cánh tay, cổ hạch, đau đầu.",ev:"T",warn:"—",org:"Cánh tay",sym:["cánh tay","hạch","đau đầu","nhiệt"]},
+{c:"TE16",vi:"Thiên Dung",cn:"天牖",py:"Tiānyǒu",m:"TE",pos:[0.32,2.66,-0.16],loc:"Cổ sau bên, ngang khấc tai, cơ thang sau.",find:"Sau khấc cổ — ấn tức.",use:"Truyền thống: tức phong thanh nhiệt, thông khiếu minh mục; dùng tai ù, đau đầu, mắt đau, cổ cứng.",ev:"T",warn:"Day nhẹ.",org:"Cổ · tai",sym:["tai","đau đầu","mắt","cổ cứng"]},
+{c:"TE18",vi:"Khi Mạch",cn:"瘈脉",py:"Chìmài",m:"TE",pos:[0.26,2.84,-0.08],loc:"Sau tai, hõm giữa vàch tai và chẩm.",find:"Sau tai — ấn tức.",use:"Truyền thống: tức phong trấn kinh, thông khiếu hoạt lạc; dùng kinh giật, tai ù, đau đầu.",ev:"T",warn:"Day nhẹ.",org:"Sau tai",sym:["kinh giật","tai","đau đầu","trấn kinh"]},
+{c:"TE19",vi:"Lưu Tỳ",cn:"颅息",py:"Lúxī",m:"TE",pos:[0.25,2.88,-0.05],loc:"Sau tai trên, hõm trên khi mạch.",find:"Sau tai trên — ấn tức.",use:"Truyền thống: tức phong thanh nhiệt, trấn kinh an thần; dùng tai ù, kinh giật, đau răng.",ev:"T",warn:"Day nhẹ.",org:"Sau tai",sym:["tai","kinh giật","răng","thần"]},
+{c:"TE21",vi:"Nhĩ Môn",cn:"耳门",py:"Ěrmén",m:"TE",pos:[0.22,2.74,0.02],loc:"Trước tai, hõm trên khấc tai, trên hợp định.",find:"Trên khấc tai — ấn tức.",use:"Truyền thống: sơ phong thanh nhiệt, thông khiếu lợi khiếu; dùng tai ù, đau tai, mũi tắc, đau đầu.",ev:"C",warn:"Day nhẹ.",org:"Tai",sym:["tai","ù tai","mũi","đau đầu"]},
+{c:"GB6",vi:"Huyền Lý",cn:"悬厘",py:"Xuánlí",m:"GB",pos:[0.29,3.02,-0.05],loc:"Đầu bên, vào chân tóc giữa Huyền Lô và Khúc Tân.",find:"Chân tóc bên — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt; dùng đau đầu bên, mắt đau, tai ù.",ev:"T",warn:"Day nhẹ.",org:"Đầu bên",sym:["đau đầu","mắt","tai","thái dương"]},
+{c:"GB11",vi:"Đầu Khiếu Âm",cn:"头窍阴",py:"Tóuqiàoyīn",m:"GB",pos:[0.275,3.06,-0.16],loc:"Sau tai trên, hõm sau vàch tai, chân tóc.",find:"Sau tai — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt, an thần định chí; dùng đau đầu, tai ù, kinh giật, mất ngủ.",ev:"T",warn:"Day nhẹ.",org:"Sau tai",sym:["đau đầu","tai","kinh giật","mất ngủ"]},
+{c:"GB13",vi:"Bản Thần",cn:"本神",py:"Běnshén",m:"GB",pos:[0.26,3.12,-0.1],loc:"Đầu bên, vào chân tóc 0.5 thốn, ngoài đường giữa 3 thốn.",find:"Chân tóc bên — ấn nhẹ.",use:"Truyền thống: trấn kinh an thần, tức phong thanh nhiệt; dùng điên cuồng, đau đầu, mắt mờ, co giật.",ev:"T",warn:"Day nhẹ.",org:"Đầu · thần",sym:["thần kinh","đau đầu","mắt","co giật"]},
+{c:"GB17",vi:"Chính Doanh",cn:"正营",py:"Zhèngyíng",m:"GB",pos:[0.2,3.05,0.14],loc:"Đầu, vào chân tóc 2.5 thốn, thẳng đuôi mắt.",find:"Chân tóc trên đuôi mắt — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt, an thần chỉ thống; dùng đau đầu, mắt đau, chóng mặt.",ev:"T",warn:"Day nhẹ.",org:"Đầu",sym:["đau đầu","mắt","chóng mặt","thần"]},
+{c:"GB18",vi:"Thừa Linh",cn:"承灵",py:"Chénglíng",m:"GB",pos:[0.19,3.06,0.12],loc:"Đầu, vào chân tóc 4 thốn, thẳng đuôi mắt.",find:"Chân tóc — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt, thông khiếu; dùng đau đầu, mũi tắc, mắt đau.",ev:"T",warn:"Day nhẹ.",org:"Đầu",sym:["đau đầu","mũi","mắt","thông khiếu"]},
+{c:"GB22",vi:"Uẩn Dạch",cn:"渊腋",py:"Yuānyè",m:"GB",pos:[0.34,2.2,-0.05],loc:"Sườn ngực, hõm dưới nách 3 thốn, ngang khoang sườn 4.",find:"Ba thốn dưới nách — ấn tức.",use:"Truyền thống: sơ can lợi đởm, khoan hung tán kết; dùng đau sườn, ngực tức, vú đau.",ev:"T",warn:"Không châm, day nông.",org:"Sườn ngực",sym:["sườn","ngực","vú","đởm"]},
+{c:"GB23",vi:"Chẩm Kinh",cn:"辄筋",py:"Zhéjīn",m:"GB",pos:[0.34,2.12,-0.08],loc:"Sườn ngực, ngang khoang sườn 4, một thốn trước Uẩn Dạch.",find:"Sườn ngực — ấn tức.",use:"Truyền thống: sơ can lợi đởm, thư cân khoan hung; dùng đau sườn, khái thấu, hơi thở ngắn.",ev:"T",warn:"Không châm, day nông.",org:"Sườn · gân",sym:["sườn","khái","hơi thở","gân"]},
+{c:"GB26",vi:"Đới Mạch",cn:"带脉",py:"Dàimài",m:"GB",pos:[0.3,1.66,-0.02],loc:"Hông, ngang rốn, dưới ngọn sườn 11, chỗ gập eo.",find:"Ngang rốn vòng hông — ấn tức.",use:"Truyền thống: tróc cốt thắt lưng, điều kinh chỉ đới — huyệt chủ của Đới Mạch; dùng đới hạ bệnh, kinh nguyệt, lưng mỏi.",ev:"T",warn:"—",org:"Hông · đới mạch",sym:["đới","kinh nguyệt","lưng mỏi","hông"]},
+{c:"GB27",vi:"Ngũ Xuất",cn:"五枢",py:"Wǔshū",m:"GB",pos:[0.28,1.58,0.0],loc:"Hông, dưới ngọn sườn 11, trước Đới Mạch.",find:"Hông trước — ấn tức.",use:"Truyền thống: sơ can lợi đởm, điều kinh ôn hạ tiêu; dùng đới hạ bệnh, kinh nguyệt, đau hông.",ev:"T",warn:"—",org:"Hông",sym:["đới","kinh nguyệt","hông","đau hông"]},
+{c:"GB28",vi:"Duy Đạo",cn:"维道",py:"Wéidào",m:"GB",pos:[0.26,1.54,0.04],loc:"Hông trước, dưới khối xương bẹn 5 thốn, trước Ngũ Xuất.",find:"Hông trước dưới — ấn tức.",use:"Truyền thống: sơ can lợi đởm, điều kinh chỉ đới, cử hãi thông hạ tiêu; dùng đới hạ bệnh, đau hông.",ev:"T",warn:"—",org:"Hông · duy",sym:["đới","hông","kinh nguyệt","sa"]},
+{c:"GB32",vi:"Trung Độc",cn:"中渎",py:"Zhōngdú",m:"GB",pos:[0.36,0.95,0.03],loc:"Đùi ngoài, 5 thốn dưới Phong Thị, giữa hai xương.",find:"Năm thốn dưới Phong Thị — ấn tức.",use:"Truyền thống: sơ phong thấp thông lạc; dùng đùi ngoài đau, tê bì, chân nặng.",ev:"T",warn:"—",org:"Đùi ngoài",sym:["đùi","tê","chân","thấp"]},
+{c:"GB36",vi:"Ngoại Khâu",cn:"外丘",py:"Wàiqiū",m:"GB",pos:[0.77,0.7,0.08],loc:"Cẳng chân ngoài, 7 thốn trên mắt cá ngoài, phẳng trước xương ống chân.",find:"Bảy thốn trên mắt cá ngoài — ấn tức.",use:"Truyền thống: sơ can lợi đởm, thông kinh hoạt lạc — khách huyệt; dùng đau sườn, chân nặng, chóng mặt.",ev:"T",warn:"—",org:"Cẳng chân ngoài",sym:["sườn","chân","chóng mặt","khách"]},
+{c:"GB42",vi:"Địa Ngũ Hội",cn:"地五会",py:"Dìwǔhuì",m:"GB",pos:[0.34,0.08,0.12],loc:"Mu chân, sau khớp bàn ngón 4, hõm rõ.",find:"Hõm sau khớp ngón 4 — ấn tức.",use:"Truyền thống: sơ can lợi đởm, thanh nhiệt tả hỏa; dùng đau tai, mắt đỏ, đầu đau, ngực đau.",ev:"T",warn:"—",org:"Mu chân",sym:["tai","mắt đỏ","đau đầu","ngực"]},
+{c:"LR11",vi:"Âm Liêm",cn:"阴廉",py:"Yīnlián",m:"LR",pos:[0.32,1.75,0.14],loc:"Đùi trong, dưới bẹn 2 thốn, bờ trong khối xương bẹn.",find:"Đùi trong — ấn tức.",use:"Truyền thống: sơ can lợi đởm, điều kinh chỉ đới; dùng kinh nguyệt bất điều, đùi trong đau.",ev:"T",warn:"—",org:"Đùi trong",sym:["kinh nguyệt","đùi","phụ khoa","đau"]},
+{c:"LR12",vi:"Cấp Mạch",cn:"急脉",py:"Jímài",m:"LR",pos:[0.3,1.7,0.18],loc:"Bẹn, ngoài môn sinh dục 2.5 thốn, mạch đập rõ.",find:"Hõm bẹn ngoài — ấn nhẹ.",use:"Truyền thống: sơ can lý khí, ôm dương cố thoát; dùng hernia, đau bụng, kinh nguyệt.",ev:"T",warn:"Mạch bẹn — day nhẹ, không châm.",org:"Bẹn · mạch",sym:["hernia","đau bụng","kinh nguyệt","mạch"]},
+{c:"GV7",vi:"Trung Suất",cn:"中枢",py:"Zhōngshū",m:"GV",pos:[0,1.76,-0.36],loc:"Lưng, ngang gai sống L2, dưới sống.",find:"Ngang dưới rốn vòng lưng — ấn tức.",use:"Truyền thống: ôn bổ nguyên dương, kiện tỳ lý khí; dùng đau lưng, thấp trệ, khí nghịch.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · trung",sym:["đau lưng","thấp","khí nghịch","lưng"]},
+{c:"GV9",vi:"Chí Dương",cn:"至阳",py:"Zhìyáng",m:"GV",pos:[0,1.94,-0.36],loc:"Lưng, ngang gai sống D7, dưới sống.",find:"Ngang dưới mỏm ức — ấn tức.",use:"Truyền thống: ôn dương tán hàn, khoan hung lý khí; dùng đau ngực, khí nghịch, ho, lưng đau.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · dương",sym:["ngực","khí nghịch","ho","lưng"]},
+{c:"GV13",vi:"Đào Đạo",cn:"陶道",py:"Táodào",m:"GV",pos:[0,2.34,-0.35],loc:"Lưng, ngang gai sống D1, dưới sống — hội huyệt của Đốc Mạch, Túc Thái Dương.",find:"Ngang đỉnh vai — ấn tức.",use:"Truyền thống: tức phong tán hàn, tuyên phế trấn kinh; dùng cảm mạo, sốt, đau lưng, điên cuồng.",ev:"T",warn:"Chỉ day ấn.",org:"Lưng · hội",sym:["cảm","sốt","lưng","hội"]},
+{c:"GV18",vi:"Cường Gian",cn:"强间",py:"Qiángjiān",m:"GV",pos:[0,3.04,-0.14],loc:"Sau đầu, 4 thốn trên Phong Phủ.",find:"Sau đầu giữa — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt, an thần định chí; dùng đau đầu, mất ngủ, mắt mờ, kinh giật.",ev:"T",warn:"Day nhẹ.",org:"Sau đầu",sym:["đau đầu","mất ngủ","mắt","kinh giật"]},
+{c:"GV19",vi:"Hậu Đỉnh",cn:"后顶",py:"Hòudǐng",m:"GV",pos:[0,3.1,-0.1],loc:"Sau đỉnh đầu, 5.5 thốn trên Phong Phủ, 1.5 thốn sau Bách Hội.",find:"Sau đỉnh đầu — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt, trấn kinh an thần; dùng đau đầu, mất ngủ, chóng mặt.",ev:"T",warn:"Day nhẹ.",org:"Đỉnh đầu sau",sym:["đau đầu","mất ngủ","chóng mặt","đỉnh"]},
+{c:"GV22",vi:"Huynh Hội",cn:"囟会",py:"Xìnhuì",m:"GV",pos:[0,3.22,0.04],loc:"Đỉnh đầu trước, 3 thốn trên Thượng Tinh, 2 thốn sau Tiền Đỉnh.",find:"Đỉnh đầu trước — ấn nhẹ.",use:"Truyền thống: tức phong thanh nhiệt, thông khiếu an thần; dùng đau đầu, mũi tắc, mất ngủ, chảy máu cam.",ev:"T",warn:"Day nhẹ.",org:"Đỉnh đầu trước",sym:["đau đầu","mũi","mất ngủ","máu cam"]},
+{c:"GV28",vi:"Ấm Giao",cn:"龈交",py:"Yínjiāo",m:"GV",pos:[0,2.84,0.22],loc:"Lợi trên, rãnh giữa răng cửa lợi, đính lưỡi lên thấy rõ.",find:"Gập lưỡi lên, điểm nhô nơi lợi — ấn nhẹ.",use:"Truyền thống: thanh nhiệt tả hỏa, thông khiếu chỉ thống; dùng lở miệng, răng đau, kinh giật, hiccup.",ev:"T",warn:"Day cực nhẹ.",org:"Lợi · giao",sym:["lở miệng","răng","kinh giật","hiccup"]},
+{c:"CV16",vi:"Trung Đình",cn:"中庭",py:"Zhōngtíng",m:"CV",pos:[0,2.4,0.3],loc:"Ngực, ngang khoang sườn 5, giữa hai núm vú.",find:"Giữa ngực — ấn nhẹ.",use:"Truyền thống: khoan hung lý khí, hàng nghịch chỉ ôn; dùng ngực tức, hiccup, nôn, ợ.",ev:"T",warn:"Day nhẹ.",org:"Ngực · đình",sym:["ngực","hiccup","nôn","ợ"]},
+{c:"CV18",vi:"Ngọc Đường",cn:"玉堂",py:"Yùtáng",m:"CV",pos:[0,2.46,0.29],loc:"Ngực, ngang khoang sườn 3, giữa hai núm vú.",find:"Giữa ngực — ấn nhẹ.",use:"Truyền thống: khoan hung lý khí, an thần định chí; dùng ngực tức, ho suyễn, hồi hộp.",ev:"T",warn:"Day nhẹ.",org:"Ngực",sym:["ngực","ho","hồi hộp","tức"]},
+{c:"CV19",vi:"Tử Cung",cn:"紫宫",py:"Zǐgōng",m:"CV",pos:[0,2.48,0.28],loc:"Ngực, ngang khoang sườn 2, giữa hai núm vú.",find:"Giữa ngực — ấn nhẹ.",use:"Truyền thống: khoan hung lý khí, thông lợi yết hầu; dùng ngực tức, ho suyễn, yết hầu đau.",ev:"T",warn:"Day nhẹ.",org:"Ngực · tử cung",sym:["ngực","ho","yết hầu","suyễn"]},
+{c:"CV21",vi:"Toản Cơ",cn:"璇玑",py:"Xuánjī",m:"CV",pos:[0,2.6,0.25],loc:"Ngực trên, ngang khoang sườn 1, trên Hoa Cái.",find:"Trên ngực giữa — ấn nhẹ.",use:"Truyền thống: tuyên phế chỉ khái, hàng khí bình suyễn; dùng ho suyễn, ngực tức, yết hầu.",ev:"T",warn:"Day nhẹ.",org:"Ngực trên",sym:["ho","suyễn","ngực","yết hầu"]},
+{c:"CV24",vi:"Thừa Tương",cn:"承浆",py:"Chéngjiāng",m:"CV",pos:[0,2.94,0.23],loc:"Cằm, hõm giữa môi dưới và cằm.",find:"Hõm dưới môi dưới — ấn nhẹ.",use:"Truyền thống: sơ phong thanh nhiệt, thông khiếu lợi khiếu — hội huyệt của Đốc Mạch, Nhâm Mạch; dùng khát, lở miệng, liệt mặt, nói khó.",ev:"C",warn:"Day nhẹ.",org:"Cằm · hội",sym:["khát","lở miệng","liệt mặt","cằm"]}
 ];
 
 /* ---------- QUESTIONNAIRE ---------- */
@@ -830,6 +903,7 @@ function openView(v){
   if(v==='data')renderProfile();
   if(v==='report')renderReportPrev();
   if(v==='practice')renderPractice();
+  if(v==='quiz')renderQuiz();
 }
 function openSheet(html){$('#sheetBody').innerHTML=html;$('#sheet').classList.add('on')}
 function closeSheet(){$('#sheet').classList.remove('on')}
@@ -1010,6 +1084,20 @@ function animate(t){
   if(window._bodyParts){window._bodyParts.scale.y=breathe;window._bodyParts.position.y=-(breathe-1)*1.8;}
   pointMeshes.forEach((m,i)=>{const s=1+Math.sin(clock3d*3+i)*0.18;m.children[0].scale.setScalar(s)});
   renderer.render(scene,camera);
+  const lb=$('#ptLabel');
+  if(selectedPt&&lb){
+    const mesh=pointMeshes.find(m=>m.userData.code===selectedPt);
+    if(mesh){
+      const v=mesh.position.clone().project(camera);
+      if(v.z<1){
+        const r=$('#stage').getBoundingClientRect();
+        lb.textContent=selectedPt+' · '+(ACUPOINTS.find(a=>a.c===selectedPt)||{}).vi;
+        lb.style.display='block';
+        lb.style.left=((v.x*0.5+0.5)*r.width+12)+'px';
+        lb.style.top=((-v.y*0.5+0.5)*r.height-12)+'px';
+      }else lb.style.display='none';
+    }
+  }else if(lb)lb.style.display='none';
 }
 window.addEventListener('resize',resize3d);
 
@@ -1077,7 +1165,7 @@ function showPoint(code){
   const rel=ACUPOINTS.filter(x=>x.m===p.m&&x.c!==p.c);
   openSheet(
    '<div class="pntHead"><div class="grow"><div class="pntCode">'+p.c+'</div><h2 style="font-size:1.3rem">'+p.vi+' · '+p.cn+'</h2><div class="sub">'+p.py+' — '+mr.vi+' ('+mr.cn+') · '+mr.el+'</div></div>'+
-   '<button class="btn sm" onclick="toggleFav(\''+p.c+'\');showPoint(\''+p.c+'\')">'+(FAVS.includes(p.c)?'★':'☆')+'</button>'+
+   '<button class="btn sm" onclick="closeSheet();focusPoint(\''+p.c+'\')">🎯</button><button class="btn sm" onclick="toggleFav(\''+p.c+'\');showPoint(\''+p.c+'\')">'+(FAVS.includes(p.c)?'★':'☆')+'</button>'+
    '<button class="btn sm" onclick="toggleCmp(\''+p.c+'\');showPoint(\''+p.c+'\')">'+(CMP.includes(p.c)?'✓ SS':'+ SS')+'</button></div>'+
    '<div class="divider"></div>'+
    '<div class="kv"><span class="k">Vị trí giải phẫu</span><span class="v">'+p.loc+'</span></div>'+
@@ -1577,6 +1665,80 @@ function doWipe(){localStorage.clear();closeModal();location.reload()}
 
 
 
+
+/* ================= QUIZ MODULE ================= */
+let QZ={mode:'name2code',scope:'all',qs:[],i:0,score:0,streak:0,wrong:[]};
+function renderQuiz(){
+  const el=$('#quizSetup');if(!el)return;
+  el.innerHTML='<h3 style="font-size:.95rem;margin-bottom:6px">Chế độ</h3><div class="opts">'+[['name2code','Tên → Mã'],['code2name','Mã → Tên'],['loc2name','Vị trí → Huyệt']].map(m=>'<span class="chip'+(QZ.mode===m[0]?' on':'')+'" onclick="QZ.mode=\''+m[0]+'\';renderQuiz()">'+m[1]+'</span>').join('')+'</div>'+
+  '<h3 style="font-size:.95rem;margin:12px 0 6px">Phạm vi</h3><div class="opts"><span class="chip'+(QZ.scope==='all'?' on':'')+'" onclick="QZ.scope=\'all\';renderQuiz()">Tất cả (364)</span>'+
+  MERIDIANS.map(m=>'<span class="chip'+(QZ.scope===m.id?' on':'')+'" onclick="QZ.scope=\''+m.id+'\';renderQuiz()">'+m.id+'</span>').join('')+'</div>'+
+  '<div class="opts" style="margin-top:8px">'+Object.keys(REGIONS).map(r=>'<span class="chip'+(QZ.scope==='rg:'+r?' on':'')+'" onclick="QZ.scope=\'rg:'+r+'\';renderQuiz()">'+REGIONS[r]+'</span>').join('')+'</div>'+
+  '<button class="btn acc block" style="margin-top:14px" onclick="startQuiz()">▶ Bắt đầu (10 câu)</button>';
+  const st=store.get('qstat',{});
+  const ks=Object.keys(st);
+  el.innerHTML+=ks.length?'<div class="sub" style="margin-top:10px">🏆 Kỷ lục: '+ks.slice(-4).map(k=>k+': '+st[k]+'/10').join(' · ')+'</div>':'<div class="sub" style="margin-top:10px">Chưa có kỷ lục — chơi ván đầu tiên!</div>';
+  if(!$('#quizGame').innerHTML||QZ.qs.length===0)$('#quizGame').innerHTML='';
+}
+function quizPool(){return QZ.scope==='all'?ACUPOINTS:QZ.scope.startsWith('rg:')?ACUPOINTS.filter(p=>regionOf(p)===QZ.scope.slice(3)):ACUPOINTS.filter(p=>p.m===QZ.scope)}
+function startQuiz(){
+  const pool=quizPool();if(pool.length<4){alert('Phạm vi quá nhỏ để tạo câu hỏi');return}
+  const qs=[];const used=new Set();
+  for(let i=0;i<10&&i<pool.length;i++){
+    let a;do{a=pool[Math.floor(Math.random()*pool.length)]}while(used.has(a.c));used.add(a.c);
+    const ds=[];let guard=0;
+    while(ds.length<3&&guard++<200){const d=pool[Math.floor(Math.random()*pool.length)];if(d.c!==a.c&&!ds.some(x=>x.c===d.c))ds.push(d)}
+    qs.push({a,opts:[a,...ds].sort(()=>Math.random()-0.5)});
+  }
+  QZ={mode:QZ.mode,scope:QZ.scope,qs,i:0,score:0,streak:0,wrong:[]};
+  nextQuestion();
+}
+function nextQuestion(){
+  if(QZ.i>=QZ.qs.length){endQuiz();return}
+  const q=QZ.qs[QZ.i];const p=q.a;
+  const mr=MERIDIANS.find(m=>m.id===p.m);
+  let qq,unit;
+  if(QZ.mode==='name2code'){qq='<div style="font-size:1.5rem;font-weight:800">'+p.vi+' <span style="color:var(--sub);font-size:1rem">'+p.cn+'</span></div><div class="sub" style="margin-top:4px">Chọn mã huyệt đúng</div>';unit=o=>o.c}
+  else if(QZ.mode==='code2name'){qq='<div style="font-size:2.2rem;font-weight:800;color:var(--acc)">'+p.c+'</div><div class="sub" style="margin-top:4px">Chọn tên huyệt đúng</div>';unit=o=>o.vi+' · '+o.cn}
+  else{qq='<div style="font-size:.95rem;line-height:1.6">'+p.loc+'</div><div class="sub" style="margin-top:4px">Thuộc kinh '+mr.id+' — đây là huyệt nào?</div>';unit=o=>o.c+' · '+o.vi}
+  $('#quizGame').innerHTML='<div class="card fadein"><div class="row" style="margin-bottom:10px"><span class="chip">Câu '+(QZ.i+1)+'/'+QZ.qs.length+'</span><span class="chip">✓ '+QZ.score+'</span><span class="chip">🔥 '+QZ.streak+'</span></div>'+
+  '<div style="text-align:center;padding:10px 0 14px">'+qq+'</div>'+
+  '<div id="quizOpts">'+q.opts.map((o,i)=>'<button class="btn block" style="margin-top:8px;text-align:left;justify-content:flex-start" onclick="answerQuiz('+i+')">'+unit(o)+'</button>').join('')+'</div>'+
+  '<div id="quizFb"></div></div>';
+  window._qzOpts=q.opts;window._qzAns=p;
+}
+function answerQuiz(i){
+  const o=window._qzOpts[i],p=window._qzAns;
+  const btns=$('#quizOpts').querySelectorAll('button');
+  btns.forEach(b=>b.style.pointerEvents='none');
+  if(o.c===p.c){QZ.score++;QZ.streak++;btns[i].style.borderColor='var(--acc2)';btns[i].style.background='color-mix(in srgb,var(--acc2) 20%,transparent)';}
+  else{QZ.streak=0;QZ.wrong.push(p.c);btns[i].style.borderColor='var(--red)';btns[i].style.background='color-mix(in srgb,var(--red) 15%,transparent)';btns[window._qzOpts.findIndex(x=>x.c===p.c)].style.borderColor='var(--acc2)';}
+  const mr=MERIDIANS.find(m=>m.id===p.m);
+  $('#quizFb').innerHTML='<div class="noteBox fadein" style="display:block;margin-top:12px"><b>'+p.c+' · '+p.vi+' '+p.cn+'</b> — '+mr.vi+'. '+p.loc+'</div>'+
+  '<button class="btn acc block" style="margin-top:10px" onclick="QZ.i++;nextQuestion()">'+(QZ.i>=QZ.qs.length-1?'Xem kết quả →':'Câu tiếp →')+'</button>';
+}
+function endQuiz(){
+  const st=store.get('qstat',{});const key=QZ.mode+'/'+QZ.scope;
+  if(st[key]==null||QZ.score>st[key])st[key]=QZ.score;store.set('qstat',st);
+  $('#quizGame').innerHTML='<div class="card fadein" style="text-align:center"><div style="font-size:3.2rem;font-weight:800;color:var(--acc)">'+QZ.score+'/'+QZ.qs.length+'</div>'+
+  '<div class="sub" style="margin-top:4px">'+(QZ.score>=8?'Xuất sắc! Bạn đã thuộc bộ này ✨':QZ.score>=5?'Khá — luyện thêm vài ván nữa':'Cần ôn lại — xem các huyệt bị sai bên dưới')+'</div>'+
+  (QZ.wrong.length?'<div class="divider"></div><div class="sub" style="margin-bottom:6px">📌 Huyệt cần ôn:</div>'+QZ.wrong.map(c=>{const p=ACUPOINTS.find(x=>x.c===c);return '<span class="tagE" onclick="showPoint(\''+c+'\')">'+c+' '+p.vi+'</span>'}).join(''):'')+
+  '<div class="grid2" style="margin-top:14px"><button class="btn acc block" onclick="startQuiz()">🔄 Chơi lại</button><button class="btn block" onclick="QZ.qs=[];renderQuiz()">Đổi chế độ</button></div></div>';
+}
+
+/* ================= 3D FOCUS & LABEL ================= */
+let selectedPt=null;
+function focusPoint(code){
+  const p=ACUPOINTS.find(x=>x.c===code);if(!p||!curves)return;
+  const pos=pointPos(p);
+  const dx=pos.x,dy=pos.y-1.8,dz=pos.z;
+  camTheta=Math.atan2(dx,dz);
+  const len=Math.sqrt(dx*dx+dy*dy+dz*dz)||1;
+  camPhi=Math.acos(Math.max(-1,Math.min(1,dy/len)));
+  camDist=Math.max(2.4,Math.min(4.5,camDist));
+  selectedPt=code;
+  if(!pointGroup.visible)setBodyMode('kinh');
+}
 /* ================= DAILY REMINDERS ================= */
 let REMIND=store.get('remind',{water:true,sleep:true,practice:true,vitals:false});
 const REMIND_DEFS=[
