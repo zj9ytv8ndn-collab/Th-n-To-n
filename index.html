@@ -750,6 +750,9 @@ const HAY=[["LI4", "Hợp Cốc", "Giảm đau, hạ sốt — trị đau đầu
 const SYMS=[["cảm", "Cảm mạo"], ["đau đầu", "Đau đầu"], ["mất ngủ", "Mất ngủ"], ["ho", "Ho — khí quản"], ["tiêu hóa", "Tiêu hóa kém"], ["táo bón", "Táo bón"], ["đau bụng", "Đau bụng"], ["buồn nôn", "Buồn nôn"], ["cổ cứng", "Cổ cứng"], ["vai gáy", "Vai gáy"], ["đau lưng", "Đau lưng"], ["chuột rút", "Chuột rút"], ["huyết áp", "Huyết áp"], ["hồi hộp", "Hồi hộp — lo âu"], ["cáu gắt", "Cáu gắt — stress"], ["mắt", "Mắt"], ["tai", "Tai — ù tai"], ["răng", "Răng — miệng"], ["kinh nguyệt", "Phụ khoa — kinh nguyệt"], ["chóng mặt", "Chóng mặt"]];
 const MV=['LU','LI','ST','SP','HT','SI','BL','KI','PC','TE','GB','LR','GV','CV'];
 const MIR={front:1,back:1,head:1};
+/* Trục cơ thể THẬT tính từ kinh trung tâm (tránh lệch do ảnh không căn giữa viewBox) */
+const AX={front:157.5,back:176.2,head:90.3,side:115,hand:69,foot:34};
+const MIRM=m=>MIR[curView]&&m!=='GV'&&m!=='CV';
 const VIEWW={"front": 300, "back": 320, "side": 230, "head": 210, "hand": 138, "foot": 68};
 const EVL={A:'Bằng chứng mạnh',B:'Bằng chứng vừa',C:'Bằng chứng hạn chế',T:'Tài liệu truyền thống',I:'Chưa đủ bằng chứng'};
 const NS='http://www.w3.org/2000/svg';
@@ -827,7 +830,7 @@ function renderMap(){
    const pl=document.createElementNS(NS,'polyline');
    pl.setAttribute('points',pts);pl.setAttribute('class','mln');pl.style.stroke=MER[m].color;
    Lg.appendChild(pl);
-   if(MIR[curView]){const pl2=pl.cloneNode();pl2.setAttribute('points',seg.map(p=>(VIEWW[curView]-p[0])+','+p[1]).join(' '));Lg.appendChild(pl2);}
+   if(MIRM(m)){const ax2=2*AX[curView];const pl2=pl.cloneNode();pl2.setAttribute('points',seg.map(p=>(ax2-p[0])+','+p[1]).join(' '));Lg.appendChild(pl2);}
   });
  });
  const ms=matchSet();let shown=0;
@@ -836,7 +839,7 @@ function renderMap(){
   const xy=d.v[curView];if(!xy)return;
   const inMain=!$('#q').value.trim()&&!curSym||ms.has(d.c);
   if(inMain)shown++;
-  const list=MIR[curView]?[xy,[Math.round((VIEWW[curView]-xy[0])*10)/10,xy[1]]]:[xy];
+  const list=MIRM(d.m)?[xy,[Math.round((2*AX[curView]-xy[0])*10)/10,xy[1]]]:[xy];
   list.forEach(q=>{
    const c=document.createElementNS(NS,'circle');
    c.setAttribute('cx',q[0]);c.setAttribute('cy',q[1]);c.setAttribute('r',1.9);
