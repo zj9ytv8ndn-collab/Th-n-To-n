@@ -386,6 +386,72 @@ input[type=range]::-webkit-slider-thumb{background:var(--red);border:2.5px solid
 .qOpt.ok{background:#f0fdf4;border-color:#86efac;color:#166534}
 .qOpt.bad{background:#fef2f2;border-color:#fca5a5;color:#991b1b}
 
+#hsx *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+#hsx body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-feature-settings:"tnum" 1;overflow-x:hidden}
+#hsx #app{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom));position:relative}
+#hsx #hdr{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:calc(12px + env(safe-area-inset-top)) 16px 10px}
+#hsx #hdr .t1{font-family:Georgia,serif;font-weight:700;font-size:1.05rem;letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+#hsx #hdr .t1::before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:linear-gradient(150deg,#0e7490,#155e75);color:#fff;font-size:16px;font-family:-apple-system,sans-serif;box-shadow:0 2px 6px rgba(14,116,144,.35)}
+#hsx #hdr .t2{font-size:.6rem;letter-spacing:.22em;color:var(--ink2);font-weight:600;margin-top:2px}
+#hsx #tabbar{position:fixed;bottom:0;left:0;right:0;z-index:60;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom))}
+#hsx #tabbar .in{display:flex;background:color-mix(in srgb,var(--card) 96%,transparent);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:var(--shadow);width:100%;max-width:520px;justify-content:space-around}
+#hsx .tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 10px;border-radius:13px;color:var(--ink2);font-size:.56rem;font-weight:800;cursor:pointer;border:none;background:none;flex-shrink:0}
+#hsx .tab .ic{font-size:18px}
+#hsx .tab.on{color:var(--red);background:color-mix(in srgb,var(--red) 10%,transparent)}
+#hsx .view{display:none;animation:vin .28s ease}
+#hsx .view.on{display:block}
+#hsx .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px;box-shadow:var(--shadow)}
+#hsx .sec{padding:16px 16px 4px}
+#hsx .sec h2{font-size:.74rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--ink2);display:flex;align-items:center;gap:7px}
+#hsx .sec h2::before{content:"";width:20px;height:2px;background:var(--red);border-radius:2px}
+#hsx .sub{font-size:.76rem;color:var(--ink2);margin-top:3px}
+#hsx .fld{margin:8px 0}
+#hsx .fld label{display:block;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-bottom:3px}
+#hsx .fld input, #hsx .fld select{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font-size:.86rem}
+#hsx .fld input:focus, #hsx .fld select:focus{border-color:var(--red);box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 15%,transparent);outline:none}
+#hsx .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#hsx .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:.82rem;font-weight:700;cursor:pointer;user-select:none}
+#hsx .btn:active{transform:scale(.96)}
+#hsx .btn.teal{background:linear-gradient(165deg,var(--red2),var(--red));border:none;color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--red) 30%,transparent)}
+#hsx .btn.sm{padding:7px 12px;font-size:.72rem;border-radius:9px}
+#hsx .riskCard{border-left:4px solid var(--line);cursor:pointer}
+#hsx .riskCard .rc-top{display:flex;align-items:center;gap:8px}
+#hsx .riskCard .rc-name{font-weight:800;font-size:.88rem;flex:1}
+#hsx .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.64rem;font-weight:800;letter-spacing:.03em}
+#hsx .p-low{background:#f0fdf4;color:#166534;border:1px solid #86efac}
+#hsx .p-mod{background:#fffbeb;color:#92400e;border:1px solid #fcd34d}
+#hsx .p-high{background:#fef2f2;color:#991b1b;border:1px solid #fca5a5}
+#hsx .p-na{background:var(--bg);color:var(--ink2);border:1px solid var(--line)}
+#hsx .evi{font-size:.62rem;color:var(--ink2);margin-top:6px;line-height:1.5}
+#hsx .evi b{color:var(--red)}
+#hsx .qRow{padding:10px 0;border-bottom:1px dashed var(--line)}
+#hsx .qRow .qt{font-size:.8rem;font-weight:600;margin-bottom:6px}
+#hsx .opts{display:flex;gap:4px;flex-wrap:wrap}
+#hsx .opt{flex:1;min-width:64px;padding:8px 4px;border-radius:9px;border:1.5px solid var(--line);background:var(--bg);font-size:.66rem;font-weight:700;text-align:center;cursor:pointer;color:var(--ink2)}
+#hsx .opt.on{background:var(--red);border-color:var(--red);color:#fff}
+#hsx .flagE{background:#fef2f2;border:1.5px solid #fca5a5;color:#991b1b;border-radius:12px;padding:12px;font-size:.8rem;font-weight:700;margin:10px 12px}
+#hsx .flagW{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:12px;padding:11px;font-size:.78rem;margin:10px 12px}
+#hsx .noteBox{background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;border-radius:12px;padding:11px;font-size:.76rem;margin:10px 12px}
+#hsx .disc{background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:11px;font-size:.68rem;color:var(--ink2);margin:10px 12px;line-height:1.55}
+#hsx canvas.chart{width:100%;height:130px;display:block}
+#hsx .kpi{display:flex;gap:10px;flex-wrap:wrap}
+#hsx .kpi .k{flex:1;min-width:96px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:10px;text-align:center}
+#hsx .kpi .k b{font-size:1.25rem;font-family:Georgia,serif;color:var(--red);display:block}
+#hsx .kpi .k span{font-size:.6rem;font-weight:700;color:var(--ink2);letter-spacing:.05em}
+#hsx details.g{border:1px solid var(--line);border-radius:var(--r);background:var(--card);margin:10px 12px;box-shadow:var(--shadow)}
+#hsx details.g summary{padding:12px 14px;font-weight:800;font-size:.86rem;cursor:pointer;list-style:none;display:flex;align-items:center;gap:7px}
+#hsx details.g summary::before{content:"▸";color:var(--red)}
+#hsx details.g[open] summary::before{content:"▾"}
+#hsx details.g .bd{padding:0 14px 14px}
+#hsx #consent{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+#hsx #consent .box{max-width:420px;max-height:88vh;overflow-y:auto}
+#hsx .aiOut{font-size:.8rem;line-height:1.65}
+#hsx .aiOut h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin:12px 0 4px}
+#hsx .mini{font-size:.66rem;color:var(--ink2)}
+#hsx .empty{text-align:center;color:var(--ink2);padding:24px 10px;font-size:.8rem}
+#hconsent{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+#hconsent .box{max-width:420px;max-height:88vh;overflow-y:auto}
+
 </style>
 </head>
 <body>
@@ -574,11 +640,95 @@ input[type=range]::-webkit-slider-thumb{background:var(--red);border:2.5px solid
  <div class="card warnBox">🩺 Nếu xuất hiện đau ngực, khó thở nặng, liệt nửa người, nói khó, hôn mê — <b>gọi 115 ngay</b>, không chờ phân tích.</div>
 </section>
 
+<div id="hsx">
+
+<!-- ===== TỔNG QUAN ===== -->
+<section class="view on" id="v-hdash">
+ <div class="sec"><h2>Tổng quan hôm nay</h2><div class="sub" id="hdashDate"></div></div>
+ <div class="card kpi" id="hdashKpi"></div>
+ <div class="card" id="hdashRisk"></div>
+ <div class="card noteBox">ℹ️ Đây là công cụ <b>theo dõi wellness & sàng lọc có bằng chứng</b> — không chẩn đoán bệnh. Mọi kết quả kèm nguồn nghiên cứu (DOI) và mức độ tin cậy.</div>
+ <div class="card" style="text-align:center">
+  <button class="btn teal" style="width:100%" onclick="goX('hscreen')">🧪 Bắt đầu bộ sàng lọc</button>
+  <div style="height:8px"></div>
+  <button class="btn" style="width:100%" onclick="hrunAIExplain()">🤖 Giải thích AI (có kiểm chứng)</button>
+ </div>
+ <div id="haiBox"></div>
+</section>
+
+<!-- ===== HỒ SƠ ===== -->
+<section class="view" id="v-hprofile">
+ <div class="sec"><h2>Hồ sơ sức khỏe</h2><div class="sub">Nhập thủ công · chỉ lưu trên thiết bị</div></div>
+ <div class="card"><b style="font-size:.88rem">Thông tin cơ bản</b>
+  <div class="grid2">
+   <div class="fld"><label>Tuổi</label><input type="number" id="hpf_age" min="16" max="100"></div>
+   <div class="fld"><label>Giới tính</label><select id="hpf_sex"><option value="">—</option><option value="f">Nữ</option><option value="m">Nam</option></select></div>
+   <div class="fld"><label>Chiều cao (cm)</label><input type="number" id="hpf_h" step="0.1"></div>
+   <div class="fld"><label>Cân nặng (kg)</label><input type="number" id="hpf_w" step="0.1"></div>
+   <div class="fld"><label>Vòng eo (cm)</label><input type="number" id="hpf_waist"></div>
+   <div class="fld"><label>Hút thuốc</label><select id="hpf_smoke"><option value="0">Không</option><option value="1">Có / đã bỏ &lt;1 năm</option></select></div>
+  </div>
+  <div id="hbmiOut" style="font-size:.78rem;font-weight:700;color:var(--teal)"></div>
+ </div>
+ <div class="card"><b style="font-size:.88rem">Chỉ số đo hôm nay — để trống = Không có dữ liệu</b>
+  <div class="grid2">
+   <div class="fld"><label>Huyết áp tâm thu (mmHg)</label><input type="number" id="hm_sys"></div>
+   <div class="fld"><label>Huyết áp tâm trương</label><input type="number" id="hm_dia"></div>
+   <div class="fld"><label>Nhịp tim nghỉ (bpm)</label><input type="number" id="hm_rhr"></div>
+   <div class="fld"><label>SpO₂ (%)</label><input type="number" id="hm_spo2" step="0.1"></div>
+   <div class="fld"><label>Giấc ngủ (giờ)</label><input type="number" id="hm_sleep" step="0.1"></div>
+   <div class="fld"><label>Vận động (phút/tuần)</label><input type="number" id="hm_act"></div>
+  </div>
+  <button class="btn teal" style="width:100%" onclick="hsaveProfile()">💾 Lưu hồ sơ & chỉ số</button>
+ </div>
+ <div class="sec"><h2>Xu hướng đo lường</h2></div>
+ <div class="card"><b class="mini">HUYẾT ÁP (mmHg)</b><canvas class="chart" id="hch_bp"></canvas></div>
+ <div class="card"><b class="mini">CÂN NẶNG (kg)</b><canvas class="chart" id="hch_w"></canvas></div>
+ <div class="sec"><h2>Xét nghiệm (tự nhập từ phiếu)</h2><div class="sub">Nguồn duy nhất của dữ liệu lab hợp lệ</div></div>
+ <div class="card"><div class="grid2">
+   <div class="fld"><label>Glucose đói (mg/dL)</label><input type="number" id="hlab_glu" step="0.1"></div>
+   <div class="fld"><label>HbA1c (%)</label><input type="number" id="hlab_a1c" step="0.1"></div>
+   <div class="fld"><label>Cholesterol (mg/dL)</label><input type="number" id="hlab_tc"></div>
+   <div class="fld"><label>HDL (mg/dL)</label><input type="number" id="hlab_hdl"></div>
+   <div class="fld"><label>LDL (mg/dL)</label><input type="number" id="hlab_ldl"></div>
+   <div class="fld"><label>Creatinine (mg/dL)</label><input type="number" id="hlab_cr" step="0.01"></div>
+   <div class="fld"><label>AST (U/L)</label><input type="number" id="hlab_ast"></div>
+   <div class="fld"><label>ALT (U/L)</label><input type="number" id="hlab_alt"></div>
+   <div class="fld"><label>Tiểu cầu (x10³/µL)</label><input type="number" id="hlab_plt"></div>
+  </div>
+  <button class="btn" style="width:100%" onclick="hsaveLabs()">💾 Lưu xét nghiệm</button>
+  <div class="mini" style="margin-top:8px">iPhone/Apple Watch <b>không đo được</b> các chỉ số này — nhập từ phiếu xét nghiệm của bệnh viện.</div>
+ </div>
+</section>
+
+<!-- ===== SÀNG LỌC ===== -->
+<section class="view" id="v-hscreen">
+ <div class="sec"><h2>Bộ sàng lọc có bằng chứng</h2><div class="sub">Bấm vào từng bộ câu hỏi · mỗi kết quả kèm nguồn nghiên cứu</div></div>
+ <div id="hscreenList"></div>
+</section>
+
+<!-- ===== RISK ===== -->
+<section class="view" id="v-hrisk">
+ <div class="sec"><h2>Risk Engine</h2><div class="sub">Chỉ dùng model đã validated · hiển thị thiếu dữ liệu & độ tin cậy</div></div>
+ <div id="hriskOut"></div>
+</section>
+
+<!-- ===== BÁO CÁO ===== -->
+<section class="view" id="v-hreport">
+ <div class="sec"><h2>Báo cáo sức khỏe</h2><div class="sub">PDF cho chuyên gia y tế</div></div>
+ <div class="card"><button class="btn teal" style="width:100%" onclick="hmakeReport()">🖨 Tạo báo cáo PDF / In</button></div>
+ <div class="card warnBox" style="background:#fef2f2;border-color:#fca5a5;color:#991b1b">🚨 Đau ngực, khó thở nặng, ngất, triệu chứng đột quỵ, ý định tự hại → <b>gọi 115 ngay</b>.</div>
+ <div class="disc">📜 <b>Miễn trừ:</b> Ứng dụng phục vụ giáo dục sức khỏe, theo dõi wellness và sàng lọc tham khảo. Không chẩn đoán, không điều trị, không thay thế bác sĩ. Các mô hình nguy cơ (ASCVD, QRISK...) <b>chưa được hiệu chuẩn cho ngườI Việt Nam</b>. This app does not diagnose, treat, cure, or prevent any disease.</div>
+</section>
 </div>
+
+</div></div>
+
 
 <nav id="tabbar"><div class="in">
  <button class="tab on" data-v="map" onclick="go('map')"><span class="ic">🗺</span>BẢN ĐỒ</button>
   <button class="tab" data-v="health" onclick="goX('health')"><span class="ic">❤️</span>SỨC KHỎE</button>
+ <button class="tab" data-v="hscreen" onclick="goX('hscreen')"><span class="ic">🧪</span>SÀNG LỌC</button>
  <button class="tab" data-v="analysis" onclick="goX('analysis')"><span class="ic">🧠</span>PHÂN TÍCH</button>
  <button class="tab" data-v="plan" onclick="goX('plan')"><span class="ic">📋</span>KẾ HOẠCH</button>
  <button class="tab" data-v="report" onclick="goX('report')"><span class="ic">🖨</span>BÁO CÁO</button>
@@ -824,6 +974,7 @@ function toast(m){const t=document.createElement('div');t.className='toast';t.te
 
 /* ---- router override + lazy init ---- */
 function goX(v){go(v);
+ if(v==='hdash')hrenderDash();if(v==='hprofile')hrenderProfile();if(v==='hscreen')hrenderScreenList();if(v==='hrisk')hrenderRisk();
  if(v==='health')renderHealth();
  if(v==='analysis')renderQuiz();
  if(v==='plan')renderPlan();
@@ -1210,6 +1361,208 @@ buildFavSel();
 function buildSym(){
  document.getElementById('symChips').innerHTML='<span class="chip'+(curSym?'':' on')+'" onclick="curSym=null;buildSym();renderMap();document.getElementById(\'symDrop\').open=false">Tất cả</span>'+SYMS.map(s=>'<span class="chip'+(curSym===s[0]?' on':'')+'" onclick="curSym=\''+s[0]+'\';buildSym();renderMap();document.getElementById(\'symDrop\').open=false">'+s[1]+'</span>').join('');
 }
+
+/* ===== AI HEALTH SCAN MODULE (integrated) ===== */
+
+/* ================= CORE ================= */
+const HH=(k,d)=>{try{const v=localStorage.getItem('hs_'+k);return v!==null?JSON.parse(v):d}catch(e){return d}};
+const HHS=(k,v)=>{try{localStorage.setItem('hs_'+k,JSON.stringify(v))}catch(e){}};
+const htoday=()=>new Date().toISOString().slice(0,10);
+const nd=v=>v==null||v===''?'—':v;
+/* EVIDENCE REGISTRY — chỉ nguồn thật đã kiểm */
+const HEV={
+ phq9:{n:'PHQ-9 — Kroenke et al., J Gen Intern Med 2001',d:'10.1046/j.1525-1497.2001.016009606.x',pop:'Mỹ, primary care',lvl:'A'},
+ gad7:{n:'GAD-7 — Spitzer et al., Arch Intern Med 2006',d:'10.1001/archinte.166.10.1092',pop:'Mỹ, primary care',lvl:'A'},
+ stopbang:{n:'STOP-BANG — Chung et al., Anesthesiology 2008',d:'10.1097/ALN.0b013e31816d83e7',pop:'Phẫu thuật, đa trung tâm',lvl:'A'},
+ ess:{n:'Epworth Sleepiness Scale — Johns, Sleep 1991',d:'10.1093/sleep/14.6.540',pop:'Úc',lvl:'A'},
+ findrisc:{n:'FINDRISC — Lindström & Tuomilehto, Diabetes Care 2003',d:'10.2337/diacare.26.3.725',pop:'Phần Lan, 35-64 tuổi',lvl:'A'},
+ ada:{n:'ADA Risk Test — từ NHANES (Bang et al., Ann Fam Med 2009)',d:'10.1370/afm.1011',pop:'Mỹ',lvl:'A'},
+ esc:{n:'ESC/ACC/AHA hypertension thresholds',d:' guideline 2018/2017',pop:'—',lvl:'A'},
+ ckd:{n:'CKD-EPI 2021 race-free — Inker et al., NEJM 2021',d:'10.1056/NEJMoa2102953',pop:'Đa sắc tộc',lvl:'A'},
+ fib4:{n:'FIB-4 — Sterling et al., Hepatology 2006',d:'10.1002/hep.21178',pop:'HIV/HCV & tổng quát',lvl:'A'}
+};
+/* ================= PROFILE ================= */
+let HPF=HH('pf',{}),HLABS=HH('labs',{}),HMEAS=HH('meas',[]);
+function hbmiInfo(){const h=parseFloat($('#pf_h').value),w=parseFloat($('#pf_w').value);
+ if(h>0&&w>0){const b=w/Math.pow(h/100,2);$('#hbmiOut').textContent='BMI '+b.toFixed(1)+' — '+(b<18.5?'Thiếu cân':b<25?'Bình thường':b<30?'Thừa cân':'Béo phì')+' · BSA (Mosteller) '+Math.sqrt(h*w/3600).toFixed(2)+' m² · PP/MAP tính từ HA';}else $('#hbmiOut').textContent='';}
+function hsaveProfile(){['age','sex','h','w','waist','smoke'].forEach(k=>HPF[k]=$('#hpf_'+k).value===''?null:$('#hpf_'+k).value);HHS('pf',HPF);
+ const snap={t:Date.now(),date:htoday()};['sys','dia','rhr','spo2','sleep','act'].forEach(k=>{const v=$('#hm_'+k).value;if(v!=='')snap[k]=parseFloat(v)});HMEAS.push(snap);HHS('meas',HMEAS.slice(-300));hrenderProfile();alert('Đã lưu');}
+function hsaveLabs(){['glu','a1c','tc','hdl','ldl','cr','ast','alt','plt'].forEach(k=>HLABS[k]=$('#hlab_'+k).value===''?null:parseFloat($('#hlab_'+k).value));HHS('labs',HLABS);alert('Đã lưu xét nghiệm');hrenderRisk();}
+function hrenderProfile(){$('#hdashDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'long'});
+ ['age','sex','h','w','waist','smoke'].forEach(k=>{if(HPF[k]!=null)$('#hpf_'+k).value=HPF[k]});
+ hbmiInfo();hdrawCharts();}
+function hdrawCharts(){hlineChart($('#ch_bp'),HMEAS.map(m=>m.sys),HMEAS.map(m=>m.date),'sys');hlineChart($('#ch_w'),HMEAS.map(m=>m.w||null),HMEAS.map(m=>m.date),'w');}
+function hlineChart(cv,vals,labels){if(!cv)return;const dpr=Math.min(devicePixelRatio||1,2),W=cv.clientWidth||300,ht=130;cv.width=W*dpr;cv.height=ht*dpr;
+ const g=cv.getContext('2d');g.scale(dpr,dpr);g.clearRect(0,0,W,ht);
+ const pts=[];vals.forEach((v,i)=>{if(v!=null&&!isNaN(v))pts.push([i,parseFloat(v)])});
+ g.font='10px sans-serif';g.fillStyle='#999';
+ if(pts.length<2){g.fillText(pts.length?'Cần ≥2 lần đo':'Không có dữ liệu',10,ht/2);return}
+ const vs=pts.map(p=>p[1]),lo=Math.min(...vs),hi=Math.max(...vs),rg=(hi-lo)||1;
+ const X=i=>16+(i/(vals.length-1))*(W-30),Y=v=>ht-16-((v-lo)/rg)*(ht-30);
+ g.strokeStyle='rgba(120,130,150,.3)';g.beginPath();g.moveTo(16,8);g.lineTo(16,ht-16);g.lineTo(W-10,ht-16);g.stroke();
+ g.strokeStyle='#0e7490';g.lineWidth=2;g.beginPath();pts.forEach((p,i)=>i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1])));g.stroke();
+ g.fillStyle='#0e7490';pts.forEach(p=>{g.beginPath();g.arc(X(p[0]),Y(p[1]),2.4,0,7);g.fill()});
+ g.fillStyle='#888';g.fillText(hi,2,12);g.fillText(lo,2,ht-20);}
+/* ================= SCREENING ENGINE ================= */
+const HQS=[
+ {id:'phq9',ev:'phq9',title:'PHQ-9 — Trầm cảm (2 tuần)',time:'~2 phút',
+  items:['Ít hứng thú/niềm vui','Buồn chán, tuyệt vọng','Khó ngủ/ngủ nhiều','Mệt mỏi, thiếu năng lượng','Chán ăn/ăn nhiều','Cảm thấy tệ về bản thân','Khó tập trung','Chậm chạp hoặc bồn chồn','Ý nghĩ tự làm hại bản thân'],
+  opts:['Không hề','Vài ngày','Hơn nửa số ngày','Gần như mỗi ngày'],
+  score:a=>{const t=a.reduce((x,y)=>x+y,0);const s=t<=4?'low':t<=9?'mod':t<=14?'high':'high';
+   return{score:t,stratum:s,label:t<=4?'Tối thiểu':t<=9?'Nhẹ':t<=14?'Trung bình':t<=19?'Trung bình-nặng':'Nặng',
+   extra:a[8]>0?'⚠️ Câu 9 > 0: cần đánh giá chuyên sâu ngay về an toàn bản thân.':null}},},
+ {id:'gad7',ev:'gad7',title:'GAD-7 — Lo âu (2 tuần)',time:'~1 phút',
+  items:['Lo lắng, bồn chồn','Khó kiểm soát lo âu','Lo nhiều điều','Khó thư giãn','Bứt rứt, ngồi không yên','Dễ cáu gắt','Sợ hãi như điều tệ sắp xảy ra'],
+  opts:['Không hề','Vài ngày','Hơn nửa số ngày','Gần như mỗi ngày'],
+  score:a=>{const t=a.reduce((x,y)=>x+y,0);return{score:t,stratum:t<=4?'low':t<=9?'mod':'high',label:t<=4?'Tối thiểu':t<=9?'Nhẹ':t<=14?'Trung bình':'Nặng'}}},
+ {id:'stopbang',ev:'stopbang',title:'STOP-BANG — Nguy cơ ngừng thở khi ngủ (OSA)',time:'~2 phút',
+  items:[['Ngáy to','Ngáy to','Không'],['Mệt mỏi buồn ngủ ban ngày','Mệt mỏi','Không'],['NgườI khác thấy bạn ngừng thở lúc ngủ','Quan sát được','Không'],['Đang điều trị/có tăng huyết áp','Có','Không'],['BMI > 35','Có','Không'],['Tuổi > 50','Có','Không'],['Chu vi cổ > 40 cm','Có','Không'],['Giới nam','Nam','Không']],
+  opts:['Không','Có'],
+  score:a=>{const t=a.reduce((x,y)=>x+y,0);return{score:t,stratum:t<=2?'low':t<=4?'mod':'high',label:t<=2?'Nguy cơ thấp':t<=4?'Nguy cơ trung bình':'Nguy cơ cao OSA',note:'Sensitivity cao / specificity thấp — dùng để quyết định khám chuyên khoa giấc ngủ.'}}},
+ {id:'ess',ev:'ess',title:'ESS — Mức độ buồn ngủ ban ngày',time:'~1 phút',
+  items:['Ngồi đọc sách','Xem TV','Ngồi yên nơi công cộng','Ngồi xe 1 giờ liên tục (không lái)','Chiều nghỉ ngơi khi trễ giờ','Ngồi nói chuyện với ngườI khác','Ngồi yên sau bữa trưa (không rượu)','Kẹt xe vài phút khi dừng xe'],
+  opts:['Không','Nhẹ','Vừa','Nhiều'],
+  score:a=>{const t=a.reduce((x,y)=>x+y,0);return{score:t,stratum:t<11?'low':'mod',label:t<11?'Bình thường':'Buồn ngủ quá mức (ESS ≥ 11)'}}},
+ {id:'findrisc',ev:'findrisc',title:'FINDRISC — Nguy cơ ĐTĐ type 2 (10 năm)',time:'~2 phút',auto:true,
+  items:[['age','Tuổi',['<45','45–54','55–64','≥65'],[0,1,2,3]],
+   ['bmi','BMI',['<25','25–29.9','30–34.9','≥35'],[0,1,3,3]],
+   ['waist','Vòng eo (cm) — nam/nữ',['Nam <94 / Nữ <80','Nam 94–101 / Nữ 80–87','Nam >101 / Nữ >87'],[0,1,3]],
+   ['act','Vận động ≥30 phút/ngày ≥5 ngày/tuần',['Có','Không'],[0,2]],
+   ['veg','Ăn rau quả mỗi ngày',['Có','Không'],[0,1]],
+   ['bpmed','Dùng thuốc huyết áp',['Không','Có'],[0,2]],
+   ['gluchist','Từng glucose cao (khám)',['Không','Có'],[0,5]],
+   ['fam','NgườI thân ĐTĐ',['Không','Bác/anh/chị/em','Bố/mẹ/các con'],[0,3,5]]],
+  score:(a,raw)=>{const t=a.reduce((x,y)=>x+y,0);
+   const risk=t<7?'~1%':t<12?'~4%':t<15?'~9%':t<21?'~17%':'~33%';
+   return{score:t,stratum:t<7?'low':t<12?'mod':'high',label:'Điểm '+t+'/26 — nguy cơ ĐTĐ 10 năm ≈ '+risk+' (ước tính từ cohort Phần Lan)'}}},
+ {id:'ada',ev:'ada',title:'ADA Risk Test — Nguy cơ tiền ĐTĐ/ĐTĐ',time:'~1 phút',auto:true,
+  items:[['age','Tuổi',['<40','40–49','50–59','≥60'],[0,1,2,3]],
+   ['sex','Giới',['Nữ','Nam'],[0,1]],
+   ['gdm','Từng đái tháo đường thai kỳ',['Không','Có'],[0,1]],
+   ['fam','Bố/mẹ/anh/chị/em có ĐTĐ',['Không','Có'],[0,1]],
+   ['bp','Huyết áp cao / đang điều trị',['Không','Có'],[0,1]],
+   ['act','Vận động ít hơn 3 lần/tuần',['Không','Có'],[0,1]],
+   ['bmi','BMI',['<25','25–29.9','30–34.9','≥35'],[0,1,2,3]]],
+  score:a=>{const t=a.reduce((x,y)=>x+y,0);
+   return{score:t,stratum:t>=5?'high':'low',label:'Điểm '+t+'/11 — '+(t>=5?'Nguy cơ cao → khuyến nghị xét nghiệm HbA1c/glucose tại cơ sở y tế':'Nguy cơ thấp')}}}
+];
+let HQA={}; // answers per id
+function hrenderScreenList(){$('#hscreenList').innerHTML=HQS.map(q=>{
+ const done=HH('res_'+q.id,null);
+ return `<details class="g"><summary><span style="flex:1">${q.title}</span><span class="pill ${done?({low:'p-low',mod:'p-mod',high:'p-high'})[done.stratum]:'p-na'}">${done?done.label.split(' — ')[0]:'Chưa làm'}</span></summary><div class="bd" id="hqb_${q.id}"></div></details>`;}).join('');
+ HQS.forEach(q=>hrenderQ(q));}
+function hrenderQ(q){const box=$('#hqb_'+q.id);if(!box)return;
+ const saved=HH('res_'+q.id,null);
+ let h=`<div class="mini" style="margin-bottom:8px">⏱ ${q.time} · <b>Nguồn:</b> ${HEV[q.ev].n} · DOI: <b>${HEV[q.ev].d}</b></div>`;
+ q.items.forEach((it,i)=>{
+  const label=Array.isArray(it)?it[1]||it[0]:it;
+  const opts=Array.isArray(it)&&q.auto?it[2]:(q.opts||['Không','Có']);
+  h+=`<div class="qRow"><div class="qt">${i+1}. ${label}</div><div class="opts" data-q="${q.id}" data-i="${i}">`+
+   opts.map((o,j)=>`<div class="opt" data-j="${j}">${o}</div>`).join('')+`</div></div>`;});
+ h+=`<button class="btn teal" style="width:100%;margin-top:10px" onclick="hscoreQ('${q.id}')">Tính kết quả</button><div id="hqres_${q.id}"></div>`;
+ box.innerHTML=h;
+ box.querySelectorAll('.opts').forEach(g=>{const saved2=HQA[q.id];g.querySelectorAll('.opt').forEach(o=>o.addEventListener('click',()=>{
+  g.querySelectorAll('.opt').forEach(x=>x.classList.remove('on'));o.classList.add('on');
+  if(!HQA[q.id])HQA[q.id]=[];HQA[q.id][parseInt(g.dataset.i)]=parseInt(o.dataset.j);}));});
+ if(saved&&saved.ans){HQA[q.id]=saved.ans;
+  box.querySelectorAll('.opts').forEach(g=>{const i=parseInt(g.dataset.i);const v=HQA[q.id][i];if(v!=null)g.querySelectorAll('.opt')[v]&&g.querySelectorAll('.opt')[v].classList.add('on');});}
+}
+function hscoreQ(id){const q=HQS.find(x=>x.id===id);const a=HQA[id]||[];
+ const need=q.items.length;if(a.length<need||a.slice(0,need).some(v=>v==null)){alert('Vui lòng trả lờI đủ '+need+' câu');return;}
+ const r=q.score(a);
+ const res={...r,ans:a,date:htoday()};
+ HHS('res_'+id,res);
+ let h=`<div style="margin-top:10px;padding:11px;border-radius:11px;background:var(--bg);border:1px solid var(--line)">
+  <div style="display:flex;gap:8px;align-items:center"><span class="pill ${({low:'p-low',mod:'p-mod',high:'p-high'})[r.stratum]}">${r.label}</span>
+  <span class="mini">Điểm: <b>${r.score}</b></span></div>
+  ${r.extra?`<div class="flagW" style="margin:8px 0 0">${r.extra}</div>`:''}
+  ${r.note?`<div class="mini" style="margin-top:6px">${r.note}</div>`:''}
+  <div class="mini" style="margin-top:6px">Độ tin cậy: <b>Cao</b> (screening questionnaire đã validated) · Không phải chẩn đoán.</div></div>`;
+ if(id==='phq9'&&r.extra)h=`<div class="flagE">🚨 Câu về tự làm hại &gt; 0 — nếu bạn đang có ý nghĩ này, hãy liên hệ ngườI thân/chuyên gia hoặc cấp cứu 115. Bạn không đơn độc.</div>`+h;
+ $('#hqres_'+id).innerHTML=h;
+ hrenderScreenList();}
+/* ================= RISK ENGINE ================= */
+function hcomputeEngine(){
+ const out=[];const missing=[];
+ const lastM=HMEAS[HMEAS.length-1]||{};
+ const bpS=lastM.sys,bpD=lastM.dia;
+ // ĐTĐ
+ const fin=HH('res_findrisc',null),ada=HH('res_ada',null);
+ if(fin)out.push({k:'ĐTĐ Type 2',src:'findrisc',r:fin,conf:'Cao',missing:HLABS.glu==null?'Glucose/HbA1c chưa nhập — xét nghiệm giúp xác nhận.':null});
+ if(ada)out.push({k:'Tiền ĐTĐ',src:'ada',r:ada,conf:'Cao',missing:HLABS.glu==null?'Không có glucose/HbA1c.':null});
+ // OSA
+ const sb=HH('res_stopbang',null),ess=HH('res_ess',null);
+ if(sb)out.push({k:'OSA (ngừng thở khi ngủ)',src:'stopbang',r:sb,conf:'Cao (sàng lọc)',missing:null});
+ // Tâm thần
+ const p9=HH('res_phq9',null),g7=HH('res_gad7',null);
+ if(p9)out.push({k:'Trầm cảm — screening',src:'phq9',r:p9,conf:'Cao (sàng lọc)',missing:null,extra:p9.extra});
+ if(g7)out.push({k:'Lo âu — screening',src:'gad7',r:g7,conf:'Cao (sàng lọc)',missing:null});
+ // HA — chỉ từ đo thực
+ if(bpS!=null&&bpD!=null){const lv=bpS>=180||bpD>=120?'high':(bpS>=140||bpD>=90)?'mod':'low';
+  out.push({k:'Huyết áp',src:'esc',r:{score:bpS+'/'+bpD,label:bpS>=180||bpD>=120?'Tăng HA độ 3 — cần đánh giá y khoa sớm':bpS>=140||bpD>=90?'Tăng HA (≥140/90) — theo dõi & khám':'Trong giới hạn tham chiếu',stratum:lv},conf:'Cao (đo trực tiếp)',missing:'Đo nhiều lần cùng khung giờ để kết luận.'});}
+ else missing.push('Huyết áp (cần máy đo ngoài)');
+ // CKD-EPI nếu có creatinine
+ if(HLABS.cr!=null&&HPF.age&&HPF.sex){const female=HPF.sex==='f';
+  const k=female?0.7:0.9, a=female?-0.241:-0.302;
+  let e=142*Math.pow(Math.min(HLABS.cr/k,1),a)*Math.pow(Math.max(HLABS.cr/k,1),-1.200)*Math.pow(0.9938,HPF.age)*(female?1.012:1);
+  const lv=e>=90?'low':e>=60?'low':e>=45?'mod':'high';
+  out.push({k:'eGFR (CKD-EPI 2021)',src:'ckd',r:{score:e.toFixed(0)+' ml/min/1.73m²',label:e>=90?'Bình thường':e>=60?'Giảm nhẹ/nhóm G2':'eGFR <60 — cần đánh giá thận',stratum:lv},conf:'Cao',missing:'Xác nhận bằng xét nghiệm lặp lại.'});}
+ // FIB-4
+ if(HLABS.ast&&HLABS.alt&&HLABS.plt&&HPF.age){const f=HPF.age*HLABS.ast/(HLABS.plt*Math.sqrt(HLABS.alt));
+  out.push({k:'Xơ gan (FIB-4)',src:'fib4',r:{score:f.toFixed(2),label:f<1.3?'Nguy cơ xơ gan thấp':f<2.67?'Vùng trung gian':'Nguy cơ cao — cần đánh giá chuyên sâu',stratum:f<1.3?'low':f<2.67?'mod':'high'},conf:'Cao',missing:'FIB-4 dùng cho ≥35 tuổi.'});}
+ // ASCVD gate
+ out.push({k:'ASCVD / QRISK3 / Framingham',src:null,r:{score:'—',label:'GATED — MODEL NOT CALIBRATED FOR THIS POPULATION',stratum:'na'},conf:'—',missing:'Cần: TC, HDL, HA đo thực, ĐTĐ, hút thuốc — VÀ recalibration cho ngườI Việt trước khi hiển thị con số.'});
+ return{out,missing};}
+function hrenderRisk(){const e=hcomputeEngine();
+ let h=e.out.map(o=>`<div class="card riskCard" style="border-left-color:${({low:'#16a34a',mod:'#d97706',high:'#dc2626',na:'#94a3b8'})[o.r.stratum]}">
+  <div class="rc-top"><span class="rc-name">${o.k}</span><span class="pill ${({low:'p-low',mod:'p-mod',high:'p-high',na:'p-na'})[o.r.stratum]}">${o.r.label.split(' — ')[0]}</span></div>
+  ${o.r.label.includes('—')||o.r.label.length>28?`<div class="mini" style="margin-top:4px">${o.r.label}</div>`:''}
+  ${o.extra?`<div class="flagW" style="margin:6px 0 0">${o.extra}</div>`:''}
+  <div class="evi">Độ tin cậy: <b>${o.conf}</b>${o.missing?' · Thiếu: '+o.missing:''}</div>
+  ${o.src?`<div class="evi">📚 ${HEV[o.src].n}<br>DOI: <b>${HEV[o.src].d}</b> · Population: ${HEV[o.src].pop}</div>`:''}
+ </div>`).join('');
+ if(e.missing.length)h+=`<div class="disc">Dữ liệu còn thiếu: ${e.missing.join(' · ')} — hệ thống không suy đoán.</div>`;
+ $('#hriskOut').innerHTML=h||'<div class="empty">Chưa có dữ liệu sàng lọc.</div>';}
+/* ================= DASH + AI ================= */
+function hrenderDash(){const e=hcomputeEngine();
+ const doneN=e.out.filter(o=>o.src).length;
+ $('#hdashKpi').innerHTML=`<div class="k"><b>${doneN}</b><span>BỘ SÀNG LỌC</span></div><div class="k"><b>${HMEAS.length}</b><span>LẦN ĐO</span></div><div class="k"><b>${Object.values(HLABS).filter(v=>v!=null).length}/9</b><span>CHỈ SỐ XÉT NGHIỆM</span></div>`;
+ $('#hdashRisk').innerHTML='<b style="font-size:.86rem">Tín hiệu cần chú ý</b>'+ (e.out.filter(o=>o.r.stratum==='high'||o.r.stratum==='mod').map(o=>`<div class="mini" style="margin-top:5px">• <b>${o.k}:</b> ${o.r.label}</div>`).join('')||'<div class="mini" style="margin-top:5px">Không có tín hiệu bất thường từ dữ liệu hiện có.</div>');}
+function hrunAIExplain(){const e=hcomputeEngine();
+ let h='<div class="card aiOut"><h4>🤖 AI Explanation Layer (guardrailed)</h4>';
+ h+='<div class="mini" style="margin-bottom:6px">AI chỉ diễn giải kết quả đã tính bởi engine — không tự sinh số liệu. Mọi nhận định truy ngược evidenceId.</div>';
+ if(!e.out.length)h+='<p>Không đủ dữ liệu → <b>UNKNOWN</b>. Hãy hoàn thành ít nhất một bộ sàng lọc.</p>';
+ e.out.forEach(o=>{h+=`<h4>▸ ${o.k}</h4><p>${o.r.label}. Độ tin cậy: ${o.conf}.`+(o.missing?' Thiếu dữ liệu: '+o.missing:'')+'</p>';});
+ if(e.missing.length)h+=`<h4>▸ Dữ liệu còn thiếu</h4><p>${e.missing.join('; ')}. Hệ thống tuân thủ nguyên tắc: không suy đoán khi thiếu dữ liệu.</p>`;
+ h+='<h4>▸ Bước tiếp theo</h4><p>Mang báo cáo này trao đổi với bác sĩ/tá khám định kỳ. Duy trì đo chỉ số đều đặn cùng khung giờ.</p>';
+ h+='<div class="mini">Safety: mọi red flag được kiểm tra trước khi hiển thị · Disclaimer: không chẩn đoán.</div></div>';
+ $('#haiBox').innerHTML=h;
+ $('#haiBox').scrollIntoView({behavior:'smooth'});}
+/* ================= REPORT ================= */
+function hmakeReport(){const e=hcomputeEngine();
+ let h=`<h1>AI HEALTH SCAN — Wellness & Screening Report</h1><div class="sm">${new Date().toLocaleString('vi-VN')} · Build v1.0-AUDIT · Dữ liệu on-device</div>`;
+ h+='<h2>1. Hồ sơ</h2><table><tr><th>Tuổi</th><td>'+nd(HPF.age)+'</td><th>Giới</th><td>'+(HPF.sex==='f'?'Nữ':HPF.sex==='m'?'Nam':'—')+'</td></tr><tr><th>Cao/nặng</th><td>'+nd(HPF.h)+' cm / '+nd(HPF.w)+' kg</td><th>BMI</th><td>'+(HPF.h&&HPF.w?(HPF.w/Math.pow(HPF.h/100,2)).toFixed(1):'—')+'</td></tr></table>';
+ h+='<h2>2. Kết quả sàng lọc & tín hiệu</h2><table><tr><th>Hạng mục</th><th>Kết quả</th><th>Độ tin cậy</th></tr>'+e.out.map(o=>`<tr><td>${o.k}</td><td>${o.r.label}</td><td>${o.conf}</td></tr>`).join('')+'</table>';
+ h+='<h2>3. Evidence Registry</h2><ol class="sm">'+Object.values(HEV).map(v=>`<li>${v.n} — DOI:${v.d} [${v.lvl}] pop: ${v.pop}</li>`).join('')+'</ol>';
+ h+='<h2>4. Hạn chế</h2><p class="sm">Mô hình ASCVD/QRISK3 chưa hiệu chuẩn cho ngườI Việt Nam (GATED). iPhone/Watch không đo HA-glucose-lab. Sàng lọc ≠ chẩn đoán. This report does not diagnose, treat, cure, or prevent any disease.</p>';
+ let el=$('#hprintArea');if(!el){el=document.createElement('div');el.id='printArea';document.body.appendChild(el)}
+ el.innerHTML=h;setTimeout(()=>window.print(),200);}
+/* ================= CONSENT ================= */
+function hacceptConsent(){HHS('consent','1');$('#hconsent').style.display='none';}
+function hsInit(){if(HH('consent',null)!=='1'){var c=$('#hconsent');if(c)c.style.display='flex';}hrenderDash();}
+if(document.readyState!=='loading')hsInit();else document.addEventListener('DOMContentLoaded',hsInit);
+
 </script>
+<div id="hconsent" style="display:none"><div class="box card">
+ <div style="text-align:center;font-size:2rem">🩺</div>
+ <b style="display:block;text-align:center;font-family:Georgia,serif;letter-spacing:.06em">AI HEALTH SCAN</b>
+ <div class="sub" style="text-align:center;margin:6px 0 10px">Wellness & Evidence-Based Screening</div>
+ <div class="disc">Ứng dụng này: (1) theo dõi chỉ số sức khỏe của bạn; (2) chạy các <b>bộ câu hỏi sàng lọc đã được nghiên cứu kiểm chứng</b> (PHQ-9, GAD-7, STOP-BANG, ESS, FINDRISC, ADA); (3) tính toán nguy cơ bằng <b>công thức y khoa công bố</b> kèm trích dẫn. Ứng dụng <b>KHÔNG</b> chẩn đoán bệnh, không đo huyết áp/glucose/xét nghiệm, không thay thế bác sĩ. Mọi dữ liệu chỉ lưu trên thiết bị của bạn.</div>
+ <button class="btn teal" style="width:100%" onclick="acceptConsent()">✓ Tôi hiểu và đồng ý</button>
+ <div style="height:6px"></div>
+ <button class="btn" style="width:100%" onclick="localStorage.setItem('hs_consent','0')">Không đồng ý</button>
+</div></div>
+
+
 </body>
 </html>
