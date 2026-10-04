@@ -1558,9 +1558,9 @@ if(document.readyState!=='loading')hsInit();else document.addEventListener('DOMC
  <b style="display:block;text-align:center;font-family:Georgia,serif;letter-spacing:.06em">AI HEALTH SCAN</b>
  <div class="sub" style="text-align:center;margin:6px 0 10px">Wellness & Evidence-Based Screening</div>
  <div class="disc">Ứng dụng này: (1) theo dõi chỉ số sức khỏe của bạn; (2) chạy các <b>bộ câu hỏi sàng lọc đã được nghiên cứu kiểm chứng</b> (PHQ-9, GAD-7, STOP-BANG, ESS, FINDRISC, ADA); (3) tính toán nguy cơ bằng <b>công thức y khoa công bố</b> kèm trích dẫn. Ứng dụng <b>KHÔNG</b> chẩn đoán bệnh, không đo huyết áp/glucose/xét nghiệm, không thay thế bác sĩ. Mọi dữ liệu chỉ lưu trên thiết bị của bạn.</div>
- <button class="btn teal" style="width:100%" onclick="acceptConsent()">✓ Tôi hiểu và đồng ý</button>
+ <button class="btn teal" style="width:100%" onclick="hacceptConsent()">✓ Tôi hiểu và đồng ý</button>
  <div style="height:6px"></div>
- <button class="btn" style="width:100%" onclick="localStorage.setItem('hs_consent','0')">Không đồng ý</button>
+ <button class="btn" style="width:100%" onclick="localStorage.setItem('hs_consent','0');document.getElementById('hconsent').style.display='none'">Không đồng ý</button>
 </div></div>
 
 
