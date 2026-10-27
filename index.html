@@ -8426,13 +8426,13 @@ try{window.GUACI64=GUACI64;}catch(e){}
   var message=String(reason&&reason.message||reason||'Unknown error').slice(0,240);
   var source=String(ev.filename||'').split(/[?#]/)[0].split('/').pop();
   var where=source?(source+':'+(ev.lineno||0)+':'+(ev.colno||0)):'';
-  var module=window.KD_LOADING_MODULE545||'';if(module)where=module+(where?' · '+where:'');var diagnostic={version:'4.11.632',kind:kind,message:message,location:where,stack:String(reason&&reason.stack||'')};window.KD_LAST_ERROR373=diagnostic;
+  var module=window.KD_LOADING_MODULE545||'';if(module)where=module+(where?' · '+where:'');var build=(document.querySelector('meta[name="kd-build"]')||{}).content||'4.11.830';var diagnostic={version:build,kind:kind,message:message,location:where,stack:String(reason&&reason.stack||'')};window.KD_LAST_ERROR373=diagnostic;
   console.error('[KD 4.11.545]',reason||message,where);
   try{
    var vi=window.S_ICHING_LANGUAGE==='vi';
    if(!box){box=document.createElement('div');box.id='kd373Error';box.setAttribute('role','alert');box.setAttribute('data-english-user-content','');box.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(100px + env(safe-area-inset-bottom));z-index:150;background:#30171b;border:1px solid #ad665e;color:#ffe9e4;padding:14px;border-radius:14px;font:600 15px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;box-sizing:border-box;max-height:50vh;overflow:auto;box-shadow:0 8px 30px #0006';document.body.appendChild(box);}
    box.textContent='';
-   var title=document.createElement('strong');title.textContent=vi?'Lỗi thao tác · 4.11.632':'Action error · 4.11.616';box.appendChild(title);
+   var title=document.createElement('strong');title.textContent=vi?'Lỗi thao tác · '+build:'Action error · '+build;box.appendChild(title);
    var code=document.createElement('pre');code.setAttribute('data-english-user-content','');code.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;font:500 13px/1.5 ui-monospace,monospace;margin:8px 0';code.textContent=message+(where?'\n'+where:'');box.appendChild(code);
    var hint=document.createElement('p');hint.style.cssText='margin:8px 0;font-size:13px';hint.textContent=vi?'Chụp lại dòng lỗi trên để xác định nguyên nhân.':'Capture the error above so its cause can be identified.';box.appendChild(hint);
    var close=document.createElement('button');close.type='button';close.textContent=vi?'Đóng':'Dismiss';close.style.cssText='min-height:44px;padding:8px 16px;border:1px solid #b8857b;border-radius:9px;background:transparent;color:inherit;font:inherit';close.addEventListener('click',function(){box.style.display='none';});box.appendChild(close);
