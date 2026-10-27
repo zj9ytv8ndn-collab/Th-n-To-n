@@ -111,7 +111,7 @@ window.addEventListener('load',function(){
   try{
    var active=document.querySelector('.screen.active');
    var tabs=document.querySelectorAll('#tabs .tab');
-   var ok=active&&active.innerHTML.trim().length>100&&tabs.length>=5&&document.getElementById('app')&&window.__KD_DATA_OK!==false;
+   var ok=active&&active.innerHTML.trim().length>100&&tabs.length>=1&&document.getElementById('app')&&window.__KD_DATA_OK!==false;
    if(!ok&&window.__KD_DATA_OK!==false&&++_wdTries<3){setTimeout(_wdCheck,3000);return;}
    if(!ok){
     var dataErr=(typeof window.__KD_DATA_OK!=='undefined'&&window.__KD_DATA_OK===false);
