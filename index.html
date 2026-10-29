@@ -127,7 +127,7 @@ body{background-image:radial-gradient(ellipse at 90% 0%,rgba(191,165,112,.12),tr
 #splashMystic,#mysticBg,#stars{display:none!important}
 #app{display:grid!important;max-width:none!important;width:100%!important;margin:0!important;grid-template-columns:258px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);min-height:100vh;background:transparent!important;color:var(--ink)!important}
 #kd359Topbar{grid-column:1/-1;grid-row:1;position:sticky;top:0;z-index:70;min-height:78px;padding:12px 30px!important;background:#f9f6ed!important;border:0!important;border-bottom:1px solid var(--line)!important;box-shadow:0 3px 14px rgba(35,50,41,.06)}
-#menuBtn{display:none!important}#kd359Bagua,.kd361-diagram{display:none!important}.kd363-brand{margin-left:0!important}.kd359-wordmark{align-items:flex-start!important;text-align:left!important;color:var(--forest)!important}.kd359-wordmark strong{font-size:0!important;letter-spacing:.12em!important}.kd359-wordmark strong:after{content:"VIỆN NGHIÊN CỨU HUYỀN HỌC  ·  HỒ SƠ 01";font:700 16px/1.25 Georgia,serif!important;letter-spacing:.14em!important;color:var(--forest)!important}.kd359-wordmark small{font:12px/1.4 Georgia,serif!important;color:#7b6847!important;letter-spacing:.04em}
+#menuBtn{display:none!important}#kd359Bagua,.kd361-diagram{display:none!important}.kd363-brand{margin-left:0!important}.kd359-wordmark{align-items:flex-start!important;text-align:left!important;color:var(--forest)!important}.kd359-wordmark strong{font-size:0!important;letter-spacing:.12em!important}.kd359-wordmark strong:after{content:"VIỆN NGHIÊN CỨU HUYỀN HỌC";font:700 16px/1.25 Georgia,serif!important;letter-spacing:.14em!important;color:var(--forest)!important}.kd359-wordmark small{font:12px/1.4 Georgia,serif!important;color:#7b6847!important;letter-spacing:.04em}
 #kd359Current{font-size:0!important}#kd359Current:after{content:"Văn bản · Phương pháp · Lịch sử";font:12px/1.4 Georgia,serif!important;color:#7b6847!important;letter-spacing:.04em}
 #uiGear{color:var(--forest)!important;background:#eee7d7!important;border:1px solid var(--line)!important;border-radius:50%!important}
 #tabs{grid-column:1;grid-row:2;width:258px!important;max-width:258px!important;position:sticky!important;top:78px!important;align-self:start;height:calc(100vh - 78px)!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;gap:4px!important;padding:24px 15px 28px!important;box-sizing:border-box;background:var(--forest)!important;border:0!important;border-radius:0!important;color:#f5f0e4!important;box-shadow:5px 0 18px rgba(23,41,33,.12)}
@@ -167,6 +167,35 @@ input,select,textarea{background:#fffdf7!important;color:var(--ink)!important;bo
 #scr-hdlt .kd361-intro:before{content:"THƯ VIỆN ĐỒ HÌNH  /  HÀ ĐỒ LẠC THƯ"}
 @media(max-width:780px){#app{display:flex!important;flex-direction:column!important}#kd359Topbar{min-height:64px;padding:10px 15px!important}#menuBtn{display:flex!important;color:var(--forest)!important;background:#eee7d7!important;border:1px solid var(--line)!important;border-radius:7px!important}#tabs{position:fixed!important;z-index:100;top:0!important;left:0;bottom:0;width:min(84vw,310px)!important;height:100dvh!important;transform:translateX(-105%);transition:transform .22s ease;box-shadow:10px 0 28px rgba(0,0,0,.22)}body.menu-open #tabs,#tabs.open{transform:translateX(0)}#menuBack{display:block!important;position:fixed;inset:0;z-index:90;background:rgba(22,31,27,.44);opacity:0;pointer-events:none}body.menu-open #menuBack,#menuBack.open{opacity:1;pointer-events:auto;background:rgba(22,31,27,.55)!important}#app>main{padding:23px 16px 60px!important;width:100%!important}.card{padding:18px!important}.kd359-wordmark strong:after{font-size:13px!important}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style><style id="research-phone-layout-fix">
+html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}
+#app,main,.screen{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+@media(max-width:700px){
+ #app{grid-template-columns:minmax(0,1fr)!important;width:100vw!important;overflow-x:hidden!important}
+ #kd359Topbar{width:100%!important;min-width:0!important;gap:9px!important;overflow:hidden!important}
+ .kd359-wordmark{flex:1 1 auto!important;min-width:0!important;max-width:calc(100vw - 122px)!important;overflow:hidden!important}
+ .kd359-wordmark strong:after{display:block!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;font-size:12px!important;line-height:1.25!important;letter-spacing:.07em!important}
+ .kd359-wordmark small,#kd359Current:after{display:block!important;white-space:normal!important;font-size:11px!important;line-height:1.3!important}
+ #uiGear{flex:0 0 44px!important;width:44px!important;height:44px!important}
+ #app>main{width:100%!important;max-width:100%!important;margin:0!important;padding:20px 15px 54px!important;overflow-x:hidden!important}
+ .screen{width:100%!important;padding:0 0 28px!important}
+ .kd361-intro{width:100%!important;margin-bottom:18px!important;padding-bottom:16px!important}
+ .kd361-intro h1{font-size:27px!important;line-height:1.16!important;overflow-wrap:anywhere!important}
+ .kd361-intro p{font-size:15px!important;line-height:1.6!important}
+ .card{width:100%!important;max-width:100%!important;margin:12px 0!important;padding:16px!important;overflow:hidden!important;box-sizing:border-box!important}
+ .card h2{font-size:19px!important;line-height:1.3!important;letter-spacing:0!important}
+ .card h3{font-size:16px!important}
+ .card p,.card li,.card td{font-size:15px!important;line-height:1.6!important;overflow-wrap:anywhere!important}
+ .table-wrap{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+ .table-wrap table{display:block!important;width:100%!important;min-width:0!important;border-collapse:separate!important}
+ .table-wrap thead{display:none!important}
+ .table-wrap tbody,.table-wrap tr{display:block!important;width:100%!important}
+ .table-wrap tr{margin:0 0 13px!important;padding:10px 12px!important;border:1px solid var(--line)!important;border-left:3px solid var(--brass)!important;border-radius:7px!important;background:#fffdf7!important}
+ .table-wrap td{display:block!important;width:100%!important;padding:5px 0!important;border:0!important;text-align:left!important}
+ .table-wrap td:first-child{padding-bottom:8px!important;color:var(--forest)!important;font-weight:700!important;font-size:16px!important}
+ #kd373Error{left:12px!important;right:12px!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;max-height:55dvh!important;background:#351b1d!important;color:#fff4ef!important;border:2px solid #b76e65!important}
+ #kd373Error p,#kd373Error strong,#kd373Error pre,#kd373Error button{color:#fff4ef!important;font-size:14px!important;line-height:1.5!important}
+}
 </style></head><body><noscript><div style="padding:10px;background:#20152f;color:#efd67a;text-align:center;font:14px sans-serif">Mở bằng trình duyệt hỗ trợ JavaScript để sử dụng các nút và phép tính.</div></noscript><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <radialGradient id="bqGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="35%" stop-color="#c9a227" stop-opacity=".32"/><stop offset="68%" stop-color="#7b4bd6" stop-opacity=".16"/><stop offset="100%" stop-color="#0a0e1a" stop-opacity="0"/></radialGradient>
 <linearGradient id="bqAur" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7fe8da"/><stop offset="30%" stop-color="#6fb7ff"/><stop offset="62%" stop-color="#b79ae8"/><stop offset="100%" stop-color="#f2a2c0"/></linearGradient>
@@ -383,8 +412,8 @@ H4sIAAAAAAACA5VYfW/bxhn/35/igYeE0nSmxCSy9UYHidMmRWp3KdwimSAYFEXzGFNHijq5Vl0DCYKh
    box.style.display='block';clearTimeout(timer);timer=setTimeout(function(){box.style.display='none';},30000);
   }catch(reportError){console.error('[KD report]',reportError);}
  }
- window.addEventListener('error',function(ev){report(ev,'script');return false;});
- window.addEventListener('unhandledrejection',function(ev){report(ev,'promise');ev.preventDefault();});
+ window.addEventListener('error',function(ev){var loc=(ev.filename||'tập lệnh')+':'+(ev.lineno||0)+':'+(ev.colno||0);report(ev,loc);return false;});
+ window.addEventListener('unhandledrejection',function(ev){var e=ev.reason||ev,loc=(e&&e.stack)||'lời hứa bị từ chối';report(e,loc);ev.preventDefault();});
 })();
 </script>
 
