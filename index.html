@@ -753,7 +753,8 @@ var failed=tests.filter(function(x){return !x.ok}),report={version:'33',scope:'s
 window.HUYEN_CO_V33={relation:rel,judge:judge,narrative:narrative,validation:report};window.HUYEN_CO_MODULES=window.HUYEN_CO_MODULES||{};window.HUYEN_CO_MODULES.subjectObjectUse={version:'33',judge:judge,narrative:narrative,run:function(){return report}};window.HUYEN_CO_VALIDATION=window.HUYEN_CO_VALIDATION||{};window.HUYEN_CO_VALIDATION.v33=report;if(!report.ok)console.warn('[HUYEN CO v33 subject/object/use]',report);else console.info('[HUYEN CO v33 subject/object/use] PASS',report);
 })();
 </script>
-\n<script id="huyenco-v34-transition-timing">
+
+<script id="huyenco-v34-transition-timing">
 (function(){
 'use strict';
 function safe(fn,d){try{return fn()}catch(e){return d}}
@@ -1043,6 +1044,49 @@ function audit(rs){var issues=[],keys=new Set(),counts={verified:0,'needs-source
 var report=audit(batch);window.HUYEN_CO_V46={batch:batch,get:function(h,l){return IDX[h+':'+l]||null},validation:report,sources:SRC};window.HUYEN_CO_VALIDATION=window.HUYEN_CO_VALIDATION||{};window.HUYEN_CO_VALIDATION.v46=report;if(report.pass)console.info('[HUYEN CO v46] SOURCE INTEGRITY PASS',report);else console.warn('[HUYEN CO v46]',report);
 })();
 </script>
+
+<script id="ios-result-render-fix-v48-2">
+(function(){
+  function $(id){return document.getElementById(id)}
+  function safeText(id,v){var e=$(id); if(e)e.textContent=v==null?'':String(v)}
+  function bind(){
+    var btn=$('cast'), result=$('result');
+    if(!btn||!result)return;
+    btn.onclick=function(){
+      var q=$('question').value.trim();
+      if(!q){$('question').focus();return}
+      try{
+        var topic=$('topic').value, seed=nowSeed(q), c=cast(seed), lr=littleRen(), pl=plum(), bu=bodyUse(pl), ch=changedHex(c), hu=mutualHex(c.h);
+        var cx=consensusEngine(topic,c,lr,bu), s=cx.score, v=verdictOf(s), it=interpret(topic,c,lr,pl,bu,s);
+        try{it=finalDeepInterpret(topic,c,ch,bu,it)||it}catch(_e){}
+        var intent=null; try{intent=intentLayer(topic,q,c,ch)}catch(_e){}
+        safeText('qEcho',q); safeText('verdict',v[0]); safeText('hexTitle','Quẻ '+c.h.id+' · '+c.h.name+' · '+c.h.lower+' dưới / '+c.h.upper+' trên'); safeText('trend',v[1]);
+        var sig=$('signals'); if(sig)sig.innerHTML='<div class="signal"><b>64 QUẺ</b><span>'+c.h.name+(c.moving.length?' · động '+c.moving.join(','):' · tĩnh')+'</span></div><div class="signal"><b>TIỂU LỤC NHÂM</b><span>'+lr+'</span></div><div class="signal"><b>MAI HOA</b><span>'+pl.upperName+' / '+pl.lowerName+' · động '+pl.move+'</span></div>';
+        safeText('changed',c.moving.length?'Quẻ biến: '+ch.id+' · '+ch.name+'. Hỗ quẻ: '+hu.id+' · '+hu.name+'. Đọc quẻ chủ là hiện trạng, quẻ biến là hướng chuyển và hỗ quẻ là diễn biến bên trong.':'Quẻ tĩnh: '+c.h.name+'. Hỗ quẻ: '+hu.id+' · '+hu.name+'. Trọng tâm là giữ thế và kiểm chứng điều kiện thực tế.');
+        safeText('summary',(s>=72?'Thế hiện tại khá thuận: có thể tiến nhưng vẫn cần kiểm chứng từng bước.':s>=58?'Có cửa thành; nên tiến có kiểm soát, chưa nên xem là chắc chắn.':s>=43?'Cát hung xen nhau; cách làm và thời điểm quan trọng hơn việc ép một đáp án tuyệt đối.':s>=30?'Thế chưa thuận; nên giảm cam kết và sửa điểm yếu trước khi tiến mạnh.':'Bất lợi đang nổi trội; ưu tiên tránh hao tổn và xem lại tiền đề của việc hỏi.')+' '+(typeof consensusText==='function'?consensusText(cx):''));
+        var intentLabel=intent&&intent.intent&&intent.intent.label?intent.intent.label:'Trọng tâm câu hỏi';
+        var decision=''; try{decision=questionDecision(topic,intent.intent,c,ch,cx)}catch(_e){}
+        safeText('deep',intentLabel+': '+decision+' '+(intent&&intent.text?intent.text+' ':'')+it.depth);
+        safeText('bodyUse',(intent&&intent.yong?'Dụng thần ưu tiên: '+intent.yong+'. ':'')+'Thể: '+bu.body+' ('+bu.be+') · Dụng: '+bu.use+' ('+bu.ue+') · Quan hệ: '+bu.r+'. '+bu.meaning+'.');
+        var ly=''; try{ly=liuYaoSummary(c,ch)+' '+liuYaoDetail(topic,c,ch)+' '+transformationText(c)}catch(_e){ly=lineFocus(c)} safeText('liuYao',ly);
+        var sy=''; try{sy=shiYingText(c,topic)}catch(_e){sy='Thế–Ứng được dùng như lớp tham chiếu cho chủ thể và đối tượng của câu hỏi.'} safeText('shiYing',sy);
+        var tm=''; try{tm=timingNarrative(topic,c)}catch(_e){tm='Ứng kỳ chỉ nên đọc như nhịp tham khảo; không coi là ngày giờ chắc chắn.'} safeText('timingText',tm);
+        var pr=''; try{pr=progressionNarrative(topic,c,ch)}catch(_e){pr='Theo dõi sự chuyển từ '+c.h.name+' sang '+ch.name+' và kiểm chứng bằng diễn biến thực tế.'} safeText('progressText',pr);
+        safeText('gainloss',it.gain); safeText('action',it.act); safeText('risk',it.risk);
+        result.classList.remove('hidden'); result.style.display='block';
+        setTimeout(function(){result.scrollIntoView({behavior:'smooth',block:'start'})},30);
+      }catch(err){
+        console.error('[HUYEN CO render fix]',err);
+        safeText('qEcho',q); safeText('verdict','CHƯA THỂ LUẬN'); safeText('hexTitle','Lỗi hiển thị kết quả đã được chặn');
+        safeText('summary','Bộ gieo quẻ đã nhận câu hỏi nhưng một lớp luận giải phát sinh lỗi: '+(err&&err.message?err.message:String(err))+'.');
+        result.classList.remove('hidden'); result.style.display='block';
+      }
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+})();
+</script>
+
 </body></html><script id="huyenco-v28-scenario-fixtures">
 (function(){
 'use strict';
@@ -1212,7 +1256,8 @@ var failed=tests.filter(function(x){return !x.ok}),report={version:'38',scope:'3
 window.HUYEN_CO_V38={STATUS:STATUS,records:RECORDS,get:get,setVerified:setVerified,markNeedsSource:markNeedsSource,stats:stats,validation:report};M.lineKnowledgeV38={version:'38',get:get,records:RECORDS,run:function(){return report}};window.HUYEN_CO_VALIDATION=window.HUYEN_CO_VALIDATION||{};window.HUYEN_CO_VALIDATION.v38=report;if(!report.ok)console.warn('[HUYEN CO v38]',report);else console.info('[HUYEN CO v38] PASS',report);
 })();
 </script>
-\n<script id="huyenco-v41-source-data-1-3">
+
+<script id="huyenco-v41-source-data-1-3">
 (function(){
 'use strict';
 var BASE=(window.HUYEN_CO_V39&&Array.isArray(window.HUYEN_CO_V39.batch))?window.HUYEN_CO_V39.batch:[];
