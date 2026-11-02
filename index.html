@@ -131,7 +131,16 @@ const BRANCH_ORDER=['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','
 const HARM={Tý:'Mùi',Mùi:'Tý',Sửu:'Ngọ',Ngọ:'Sửu',Dần:'Tỵ',Tỵ:'Dần',Mão:'Thìn',Thìn:'Mão',Thân:'Hợi',Hợi:'Thân',Dậu:'Tuất',Tuất:'Dậu'};
 const PUNISH_GROUPS=[['Dần','Tỵ','Thân'],['Sửu','Tuất','Mùi'],['Tý','Mão'],['Thìn'],['Ngọ'],['Dậu'],['Hợi']];
 const THREE_HARMONY=[['Thân','Tý','Thìn'],['Hợi','Mão','Mùi'],['Dần','Ngọ','Tuất'],['Tỵ','Dậu','Sửu']];
-function transformedLines(c){let ch=changedHex(c),base=najiaLines(c.h),next=najiaLines(ch),z=calendarLayer(c);return c.moving.map(pos=>{let a=base.lines[pos-1],b=next.lines[pos-1],tags=[],delta=0;if(!a||!b)return null;let ae=a.element,be=b.element;if(GENERATES[be]===ae){delta+=2;tags.push('hồi đầu sinh')}if(CONTROLS[be]===ae){delta-=3;tags.push('hồi đầu khắc')}if(GENERATES[ae]===be){delta+=1;tags.push('động sinh biến')}if(CONTROLS[ae]===be){delta-=1;tags.push('động khắc biến')}let ai=BRANCH_ORDER.indexOf(a.branch),bi=BRANCH_ORDER.indexOf(b.branch);if(ai>=0&&bi>=0&&ae===be){let d=(bi-ai+12)%12;if(d>0&&d<=3){delta+=1;tags.push('hóa tiến')}else if(d>=9){delta-=1;tags.push('hóa thoái')}}if(z.voids.includes(b.branch)){delta-=1;tags.push('hóa Không · chờ xuất không/điền thực')}if(BRANCH_CLASH[monthBranch(c&&c.date?new Date(c.date):new Date())]===b.branch){delta-=1;tags.push('hóa Nguyệt phá · chờ thực phá/xuất nguyệt')}if(BRANCH_COMBINE[a.branch]===b.branch){delta+=1;tags.push('động hóa hợp')}if(BRANCH_CLASH[a.branch]===b.branch){delta-=1;tags.push('động hóa xung')}if(HARM[a.branch]===b.branch){delta-=1;tags.push('lục hại')}if(PUNISH_GROUPS.some(g=>g.includes(a.branch)&&g.includes(b.branch)&&a.branch!==b.branch)){delta-=1;tags.push('hình')}return {pos,from:a,to:b,delta,tags}}).filter(Boolean)}
+// 增刪卜易 · 進神退神章: only these explicit branch transformations count as 進/退神.
+const ADVANCE_PAIRS=new Set(['Hợi>Tý','Dần>Mão','Tỵ>Ngọ','Thân>Dậu','Sửu>Thìn','Thìn>Mùi','Mùi>Tuất','Tuất>Sửu']);
+const RETREAT_PAIRS=new Set(['Tý>Hợi','Mão>Dần','Ngọ>Tỵ','Dậu>Thân','Thìn>Sửu','Mùi>Thìn','Tuất>Mùi','Sửu>Tuất']);
+// 十二長生 used conservatively here only for 化絕. 土 follows 水 (寄生於申) in this profile.
+const ABSOLUTE_BRANCH={Mộc:'Thân',Hỏa:'Hợi',Thổ:'Tỵ',Kim:'Dần',Thủy:'Tỵ'};
+function transformClassicalState(a,b){
+ const key=`${a.branch}>${b.branch}`;
+ return {advance:ADVANCE_PAIRS.has(key),retreat:RETREAT_PAIRS.has(key),absolute:ABSOLUTE_BRANCH[a.element]===b.branch};
+}
+function transformedLines(c){let ch=changedHex(c),base=najiaLines(c.h),next=najiaLines(ch),z=calendarLayer(c);return c.moving.map(pos=>{let a=base.lines[pos-1],b=next.lines[pos-1],tags=[],delta=0;if(!a||!b)return null;let ae=a.element,be=b.element;if(GENERATES[be]===ae){delta+=2;tags.push('hồi đầu sinh')}if(CONTROLS[be]===ae){delta-=3;tags.push('hồi đầu khắc')}if(GENERATES[ae]===be){delta+=1;tags.push('động sinh biến')}if(CONTROLS[ae]===be){delta-=1;tags.push('động khắc biến')}let ts=transformClassicalState(a,b);if(ts.advance){delta+=1;tags.push('hóa tiến')}if(ts.retreat){delta-=1;tags.push('hóa thoái')}if(ts.absolute){delta-=2;tags.push('hóa Tuyệt · cần xét vượng suy và cứu giải')}if(z.voids.includes(b.branch)){delta-=1;tags.push('hóa Không · chờ xuất không/điền thực')}if(BRANCH_CLASH[monthBranch(c&&c.date?new Date(c.date):new Date())]===b.branch){delta-=1;tags.push('hóa Nguyệt phá · chờ thực phá/xuất nguyệt')}if(BRANCH_COMBINE[a.branch]===b.branch){delta+=1;tags.push('động hóa hợp')}if(BRANCH_CLASH[a.branch]===b.branch){delta-=1;tags.push('động hóa xung')}if(HARM[a.branch]===b.branch){delta-=1;tags.push('lục hại')}if(PUNISH_GROUPS.some(g=>g.includes(a.branch)&&g.includes(b.branch)&&a.branch!==b.branch)){delta-=1;tags.push('hình')}return {pos,from:a,to:b,delta,tags,classicalTransform:ts}}).filter(Boolean)}
 function harmonyLayer(c){let branches=najiaLines(c.h).lines.map(x=>x.branch),active=c.moving.map(p=>branches[p-1]),groups=THREE_HARMONY.filter(g=>g.every(b=>branches.includes(b)));return {groups,active}}
 function transformationAdjustment(c){let t=transformedLines(c),n=t.reduce((a,x)=>a+x.delta,0);return Math.max(-8,Math.min(8,n))}
 function transformationText(c){let t=transformedLines(c),h=harmonyLayer(c);if(!t.length)return 'Quẻ tĩnh, không có hào động để xét hóa tiến/thoái hay hồi đầu sinh khắc.';let a=t.map(x=>`hào ${x.pos}: ${x.from.stem}${x.from.branch} → ${x.to.stem}${x.to.branch}${x.tags.length?' · '+x.tags.join(', '):''}`).join('; ');let g=h.groups.length?` Có cấu trúc tam hợp ${h.groups.map(x=>x.join('–')).join('; ')} trong địa chi quẻ; chỉ dùng như tín hiệu phụ khi đủ điều kiện.`:'';return `Biến hóa hào động: ${a}.${g}`}
@@ -218,7 +227,7 @@ const INTENT_YONG={feelings:'Thê Tài / Quan Quỷ',reconcile:'Thê Tài / Quan
 function detectIntent(topic,q){let rows=INTENT_RULES[topic]||[];for(let r of rows)if(r[1].test(q))return {id:r[0],label:r[2]};return {id:topic,label:(document.querySelector('#topic option:checked')||{}).textContent||topic}}
 function intentNarrative(intent,topic,c,ch){let map={reconcile:'Trọng tâm không phải chỉ còn tình cảm hay không, mà là nguyên nhân chia cách đã được tháo gỡ chưa. Quẻ biến được dùng để đọc khả năng nối lại sau khi điều kiện cũ thay đổi.',marriage:'Ưu tiên xem tính ổn định, sự tương ứng giữa hai phía và khả năng hình thành cam kết lâu dài; một tín hiệu cát ngắn hạn chưa tự động đồng nghĩa sẽ kết hôn.',feelings:'Tách cảm xúc hiện tại khỏi khả năng hành động. Có tình cảm nhưng thế yếu hoặc nhiều trở lực vẫn có thể dẫn đến chậm tiến.',thirdparty:'Chỉ xem đây là dấu hiệu cạnh tranh hoặc tác nhân xen vào, không dùng quẻ để khẳng định một người cụ thể ngoại tình.',job:'Ưu tiên Quan Quỷ và thế của bản thân; kết quả thuận cần đồng thời có cơ hội và khả năng nắm được cơ hội.',promotion:'Xem thế chức vị, sự nâng đỡ và trở lực nội bộ; thuận lợi phải có dấu hiệu vị trí được củng cố chứ không chỉ tài vận tốt.',quit:'Đặt trọng tâm vào lợi-hại của việc rời vị trí hiện tại và sức của phương án thay thế.',invest:'Ưu tiên bảo toàn vốn, Thê Tài và mức rủi ro; quẻ không thay thế phân tích tài chính thực tế.',debt:'Phân biệt khả năng thu hồi/trả nợ với thời điểm; tín hiệu chậm không đồng nghĩa mất hẳn.',sale:'Xem khả năng giao dịch thành, điều kiện giá và bên đối ứng; không coi một quẻ cát là bảo đảm giá tốt.',contract:'Ưu tiên giấy tờ, điều khoản và lợi ích thực nhận; cần kiểm chứng hợp đồng ngoài đời.',object:'Đọc theo dấu hiệu còn/mất, gần/xa và trở ngại tìm kiếm; không khẳng định vị trí chính xác nếu tín hiệu không đủ.',person:'Chỉ dùng như tham khảo định hướng tìm kiếm; trường hợp mất tích phải ưu tiên cơ quan chức năng.',legal:'Không dùng quẻ thay tư vấn pháp lý; phần luận chỉ mô tả thế thuận-nghịch và khả năng thương lượng.',when:'Ứng kỳ được trình bày thành cửa sổ thời gian tương đối, không hứa ngày giờ chắc chắn.'};return map[intent.id]||'Luận theo đúng đối tượng của câu hỏi, ưu tiên tín hiệu trực tiếp liên quan thay vì suy rộng từ một quẻ cát/hung chung.'}
 function intentLayer(topic,q,c,ch){let i=detectIntent(topic,q);return {intent:i,yong:INTENT_YONG[i.id]||TOPIC_YONG[topic]||'Dụng thần theo sự việc',text:intentNarrative(i,topic,c,ch)}}
-document.getElementById('cast').onclick=()=>{try{let q=document.getElementById('question').value.trim();if(!q){document.getElementById('question').focus();return}let topic=document.getElementById('topic').value,seed=nowSeed(q),c=cast(seed),lr=littleRen(),pl=plum(),bu=bodyUse(pl),ch=changedHex(c),hu=mutualHex(c.h),intent=intentLayer(topic,q,c,ch),s0=score(c,lr,bu),cx=consensusEngine(topic,c,lr,bu),s=cx.score,v=verdictOf(s),it=interpret(topic,c,lr,pl,bu,s);it=finalDeepInterpret(topic,c,ch,bu,it);el_qEcho.textContent=q;el_verdict.textContent=v[0];el_hexTitle.textContent=`Quẻ ${c.h.id} · ${c.h.name} · ${c.h.lower} dưới / ${c.h.upper} trên`;el_trend.textContent=v[1];el_signals.innerHTML=`<div class="signal"><b>64 QUẺ</b><span>${c.h.name}${c.moving.length?' · động '+c.moving.join(','): ' · tĩnh'}</span></div><div class="signal"><b>TIỂU LỤC NHÂM</b><span>${lr}</span></div><div class="signal"><b>MAI HOA</b><span>${pl.upperName} / ${pl.lowerName} · động ${pl.move}</span></div>`;el_changed.textContent=c.moving.length?`Quẻ biến: ${ch.id} · ${ch.name}. Hỗ quẻ: ${hu.id} · ${hu.name}. Quẻ chủ phản ánh thế ban đầu; quẻ biến dùng để đọc hướng chuyển; hỗ quẻ là lớp diễn biến bên trong.`:`Quẻ tĩnh: ${c.h.name}. Hỗ quẻ: ${hu.id} · ${hu.name}. Trọng tâm là giữ thế và kiểm chứng điều kiện thực tế.`;el_summary.textContent=(s>=72?'Thế hiện tại khá thuận: có thể tiến, nhưng vẫn cần kiểm chứng từng bước.':s>=58?'Có cửa thành và đáng để tiến có kiểm soát; lợi thế chưa tuyệt đối.':s>=43?'Cát hung xen nhau; cách làm và thời điểm quan trọng hơn việc cố lấy một đáp án tuyệt đối.':s>=30?'Thế chưa thuận; giảm cam kết và sửa điểm yếu trước khi tiến mạnh.':'Bất lợi đang nổi trội; ưu tiên tránh hao tổn và xem lại tiền đề của việc hỏi.')+' '+consensusText(cx);el_deep.textContent=`${intent.intent.label}: ${questionDecision(topic,intent.intent,c,ch,cx)} ${intent.text} ${it.depth}`;el_bodyUse.textContent=`Dụng thần ưu tiên: ${intent.yong}. `+`Thể: ${bu.body} (${bu.be}) · Dụng: ${bu.use} (${bu.ue}) · Quan hệ: ${bu.r}. ${bu.meaning}.`;el_liuYao.textContent=liuYaoSummary(c,ch)+' '+liuYaoDetail(topic,c,ch)+' '+transformationText(c);el_shiYing.textContent=shiYingText(c,topic);el_timingText.textContent=timingNarrative(topic,c);el_progressText.textContent=progressionNarrative(topic,c,ch);el_gainloss.textContent=it.gain;el_action.textContent=decisionChecklist(topic,intent.intent,c,cx)+' '+it.act;el_risk.textContent=it.risk;el_result.classList.remove('hidden');el_result.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){console.error('[HUYEN CO render]',err); el_result.classList.remove('hidden'); el_verdict.textContent='Không thể tạo luận giải'; el_summary.textContent='Lỗi nội bộ khi dựng kết quả: '+(err&&err.message?err.message:String(err)); el_result.scrollIntoView({behavior:'smooth',block:'start'});}};
+document.getElementById('cast').onclick=()=>{try{let q=document.getElementById('question').value.trim();if(!q){document.getElementById('question').focus();return}let topic=document.getElementById('topic').value,seed=nowSeed(q),c=Object.assign(cast(seed),{question:q}),lr=littleRen(),pl=plum(),bu=bodyUse(pl),ch=changedHex(c),hu=mutualHex(c.h),intent=intentLayer(topic,q,c,ch),s0=score(c,lr,bu),cx=consensusEngine(topic,c,lr,bu),s=cx.score,v=verdictOf(s),it=interpret(topic,c,lr,pl,bu,s);it=finalDeepInterpret(topic,c,ch,bu,it);el_qEcho.textContent=q;el_verdict.textContent=v[0];el_hexTitle.textContent=`Quẻ ${c.h.id} · ${c.h.name} · ${c.h.lower} dưới / ${c.h.upper} trên`;el_trend.textContent=v[1];el_signals.innerHTML=`<div class="signal"><b>64 QUẺ</b><span>${c.h.name}${c.moving.length?' · động '+c.moving.join(','): ' · tĩnh'}</span></div><div class="signal"><b>TIỂU LỤC NHÂM</b><span>${lr}</span></div><div class="signal"><b>MAI HOA</b><span>${pl.upperName} / ${pl.lowerName} · động ${pl.move}</span></div>`;el_changed.textContent=c.moving.length?`Quẻ biến: ${ch.id} · ${ch.name}. Hỗ quẻ: ${hu.id} · ${hu.name}. Quẻ chủ phản ánh thế ban đầu; quẻ biến dùng để đọc hướng chuyển; hỗ quẻ là lớp diễn biến bên trong.`:`Quẻ tĩnh: ${c.h.name}. Hỗ quẻ: ${hu.id} · ${hu.name}. Trọng tâm là giữ thế và kiểm chứng điều kiện thực tế.`;el_summary.textContent=(s>=72?'Thế hiện tại khá thuận: có thể tiến, nhưng vẫn cần kiểm chứng từng bước.':s>=58?'Có cửa thành và đáng để tiến có kiểm soát; lợi thế chưa tuyệt đối.':s>=43?'Cát hung xen nhau; cách làm và thời điểm quan trọng hơn việc cố lấy một đáp án tuyệt đối.':s>=30?'Thế chưa thuận; giảm cam kết và sửa điểm yếu trước khi tiến mạnh.':'Bất lợi đang nổi trội; ưu tiên tránh hao tổn và xem lại tiền đề của việc hỏi.')+' '+consensusText(cx);el_deep.textContent=`${intent.intent.label}: ${questionDecision(topic,intent.intent,c,ch,cx)} ${intent.text} ${it.depth}`;el_bodyUse.textContent=`Dụng thần ưu tiên: ${intent.yong}. `+`Thể: ${bu.body} (${bu.be}) · Dụng: ${bu.use} (${bu.ue}) · Quan hệ: ${bu.r}. ${bu.meaning}.`;el_liuYao.textContent=liuYaoSummary(c,ch)+' '+liuYaoDetail(topic,c,ch)+' '+transformationText(c)+(window.HUYEN_CO_V73_SIX_SPIRITS?' '+window.HUYEN_CO_V73_SIX_SPIRITS.sixSpiritNarrative(topic,c):'');el_shiYing.textContent=shiYingText(c,topic)+(window.HUYEN_CO_V74_SHI_YING?' '+window.HUYEN_CO_V74_SHI_YING.shiYingNarrative(topic,c):'')+(window.HUYEN_CO_V75_INTERVENING?' '+window.HUYEN_CO_V75_INTERVENING.interveningLinesNarrative(topic,c):'');el_timingText.textContent=timingNarrative(topic,c);el_progressText.textContent=progressionNarrative(topic,c,ch)+(window.HUYEN_CO_V76_INTENT_POLARITY?' '+window.HUYEN_CO_V76_INTENT_POLARITY.intentHarmonyClashNarrative(topic,c):'');el_gainloss.textContent=it.gain;el_action.textContent=decisionChecklist(topic,intent.intent,c,cx)+' '+it.act;el_risk.textContent=it.risk;el_result.classList.remove('hidden');el_result.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){console.error('[HUYEN CO render]',err); el_result.classList.remove('hidden'); el_verdict.textContent='Không thể tạo luận giải'; el_summary.textContent='Lỗi nội bộ khi dựng kết quả: '+(err&&err.message?err.message:String(err)); el_result.scrollIntoView({behavior:'smooth',block:'start'});}};
 // HuyenCo export moved below INTENT_TREE initialization to avoid Safari/WKWebView TDZ crash.
 
 
@@ -463,4 +472,810 @@ function run(){
 try{run();}catch(e){window.HUYEN_CO_FIXTURE_V63={version:'v63',pass:false,errors:[String(e&&e.message||e)]};}
 })();
 </script>
+
+<script id="transform-fixture-v64">
+(()=>{
+'use strict';
+function run(){
+ const errors=[];
+ const advance=[['Hợi','Tý'],['Dần','Mão'],['Tỵ','Ngọ'],['Thân','Dậu'],['Sửu','Thìn'],['Thìn','Mùi'],['Mùi','Tuất'],['Tuất','Sửu']];
+ const retreat=[['Tý','Hợi'],['Mão','Dần'],['Ngọ','Tỵ'],['Dậu','Thân'],['Thìn','Sửu'],['Mùi','Thìn'],['Tuất','Mùi'],['Sửu','Tuất']];
+ for(const [a,b] of advance){const x=transformClassicalState({branch:a,element:BRANCH_ELEMENT[a]},{branch:b,element:BRANCH_ELEMENT[b]});if(!x.advance||x.retreat)errors.push(`advance ${a}>${b}`);}
+ for(const [a,b] of retreat){const x=transformClassicalState({branch:a,element:BRANCH_ELEMENT[a]},{branch:b,element:BRANCH_ELEMENT[b]});if(!x.retreat||x.advance)errors.push(`retreat ${a}>${b}`);}
+ // Regression: old circular-distance heuristic falsely called these progression/regression.
+ for(const [a,b] of [['Tý','Dần'],['Mão','Tỵ'],['Dậu','Hợi'],['Hợi','Dậu']]){const x=transformClassicalState({branch:a,element:BRANCH_ELEMENT[a]},{branch:b,element:BRANCH_ELEMENT[b]});if(x.advance||x.retreat)errors.push(`false progression ${a}>${b}`);}
+ const jue={Mộc:'Thân',Hỏa:'Hợi',Thổ:'Tỵ',Kim:'Dần',Thủy:'Tỵ'};
+ for(const [el,br] of Object.entries(jue)){const x=transformClassicalState({branch:'Tý',element:el},{branch:br,element:BRANCH_ELEMENT[br]});if(!x.absolute)errors.push(`absolute ${el}>${br}`);}
+ const base=window.HUYEN_CO_FIXTURE_V63||{};
+ window.HUYEN_CO_FIXTURE_V64={version:'v64',pass:errors.length===0&&base.pass!==false,advanceCases:advance.length,retreatCases:retreat.length,absoluteCases:Object.keys(jue).length,baseV63Pass:base.pass!==false,errors:[...(base.errors||[]),...errors],fixes:['Replaced circular branch-distance heuristic with explicit 進神/退神 pairs','Added conservative 化絕 detection by the moving line element','Kept 回頭生/回頭克, 化空 and 化月破 as separate transformation evidence']};
+ return window.HUYEN_CO_FIXTURE_V64;
+}
+try{run();}catch(e){window.HUYEN_CO_FIXTURE_V64={version:'v64',pass:false,errors:[String(e&&e.message||e)]};}
+})();
+</script>
+<script id="v65-use-god-flying-hidden-fix">
+/* v65: primary 用神 selection + 飛伏神 layer. No DOM mutation. */
+const V65_PRIMARY_BY_INTENT={
+ job:'Quan Quỷ',promotion:'Quan Quỷ',quit:'Quan Quỷ',partner:'Thê Tài',
+ invest:'Thê Tài',debt:'Thê Tài',sale:'Thê Tài',contract:'Phụ Mẫu',
+ object:'Thê Tài',move:'Phụ Mẫu',trip:'Thế',legal:'Quan Quỷ',deal:'Ứng'
+};
+const V65_PRIMARY_BY_TOPIC={study:'Phụ Mẫu',health:'Thế',work:'Quan Quỷ',money:'Thê Tài',lost:'Thê Tài',dispute:'Quan Quỷ',travel:'Thế'};
+function v65Intent(topic,c){try{return detectIntent(topic,(c&&c.question)||'')}catch(e){return {id:topic}}}
+function v65PrimaryTargets(topic,c){
+ const it=v65Intent(topic,c),fixed=V65_PRIMARY_BY_INTENT[it.id]||V65_PRIMARY_BY_TOPIC[topic];
+ if(fixed)return [fixed];
+ // Love cannot choose 妻財 vs 官鬼 without the querent/relationship role; retain both rather than inventing gender.
+ if(topic==='love')return ['Thê Tài','Quan Quỷ'];
+ if(topic==='general'||topic==='timing')return ['Thế'];
+ return ['Thế'];
+}
+function v65FlyingHidden(topic,c,relation){
+ if(relation==='Thế'||relation==='Ứng')return null;
+ const n=najiaLines(c.h),visible=n.lines.filter(x=>x.relation===relation);
+ if(visible.length)return null;
+ const pi=palaceInfo(c.h),pure=HEX.find(h=>h.lower===pi.palace&&h.upper===pi.palace);
+ if(!pure)return null;
+ const root=najiaLines(pure),hidden=root.lines.find(x=>x.relation===relation);
+ if(!hidden)return null;
+ const flying=n.lines.find(x=>x.pos===hidden.pos)||null;
+ let relationToFlying='bình';
+ if(flying){
+   if(GENERATES[flying.element]===hidden.element)relationToFlying='Phi sinh Phục';
+   else if(CONTROLS[flying.element]===hidden.element)relationToFlying='Phi khắc Phục';
+   else if(GENERATES[hidden.element]===flying.element)relationToFlying='Phục sinh Phi';
+   else if(CONTROLS[hidden.element]===flying.element)relationToFlying='Phục khắc Phi';
+   else if(hidden.element===flying.element)relationToFlying='đồng hành';
+ }
+ return {relation,pos:hidden.pos,hidden:Object.assign({},hidden),flying,relationToFlying,palace:pi.palace};
+}
+function v65CandidateScore(x,c,z){
+ const p=linePower(x,c,z); let bonus=0;
+ if((c.moving||[]).includes(x.pos))bonus+=1.25;
+ if(x.pos===z.sy.shi)bonus+=0.5;
+ return {line:Object.assign({},x,{power:p}),rank:p.score+bonus};
+}
+function targetLines(topic,c){
+ const ly=hiddenLiuYao(topic,c),z=calendarLayer(c),wanted=v65PrimaryTargets(topic,c),cands=[];
+ wanted.forEach(rel=>{
+   if(rel==='Thế'){const x=ly.najia.lines.find(a=>a.pos===z.sy.shi);if(x)cands.push(v65CandidateScore(x,c,z));return}
+   if(rel==='Ứng'){const x=ly.najia.lines.find(a=>a.pos===z.sy.ying);if(x)cands.push(v65CandidateScore(x,c,z));return}
+   ly.najia.lines.filter(a=>a.relation===rel).forEach(x=>cands.push(v65CandidateScore(x,c,z)));
+ });
+ if(!cands.length){const x=ly.najia.lines.find(a=>a.pos===z.sy.shi);if(x)cands.push(v65CandidateScore(x,c,z));}
+ cands.sort((a,b)=>b.rank-a.rank||a.line.pos-b.line.pos);
+ return cands.map(x=>x.line);
+}
+function classicalLayer(topic,c){
+ const z=calendarLayer(c),wanted=v65PrimaryTargets(topic,c),targets=targetLines(topic,c),main=targets[0]||null;
+ const avg=main?main.power.score:0,roles=main?spiritRoles(z.sy.element,main.element):null;
+ const hidden=wanted.map(r=>v65FlyingHidden(topic,c,r)).filter(Boolean);
+ const level=avg>=4?'vượng':avg>=2?'khá vượng':avg>=0?'trung bình':avg>=-2?'suy':'rất suy';
+ return {z,targets,avg,main,roles,level,month:monthBranch(c&&c.date?new Date(c.date):new Date()),primaryTargets:wanted,hiddenSpirits:hidden};
+}
+window.HUYEN_CO_V65={primaryTargets:v65PrimaryTargets,flyingHidden:v65FlyingHidden};
+if(window.HuyenCo){window.HuyenCo.targetLines=targetLines;window.HuyenCo.classicalLayer=classicalLayer;window.HuyenCo.v65UseGod=window.HUYEN_CO_V65;}
+</script>
+<script id="v65-use-god-fixture">
+(function(){
+ const errors=[];
+ const dummy={h:HEX.find(h=>h.id===44),moving:[],lines:[],question:'công việc mới có được nhận không?',date:new Date('2026-11-01T12:00:00')};
+ if(v65PrimaryTargets('work',dummy)[0]!=='Quan Quỷ')errors.push('job primary use god');
+ const pure=HEX.filter(h=>h.lower===h.upper);
+ for(const h of pure){const n=najiaLines(h);if(n.lines.length!==6)errors.push('pure najia '+h.id);}
+ // Search all 64 hexagrams: whenever a requested 六親 is absent, hidden lookup must either resolve from palace root or remain explicitly null.
+ const rels=['Phụ Mẫu','Huynh Đệ','Tử Tôn','Thê Tài','Quan Quỷ']; let checked=0,resolved=0;
+ for(const h of HEX){const c={h,moving:[],lines:[],date:new Date('2026-11-01T12:00:00')},n=najiaLines(h);
+   for(const r of rels)if(!n.lines.some(x=>x.relation===r)){checked++;const f=v65FlyingHidden('general',c,r);if(f){resolved++;if(f.pos<1||f.pos>6||!f.flying)errors.push('bad hidden '+h.id+' '+r);}}
+ }
+ window.HUYEN_CO_V65_FIXTURE={ok:errors.length===0,errors,checkedMissing:checked,resolvedHidden:resolved};
+})();
+</script>
+<script id="v66-hidden-spirit-strength-fix">
+/* v66: 伏神有用/無用 evaluator based on the six useful and five unusable conditions in 增刪卜易. Data/engine only; no DOM mutation. */
+const V66_TOMB={Mộc:'Mùi',Hỏa:'Tuất',Thổ:'Thìn',Kim:'Sửu',Thủy:'Thìn'};
+const V66_ABSOLUTE={Mộc:'Thân',Hỏa:'Hợi',Thổ:'Tỵ',Kim:'Dần',Thủy:'Tỵ'};
+function v66BranchSupports(srcBranch,targetEl){const e=BRANCH_ELEMENT[srcBranch];return e===targetEl||GENERATES[e]===targetEl}
+function v66BranchAttacks(srcBranch,targetEl){return CONTROLS[BRANCH_ELEMENT[srcBranch]]===targetEl}
+function v66MovingSupport(c,targetEl){
+ const n=najiaLines(c.h);return (c.moving||[]).some(p=>{const x=n.lines[p-1];return x&&(x.element===targetEl||GENERATES[x.element]===targetEl)})
+}
+function v66MovingAttacksFlying(c,flying){
+ if(!flying)return false;const n=najiaLines(c.h);return (c.moving||[]).some(p=>{const x=n.lines[p-1];return x&&(CONTROLS[x.element]===flying.element||BRANCH_CLASH[x.branch]===flying.branch)})
+}
+function v66HiddenStatus(topic,c,relation){
+ const fh=v65FlyingHidden(topic,c,relation);if(!fh)return null;
+ const z=calendarLayer(c),h=fh.hidden,f=fh.flying,mb=monthBranch(z.date),db=z.gz.branch;
+ const hp=linePower(Object.assign({},h,{pos:fh.pos}),c,z),fp=f?linePower(f,c,z):null;
+ const useful=[],blocked=[];
+ // 六有用
+ if(v66BranchSupports(mb,h.element)||v66BranchSupports(db,h.element))useful.push('Phục thần được Nhật/Nguyệt sinh trợ');
+ if(((SEASON_POWER[mb]||{})[h.element]||0)>=1)useful.push('Phục thần vượng/tướng theo Nguyệt lệnh');
+ if(f&&GENERATES[f.element]===h.element)useful.push('Phi thần sinh Phục');
+ if(v66MovingSupport(c,h.element))useful.push('được động hào sinh trợ');
+ if(f&&(BRANCH_CLASH[mb]===f.branch||BRANCH_CLASH[db]===f.branch||v66MovingAttacksFlying(c,f)))useful.push('Nhật/Nguyệt/động hào xung khắc Phi thần');
+ if(f&&fp&&(fp.temporal.voided||fp.temporal.monthBreak||fp.score<=-1||V66_TOMB[f.element]===f.branch||V66_ABSOLUTE[f.element]===f.branch))useful.push('Phi thần suy/Không/Phá/Mộ/Tuyệt, sức đè giảm');
+ // 五無用
+ if(((SEASON_POWER[mb]||{})[h.element]||0)<=-1&&!v66BranchSupports(db,h.element))blocked.push('Phục thần hưu tù, ít khí');
+ if(v66BranchAttacks(mb,h.element)||v66BranchAttacks(db,h.element)||BRANCH_CLASH[mb]===h.branch||BRANCH_CLASH[db]===h.branch)blocked.push('Phục thần bị Nhật/Nguyệt xung khắc');
+ if(f&&CONTROLS[f.element]===h.element&&fp&&fp.score>=1)blocked.push('Phi thần vượng khắc Phục');
+ if(V66_TOMB[h.element]===mb||V66_TOMB[h.element]===db||(f&&V66_TOMB[h.element]===f.branch)||V66_ABSOLUTE[h.element]===mb||V66_ABSOLUTE[h.element]===db||(f&&V66_ABSOLUTE[h.element]===f.branch))blocked.push('Phục thần gặp Mộ/Tuyệt ở Nhật/Nguyệt/Phi');
+ if(hp.temporal.voided&&hp.temporal.monthBreak&&((SEASON_POWER[mb]||{})[h.element]||0)<=0)blocked.push('Phục thần tù, đồng thời Không và Nguyệt Phá');
+ let score=useful.length-blocked.length;
+ // Direct 飛克伏 is serious unless there is explicit rescue.
+ if(f&&CONTROLS[f.element]===h.element&&fp&&fp.score>=1)score-=1;
+ const state=score>=2?'hữu dụng':score<=-2?'khó dụng':'có điều kiện';
+ return Object.assign({},fh,{hiddenPower:hp,flyingPower:fp,useful,blocked,score,state});
+}
+// Replace classicalLayer so an absent primary 用神 is represented by its 伏神 instead of silently falling back to 世爻.
+function classicalLayer(topic,c){
+ const z=calendarLayer(c),wanted=v65PrimaryTargets(topic,c),visible=targetLines(topic,c),hidden=wanted.map(r=>v66HiddenStatus(topic,c,r)).filter(Boolean);
+ const hasPrimaryVisible=wanted.some(r=>r==='Thế'||r==='Ứng'||najiaHasRelation(c.h,r));
+ let targets=visible,main=visible[0]||null,mainHidden=null,avg=main?main.power.score:0;
+ if(!hasPrimaryVisible&&hidden.length){hidden.sort((a,b)=>b.score-a.score);mainHidden=hidden[0];main=null;targets=[];avg=mainHidden.score;}
+ const useEl=main?main.element:(mainHidden?mainHidden.hidden.element:null),roles=useEl?spiritRoles(z.sy.element,useEl):null;
+ const level=avg>=4?'vượng':avg>=2?'khá vượng':avg>=0?'trung bình':avg>=-2?'suy':'rất suy';
+ return {z,targets,avg,main,mainHidden,roles,level,month:monthBranch(z.date),primaryTargets:wanted,hiddenSpirits:hidden};
+}
+function najiaHasRelation(h,rel){return najiaLines(h).lines.some(x=>x.relation===rel)}
+window.HUYEN_CO_V66={hiddenStatus:v66HiddenStatus};
+if(window.HuyenCo){window.HuyenCo.classicalLayer=classicalLayer;window.HuyenCo.v66HiddenSpirit=window.HUYEN_CO_V66;}
+</script>
+<script id="v66-hidden-spirit-fixture">
+(function(){
+ const errors=[];let cases=0,classified=0;
+ for(const h of HEX){const c={h,moving:[],date:new Date('2026-11-01T12:00:00Z')},n=najiaLines(h);for(const r of ['Phụ Mẫu','Huynh Đệ','Tử Tôn','Thê Tài','Quan Quỷ'])if(!n.lines.some(x=>x.relation===r)){cases++;const x=v66HiddenStatus('general',c,r);if(x){classified++;if(!['hữu dụng','có điều kiện','khó dụng'].includes(x.state))errors.push('state '+h.id+' '+r);if(!x.hidden||!x.flying)errors.push('missing phi/fu '+h.id+' '+r);}}}
+ // A visible relation must not be misreported as hidden.
+ for(const h of HEX.slice(0,8)){const n=najiaLines(h),r=n.lines[0].relation;if(v66HiddenStatus('general',{h,moving:[],date:new Date('2026-11-01T12:00:00Z')},r)!==null)errors.push('visible treated hidden '+h.id);}
+ const base=window.HUYEN_CO_V65_FIXTURE||{};
+ window.HUYEN_CO_V66_FIXTURE={ok:errors.length===0&&base.ok!==false,errors:[...(base.errors||[]),...errors],missingCases:cases,classifiedHidden:classified,fixes:['Evaluates the six useful and five unusable 伏神 conditions','A missing primary 用神 can now become the actual hidden main target instead of silently falling back to 世爻','Separates Phi/Phuc support, suppression and rescue evidence for later verdict logic']};
+})();
+</script>
+<script id="v67-priority-verdict-fix">
+/* v67: priority verdict engine. 用神/root first; 元/忌/仇 and transformations modify it. Mai Hoa / Xiao Liu Ren only cross-check. */
+function v67RelationLines(c,element){return najiaLines(c.h).lines.filter(x=>x.element===element)}
+function v67BestPower(lines,c,z){if(!lines.length)return null;return lines.map(x=>({line:x,p:linePower(x,c,z)})).sort((a,b)=>b.p.score-a.p.score)[0]}
+function v67RoleForce(c,z,roles){
+ if(!roles)return {origin:0,killer:0,enemy:0,notes:[]};
+ const out={origin:0,killer:0,enemy:0,notes:[]};
+ for(const k of ['origin','killer','enemy']){
+  const el=roles[k]; if(!el)continue; const best=v67BestPower(v67RelationLines(c,el),c,z); if(!best)continue;
+  const moving=(c.moving||[]).includes(best.line.pos), effective=best.p.score+(moving?1:0);
+  out[k]=effective; if(moving||Math.abs(best.p.score)>=2)out.notes.push(`${k}:${el} ${effective>=0?'+':''}${effective}${moving?' động':''}`);
+ }
+ return out;
+}
+function v67MainTransform(c,main){if(!main)return null;return transformedLines(c).find(x=>x.pos===main.pos)||null}
+function v67UseRoot(cl){
+ if(cl.mainHidden){let s=cl.mainHidden.score;return {score:s*3,root:s>=2?'rooted':s<=-2?'rootless':'conditional',notes:[`Phục thần ${cl.mainHidden.state}`]};}
+ if(!cl.main)return {score:-9,root:'rootless',notes:['không xác định được Dụng thần']};
+ const p=cl.main.power, st=p.temporal||{}, notes=[]; let score=p.score*2;
+ if(st.monthBreak&&!st.breakRelief){score-=3;notes.push('Dụng thần Nguyệt Phá');}
+ if(st.voided&&!st.voidFilled){score-=2;notes.push('Dụng thần Tuần Không');}
+ if(st.dayClash&&!st.voidFilled){notes.push('Dụng thần gặp Nhật xung');}
+ const root=score>=4?'rooted':score<=-4?'rootless':'conditional';return {score,root,notes};
+}
+function v67LiuYaoPriority(topic,c){
+ const cl=classicalLayer(topic,c),base=v67UseRoot(cl),rf=v67RoleForce(c,cl.z,cl.roles),tr=v67MainTransform(c,cl.main);
+ let raw=base.score,notes=[...base.notes];
+ // 元神 only helps if the 用神 has some root; a rootless 用神 cannot be rescued mechanically.
+ if(rf.origin>0){if(base.root==='rootless'){raw+=1;notes.push('Nguyên thần có lực nhưng Dụng thần vô căn, cứu lực hạn chế');}else{raw+=Math.min(5,Math.max(1,rf.origin));notes.push('Nguyên thần có lực sinh Dụng');}}
+ if(rf.killer>0){raw-=Math.min(6,Math.max(2,rf.killer+1));notes.push('Kỵ thần có lực khắc Dụng');}
+ if(rf.enemy>1&&rf.killer>0){raw-=2;notes.push('Cừu thần trợ Kỵ');}
+ if(tr){raw+=tr.delta; if(tr.tags.length)notes.push(...tr.tags.map(x=>'Dụng '+x));}
+ // Direct moving lines that generate/control the main 用神 matter more than static background lines.
+ if(cl.main){for(const p of (c.moving||[])){const x=najiaLines(c.h).lines[p-1];if(!x||x.pos===cl.main.pos)continue;if(GENERATES[x.element]===cl.main.element){raw+=2;notes.push(`hào ${p} động sinh Dụng`);}if(CONTROLS[x.element]===cl.main.element){raw-=3;notes.push(`hào ${p} động khắc Dụng`);}}}
+ raw=clamp(Math.round(raw),-20,20);let dir=raw>=5?1:raw<=-5?-1:0;
+ return {name:'Lục Hào',raw,dir,strength:Math.abs(raw),detail:notes.slice(0,6).join('; ')||`Dụng thần ${cl.level}`,classical:cl,root:base.root,roleForce:rf,mainTransform:tr};
+}
+function liuYaoEvidence(topic,c){return v67LiuYaoPriority(topic,c)}
+function consensusEngine(topic,c,lr,bu){
+ const ly=liuYaoEvidence(topic,c),mh=maiHoaEvidence(bu),xl=littleRenEvidence(lr),secondary=[mh,xl];
+ const agree=secondary.filter(x=>x.dir&&x.dir===ly.dir).length,oppose=secondary.filter(x=>x.dir&&ly.dir&&x.dir===-ly.dir).length,secondaryAgreement=mh.dir&&mh.dir===xl.dir;
+ // Lục Hào verdict is primary. Secondary systems can shade confidence/score, but cannot mechanically overturn a clear rooted/rootless verdict.
+ let weighted=50+ly.raw*1.55+mh.raw*.12+xl.raw*.06;
+ if(ly.dir===1&&weighted<56)weighted=56;if(ly.dir===-1&&weighted>44)weighted=44;
+ let confidence=54+Math.min(25,ly.strength)+agree*6-oppose*9+(secondaryAgreement?3:0);if(!ly.dir)confidence-=9;
+ confidence=clamp(Math.round(confidence),28,93);weighted=clamp(Math.round(weighted),12,90);
+ const status=oppose===2?'xung đột mạnh':oppose===1?'có tín hiệu trái chiều':agree===2?'đồng thuận cao':agree===1?'đồng thuận vừa':'chưa đồng thuận';
+ const note=oppose===2?'Hai phép phụ trái chiều với Lục Hào; hạ độ chắc chắn nhưng không đảo máy móc kết luận chính.':oppose===1?'Có một lớp phụ trái chiều; ưu tiên Dụng thần và động biến của Lục Hào.':agree===2?'Ba lớp cùng hướng; Lục Hào vẫn là trục quyết định.':'Tín hiệu phụ chưa đồng nhất; kết luận lấy Lục Hào làm trục.';
+ return {score:weighted,confidence,status,note,ly,mh,xl};
+}
+window.HUYEN_CO_V67={liuYaoPriority:v67LiuYaoPriority,roleForce:v67RoleForce};
+if(window.HuyenCo){window.HuyenCo.liuYaoEvidence=liuYaoEvidence;window.HuyenCo.consensusEngine=consensusEngine;window.HuyenCo.v67PriorityVerdict=window.HUYEN_CO_V67;}
+</script>
+<script id="v67-priority-verdict-fixture">
+(function(){
+ const errors=[];
+ // Structural invariants: clear Lục Hào direction cannot be reversed solely by both secondary systems.
+ const oldMH=maiHoaEvidence,oldXL=littleRenEvidence;
+ for(const raw of [-15,-8,8,15]){const ly={raw,dir:raw>0?1:-1,strength:Math.abs(raw)};let w=50+ly.raw*1.55+(-10)*.12+(-9)*.06;if(ly.dir===1&&w<56)w=56;if(ly.dir===-1&&w>44)w=44;if(ly.dir===1&&w<50)errors.push('positive LY overturned');if(ly.dir===-1&&w>50)errors.push('negative LY overturned');}
+ // All 64 hexagrams must produce a finite priority result for a general query.
+ let checked=0;for(const h of HEX){const c={h,moving:[],question:'việc này có thuận lợi không?',date:new Date('2026-11-01T12:00:00Z')};const x=v67LiuYaoPriority('general',c);checked++;if(!Number.isFinite(x.raw)||![-1,0,1].includes(x.dir))errors.push('bad verdict '+h.id);}
+ const base=window.HUYEN_CO_V66_FIXTURE||{};
+ window.HUYEN_CO_V67_FIXTURE={ok:errors.length===0&&base.ok!==false,errors:[...(base.errors||[]),...errors],checked,fixes:['Use-god/root state is evaluated before supporting/opposing spirits','Strong Origin cannot mechanically rescue a rootless Use God','Active Killer/Enemy and direct moving-line attacks are prioritized','Mai Hoa and Xiao Liu Ren change confidence but cannot mechanically overturn a clear Liu Yao direction']};
+})();
+</script>
+<script id="v68-dual-use-god-fix">
+function v68VisibleCandidates(topic,c){const ly=hiddenLiuYao(topic,c),z=calendarLayer(c),wanted=v65PrimaryTargets(topic,c),out=[];for(const rel of wanted){if(rel==='Thế'){const x=ly.najia.lines.find(a=>a.pos===z.sy.shi);if(x)out.push(x);continue}if(rel==='Ứng'){const x=ly.najia.lines.find(a=>a.pos===z.sy.ying);if(x)out.push(x);continue}ly.najia.lines.filter(a=>a.relation===rel).forEach(x=>out.push(x))}return {ly,z,wanted,lines:out}}
+function v68CandidateState(x,c,z){const power=linePower(x,c,z),t=power.temporal||{},moving=(c.moving||[]).includes(x.pos),monthV=((SEASON_POWER[t.mb]||{})[x.element]||0);let injury=0,injuryTags=[];if(t.monthBreak&&!t.breakRelief){injury+=2;injuryTags.push('Nguyệt Phá')}if(t.voided&&!t.voidFilled){injury++;injuryTags.push('Tuần Không')}if(t.dayClash&&!t.voidFilled&&!moving){injury++;injuryTags.push('Nhật xung')}const tuple=[monthV>=1?1:0,moving?1:0,t.monthBreak&&!t.breakRelief?0:1,t.voided&&!t.voidFilled?0:1,injury===0?1:0,power.score];return {line:Object.assign({},x,{power}),moving,monthV,injury,injuryTags,tuple}}
+function v68Compare(a,b){for(let i=0;i<a.tuple.length;i++){if(a.tuple[i]!==b.tuple[i])return b.tuple[i]-a.tuple[i]}return a.line.pos-b.line.pos}
+function v68SelectUseGod(topic,c){const q=v68VisibleCandidates(topic,c),states=q.lines.map(x=>v68CandidateState(x,c,q.z)).sort(v68Compare);if(!states.length){const hidden=q.wanted.map(r=>v66HiddenStatus(topic,c,r)).filter(Boolean).sort((a,b)=>b.score-a.score);return {z:q.z,wanted:q.wanted,primary:null,secondary:[],hidden,mainHidden:hidden[0]||null,mode:hidden.length?'hidden':'missing',ambiguous:false,timing:[]}}const primary=states[0],secondary=states.slice(1),timing=secondary.filter(s=>s.power.temporal&&(s.power.temporal.voided||s.power.temporal.monthBreak)).map(s=>({pos:s.line.pos,relation:s.line.relation,reason:s.injuryTags.join('、')||'候時'}));return {z:q.z,wanted:q.wanted,primary,secondary,hidden:[],mainHidden:null,mode:states.length>1?'multiple-visible':'single-visible',ambiguous:secondary.length>0&&v68Compare(primary,secondary[0])===0,timing}}
+function targetLines(topic,c){const s=v68SelectUseGod(topic,c);return [s.primary,...s.secondary].filter(Boolean).map(x=>x.line)}
+function classicalLayer(topic,c){const s=v68SelectUseGod(topic,c),z=s.z,main=s.primary?s.primary.line:null,targets=[s.primary,...s.secondary].filter(Boolean).map(x=>x.line),mainHidden=s.mainHidden||null,avg=main?main.power.score:(mainHidden?mainHidden.score:0),useEl=main?main.element:(mainHidden?mainHidden.hidden.element:null),roles=useEl?spiritRoles(z.sy.element,useEl):null,level=avg>=4?'vượng':avg>=2?'khá vượng':avg>=0?'trung bình':avg>=-2?'suy':'rất suy';return {z,targets,avg,main,mainHidden,roles,level,month:monthBranch(z.date),primaryTargets:s.wanted,hiddenSpirits:s.hidden||[],dualUseGod:s}}
+window.HUYEN_CO_V68={selectUseGod:v68SelectUseGod,candidateState:v68CandidateState};if(window.HuyenCo){window.HuyenCo.targetLines=targetLines;window.HuyenCo.classicalLayer=classicalLayer;window.HuyenCo.v68DualUseGod=window.HUYEN_CO_V68}
+</script>
+<script id="v68-dual-use-god-fixture">
+(function(){const errors=[];let multi=0,checked=0;for(const h of HEX){const c={h,moving:[],question:'việc này có thuận lợi không?',date:new Date('2026-11-01T12:00:00Z')};for(const topic of ['money','work','love','general']){const s=v68SelectUseGod(topic,c);checked++;if(s.primary&&(!s.primary.line||!Number.isFinite(s.primary.line.power.score)))errors.push('bad primary '+h.id+' '+topic);if(s.secondary.length)multi++}}const a={line:{pos:1},tuple:[1,1,1,1,1,2]},b={line:{pos:2},tuple:[0,0,1,1,1,5]};if(v68Compare(a,b)>=0)errors.push('classical ordering failed');const base=window.HUYEN_CO_V67_FIXTURE||{};window.HUYEN_CO_V68_FIXTURE={ok:errors.length===0&&base.ok!==false,errors:[...(base.errors||[]),...errors],checked,multipleCases:multi,fixes:['dual/multiple Use God no longer selects only by aggregate power','classical priority: prosperous, moving, not broken, not void, not injured','alternate void/broken candidates retained for timing']}})();
+</script>
+<script id="timing-engine-v69">
+/* v69 應期 engine — rule candidates, not deterministic prediction.
+   Classical basis: 增刪卜易 各門類應期總注: 靜逢值沖、動逢合值、月破填合、旬空填沖、合待沖、進退逢值合/沖. */
+(function(){
+const B12=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+function uniq(a){return [...new Set(a.filter(Boolean))]}
+function v69TimingCandidates(topic,c){
+ const sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c), z=sel.z||calendarLayer(c), main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+ if(!main)return {main:null,candidates:[],notes:['Chưa xác định được Dụng thần đủ rõ để lập ứng kỳ.'],scale:'conditional'};
+ const st=lineTemporalState(main,c,z), moving=(c.moving||[]).includes(main.pos), out=[], notes=[];
+ function add(branch,reason,kind='candidate'){if(branch)out.push({branch,reason,kind})}
+ // General chapter: static -> value/clash; moving -> combine/value.
+ add(main.branch,moving?'Hào chủ động: chờ gặp trị nhật/trị nguyệt':'Hào chủ tĩnh: gặp trị là một mốc ứng');
+ add(moving?BRANCH_COMBINE[main.branch]:BRANCH_CLASH[main.branch],moving?'Hào động: gặp hợp là mốc cổ pháp':'Hào tĩnh: gặp xung có thể kích hoạt');
+ // Void: fill by value or clash; do not promise exact date.
+ if(st.voided&&!st.voidFilled){add(main.branch,'Tuần Không: gặp trị/điền thực','unlock');add(BRANCH_CLASH[main.branch],'Tuần Không: gặp xung để kích hoạt','unlock');notes.push('Dụng thần đang Tuần Không: ưu tiên chờ xuất Không/điền thực hoặc xung Không.')}
+ // Month break: fill or combine.
+ if(st.monthBreak){add(main.branch,'Nguyệt Phá: gặp trị để thực Phá','unlock');add(BRANCH_COMBINE[main.branch],'Nguyệt Phá: gặp hợp để giải Phá','unlock');notes.push('Dụng thần Nguyệt Phá: ưu tiên thực Phá hoặc phá mà gặp hợp.')}
+ // If held in combination, classical note says wait for clash to open.
+ if(BRANCH_COMBINE[z.gz.branch]===main.branch){add(BRANCH_CLASH[main.branch],'Dụng thần đang bị Nhật hợp: chờ xung khai','unlock');notes.push('Có trạng thái hợp trú: ứng kỳ thiên về lúc được xung khai.')}
+ // Transformation candidates for the main moving line.
+ const tr=transformedLines(c).find(x=>x.pos===main.pos);
+ if(tr){
+   add(tr.to.branch,'Biến hào: có thể ứng khi biến chi gặp trị','transform');
+   if(tr.classicalTransform&&tr.classicalTransform.advance)add(BRANCH_COMBINE[tr.to.branch],'Hóa Tiến: xét trị/hợp của tiến thần','transform');
+   if(tr.classicalTransform&&tr.classicalTransform.retreat)add(BRANCH_CLASH[tr.to.branch],'Hóa Thoái: xét trị/xung của thoái thần','transform');
+   if(z.voids.includes(tr.to.branch)){add(tr.to.branch,'Biến hào hóa Không: chờ xuất Không/điền thực','unlock');add(BRANCH_CLASH[tr.to.branch],'Biến hào hóa Không: gặp xung','unlock')}
+ }
+ // Multiple visible use-gods that are void/broken are retained as secondary timing anchors.
+ for(const x of (sel.timing||[])) {const ln=najiaLines(c.h).lines.find(y=>y.pos===x.pos); if(ln)add(ln.branch,`Dụng thần phụ hào ${x.pos} (${x.reason}) có thể làm mốc ứng kỳ phụ`,'secondary')}
+ const candidates=[]; const seen=new Set();
+ for(const x of out){const k=x.branch+'|'+x.reason;if(!seen.has(k)){seen.add(k);candidates.push(x)}}
+ const scale=(topic==='timing'?'near-or-event-dependent':((c.moving||[]).length?'event-dependent':'conditional'));
+ return {main,candidates,notes,scale};
+}
+function v69TimingNarrative(topic,c){
+ if(topic==='health')return TOPIC_TIMING.health;
+ const t=v69TimingCandidates(topic,c); if(!t.main)return t.notes[0];
+ const first=t.candidates.slice(0,5).map(x=>`${x.branch} (${x.reason})`).join('; ');
+ const caution='Đây là các mốc chi/điều kiện ứng theo cổ pháp, không phải lời hứa một ngày giờ chắc chắn; việc gần xét ngày/giờ, việc xa mới nâng lên tháng/năm.';
+ return `Dụng thần lấy hào ${t.main.pos||'phục'} · ${t.main.branch}${t.main.element?'/'+t.main.element:''}. ${t.notes.join(' ')} ${first?`Mốc ưu tiên: ${first}. `:''}${caution}`;
+}
+window.HUYEN_CO_TIMING_V69={v69TimingCandidates,v69TimingNarrative};
+window.HuyenCo.v69TimingCandidates=v69TimingCandidates;
+window.HuyenCo.v69TimingNarrative=v69TimingNarrative;
+// Override only timing presentation; no DOM hooks are added.
+timingNarrative=v69TimingNarrative;
+})();
+</script>
+<script id="timing-fixture-v69">
+(function(){const errors=[];let checked=0,withCandidates=0;for(const h of HEX){for(const topic of ['general','money','work','timing']){const c={h,moving:[1],question:'khi nào việc này có kết quả?',date:new Date('2026-11-01T12:00:00Z')};try{const r=window.HuyenCo.v69TimingCandidates(topic,c);checked++;if(r.main&&r.candidates.length)withCandidates++;if(r.candidates.some(x=>!['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'].includes(x.branch)))errors.push(`bad branch ${h.id}/${topic}`)}catch(e){errors.push(`${h.id}/${topic}: ${e.message}`)}}}window.HUYEN_CO_V69_FIXTURE={ok:errors.length===0,errors,checked,withCandidates,fixes:['Ứng kỳ separated from Cát/Hung score','static line -> value/clash; moving line -> value/combine','旬空 -> fill/clash candidates','月破 -> fill/combine candidates','六合/合住 -> clash-open candidate','moving transformation contributes transformed-branch timing','near/far scale is described conditionally, never as deterministic date']};})();
+</script>
+\n<script id="v70-harmony-clash-engine">
+/* v70 六合/六沖 interaction engine.
+   Classical basis: 增刪卜易 六合章第十九、六沖章第二十.
+   Harmony/clash is contextual: 用神 strength remains primary; no flat +1/-1 scoring. */
+(function(){
+function v70PairKind(a,b){
+  if(BRANCH_COMBINE[a]===b)return 'combine';
+  if(BRANCH_CLASH[a]===b)return 'clash';
+  return null;
+}
+function v70HexPattern(h){
+  const ls=najiaLines(h).lines, pairs=[[0,3],[1,4],[2,5]].map(([a,b])=>v70PairKind(ls[a].branch,ls[b].branch));
+  return {pairs,liuHe:pairs.every(x=>x==='combine'),liuChong:pairs.every(x=>x==='clash')};
+}
+function v70MainInteraction(topic,c){
+  const sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c),z=sel.z||calendarLayer(c);
+  const main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+  const notes=[],states=[];
+  if(main){
+    const moving=(c.moving||[]).includes(main.pos),p=linePower(main,c,z),strong=p.score>=1;
+    if(BRANCH_COMBINE[z.gz.branch]===main.branch)states.push(moving?'heban-day':'heqi-day');
+    if(BRANCH_COMBINE[monthBranch(z.date)]===main.branch)states.push(moving?'heban-month':'heqi-month');
+    if(BRANCH_CLASH[z.gz.branch]===main.branch){
+      if(!moving&&strong)states.push('andong');
+      else if(!moving&&!strong)states.push('ripo');
+      else states.push('moving-day-clash');
+    }
+    if(BRANCH_CLASH[monthBranch(z.date)]===main.branch)states.push('yuepo');
+    if(states.includes('heqi-day')||states.includes('heqi-month'))notes.push('Dụng thần tĩnh gặp hợp: hợp khởi; có thể được dẫn động nhưng vẫn phải xét khí lực.');
+    if(states.includes('heban-day')||states.includes('heban-month'))notes.push('Dụng thần động gặp hợp: hợp bán/hợp trú; lực động bị giữ, ứng kỳ thường chờ xung khai.');
+    if(states.includes('andong'))notes.push('Dụng thần tĩnh có khí gặp Nhật xung: xét Ám Động, không coi mặc định là phá.');
+    if(states.includes('ripo'))notes.push('Dụng thần tĩnh suy gặp Nhật xung: xét Nhật Phá.');
+  }
+  const base=v70HexPattern(c.h),changed=v70HexPattern(changedHex(c));
+  let transition='neutral';
+  if(base.liuHe&&changed.liuChong)transition='he-to-chong';
+  else if(base.liuChong&&changed.liuHe)transition='chong-to-he';
+  else if(base.liuHe&&changed.liuHe)transition='he-to-he';
+  else if(base.liuChong&&changed.liuChong)transition='chong-to-chong';
+  if(transition==='he-to-chong')notes.push('Toàn quẻ Lục Hợp biến Lục Xung: xu hướng trước hợp sau tán; không tự động kết Hung nếu Dụng thần vẫn vượng.');
+  if(transition==='chong-to-he')notes.push('Toàn quẻ Lục Xung biến Lục Hợp: xu hướng trước tán sau tụ; không tự động kết Cát nếu Dụng thần thất hãm.');
+  return {main,states,base,changed,transition,notes};
+}
+function v70InteractionNarrative(topic,c){
+  const x=v70MainInteraction(topic,c);
+  if(!x.main)return 'Chưa xác định Dụng thần đủ rõ để xét Hợp/Xung.';
+  const s=x.states.length?x.states.join(', '):'không có Hợp/Xung trực tiếp nổi bật ở Dụng thần';
+  return `Lớp Hợp–Xung: ${s}. ${x.notes.join(' ')}`;
+}
+// Feed only contextual evidence into the priority verdict. Do not use a flat harmony score.
+const _v67=v67LiuYaoPriority;
+function v70LiuYaoPriority(topic,c){
+  const r=_v67(topic,c),x=v70MainInteraction(topic,c);let raw=r.raw,notes=[...(r.notes||[])];
+  if(x.states.includes('heban-day')||x.states.includes('heban-month')){raw-=1;notes.push('Hợp bán làm chậm lực phát động của Dụng thần');}
+  if(x.states.includes('andong')){raw+=1;notes.push('Ám Động: Dụng thần có khí được Nhật xung kích hoạt');}
+  if(x.states.includes('ripo')){raw-=2;notes.push('Nhật Phá: Dụng thần tĩnh suy bị Nhật xung');}
+  // Whole-hex transition is narrative/trajectory evidence only; 用神 remains decisive.
+  return Object.assign({},r,{raw,dir:raw>=4?1:raw<=-4?-1:0,notes,interaction:x});
+}
+window.HUYEN_CO_V70={pairKind:v70PairKind,hexPattern:v70HexPattern,mainInteraction:v70MainInteraction,interactionNarrative:v70InteractionNarrative,liuYaoPriority:v70LiuYaoPriority};
+window.HuyenCo.v70HarmonyClash=window.HUYEN_CO_V70;
+window.HuyenCo.v67LiuYaoPriority=v70LiuYaoPriority;
+})();
+</script>
+<script id="v70-harmony-clash-fixture">
+(function(){
+ const errors=[];let checked=0,he=0,chong=0;
+ for(const h of HEX){
+   const p=window.HUYEN_CO_V70.hexPattern(h);checked++;
+   if(p.pairs.length!==3)errors.push('pair count '+h.id);
+   if(p.liuHe)he++;if(p.liuChong)chong++;
+   const c={h,moving:[1],question:'việc này có thuận không?',date:new Date('2026-11-01T12:00:00Z')};
+   try{const x=window.HUYEN_CO_V70.mainInteraction('general',c);if(!x.base||!x.changed)errors.push('interaction '+h.id)}catch(e){errors.push('interaction '+h.id+': '+e.message)}
+ }
+ // Pair tables themselves must be symmetric and complete.
+ for(const b of Object.keys(BRANCH_COMBINE))if(BRANCH_COMBINE[BRANCH_COMBINE[b]]!==b)errors.push('combine symmetry '+b);
+ for(const b of Object.keys(BRANCH_CLASH))if(BRANCH_CLASH[BRANCH_CLASH[b]]!==b)errors.push('clash symmetry '+b);
+ const base=window.HUYEN_CO_V69_FIXTURE||{};
+ window.HUYEN_CO_V70_FIXTURE={ok:errors.length===0&&base.ok!==false,errors:[...(base.errors||[]),...errors],checkedHexagrams:checked,detectedLiuHe:he,detectedLiuChong:chong,fixes:['Fixed v69 timing fixture B12 scope ReferenceError','Static+combine => 合起; moving+combine => 合絆','Strong static+day clash => 暗動; weak static+day clash => 日破','Whole-hex 六合/六沖 transition is trajectory evidence, not a flat score','用神 strength remains primary over harmony/clash labels']};
+})();
+</script>
+
+<script id="v71-triad-punish-harm-engine">
+/* v71 三合 / 三刑 / 六害. Contextual secondary layer; no flat score merely because branches coexist. */
+(function(){
+const V71_TRIADS=[
+ {branches:['申','子','辰'],element:'Thủy',name:'Thân–Tý–Thìn'},
+ {branches:['巳','酉','丑'],element:'Kim',name:'Tỵ–Dậu–Sửu'},
+ {branches:['寅','午','戌'],element:'Hỏa',name:'Dần–Ngọ–Tuất'},
+ {branches:['亥','卯','未'],element:'Mộc',name:'Hợi–Mão–Mùi'}
+];
+const V71_HARMS={'子':'未','未':'子','丑':'午','午':'丑','寅':'巳','巳':'寅','卯':'辰','辰':'卯','申':'亥','亥':'申','酉':'戌','戌':'酉'};
+function v71PunishKind(a,b){
+ if(a===b&&['辰','午','酉','亥'].includes(a))return 'self-punish';
+ if((a==='子'&&b==='卯')||(a==='卯'&&b==='子'))return 'mutual-punish';
+ if(['寅','巳','申'].includes(a)&&['寅','巳','申'].includes(b)&&a!==b)return 'tri-punish-member';
+ if(['丑','未','戌'].includes(a)&&['丑','未','戌'].includes(b)&&a!==b)return 'tri-punish-member';
+ return null;
+}
+function v71TriadState(topic,c){
+ const n=najiaLines(c.h), changed=changedHex(c),nn=najiaLines(changed),z=calendarLayer(c);
+ const moving=new Set(c.moving||[]), active=[];
+ for(const x of n.lines) if(moving.has(x.pos)) active.push({branch:x.branch,pos:x.pos,kind:'moving',line:x});
+ for(const pos of moving){const x=nn.lines[pos-1];if(x)active.push({branch:x.branch,pos,kind:'changed',line:x});}
+ const sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c);
+ const main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+ const shi=n.lines[(z.sy&&z.sy.shi?z.sy.shi:1)-1];
+ const results=[];
+ for(const g of V71_TRIADS){
+   const present=new Set(active.filter(x=>g.branches.includes(x.branch)).map(x=>x.branch));
+   // A static third member may complete two active members, as described in 三合章.
+   if(present.size>=2){for(const x of n.lines)if(g.branches.includes(x.branch))present.add(x.branch);}
+   const complete=g.branches.every(b=>present.has(b));
+   const missing=g.branches.filter(b=>!present.has(b));
+   const mainIn=!!(main&&g.branches.includes(main.branch));
+   const shiIn=!!(shi&&g.branches.includes(shi.branch));
+   let relationToMain='neutral';
+   if(main){if(g.element===main.element)relationToMain='same';else if(GENERATES[g.element]===main.element)relationToMain='generate-main';else if(CONTROLS[g.element]===main.element)relationToMain='control-main';else if(GENERATES[main.element]===g.element)relationToMain='main-generates';else if(CONTROLS[main.element]===g.element)relationToMain='main-controls';}
+   if(complete||present.size===2)results.push({name:g.name,element:g.element,complete,virtualOne:!complete&&present.size===2,missing,mainIn,shiIn,relationToMain});
+ }
+ return {main,shi,results};
+}
+function v71SecondaryRelations(topic,c){
+ const n=najiaLines(c.h),z=calendarLayer(c),sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c);
+ const main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+ if(!main)return {main:null,punishments:[],harms:[],triads:v71TriadState(topic,c)};
+ const relevant=[]; for(const x of n.lines){if(x.pos===main.pos||(c.moving||[]).includes(x.pos)||x.pos===z.sy.shi||x.pos===z.sy.ying)relevant.push(x);}
+ const punishments=[],harms=[];
+ for(const x of relevant){if(x.pos===main.pos)continue;const pk=v71PunishKind(main.branch,x.branch);if(pk)punishments.push({with:x,kind:pk});if(V71_HARMS[main.branch]===x.branch)harms.push({with:x,kind:'six-harm'});}
+ return {main,punishments,harms,triads:v71TriadState(topic,c)};
+}
+const _v70=window.HUYEN_CO_V70.liuYaoPriority;
+function v71LiuYaoPriority(topic,c){
+ const r=_v70(topic,c),x=v71SecondaryRelations(topic,c);let raw=r.raw,notes=[...(r.notes||[])];
+ // 三合 affects verdict only when actually formed and tied to 用神/世 or directly generating/controlling 用神.
+ for(const g of x.triads.results){
+   if(!g.complete){notes.push(`Tam Hợp ${g.name} còn thiếu ${g.missing.join('、')}: hư nhất đãi dụng, chưa coi là thành cục.`);continue;}
+   if(g.mainIn||g.shiIn||g.relationToMain==='generate-main'||g.relationToMain==='control-main'){
+     if(g.relationToMain==='generate-main'||g.relationToMain==='same'||g.mainIn){raw+=1;notes.push(`Tam Hợp ${g.name} thành ${g.element} cục và liên hệ trực tiếp Dụng/Thế; xét trợ lực theo khí lực.`);}
+     if(g.relationToMain==='control-main'){raw-=2;notes.push(`Tam Hợp ${g.name} thành ${g.element} cục khắc Dụng; đây là bất lợi có trọng lượng.`);}
+   }
+ }
+ // 刑/害 are secondary: only apply when tied to the main target and an active/世應 line.
+ if(x.punishments.length){raw-=1;notes.push('Dụng thần có Tam Hình/Tự Hình liên hệ trực tiếp; dùng như tín hiệu phụ, không tự quyết Hung.');}
+ if(x.harms.length){raw-=1;notes.push('Dụng thần gặp Lục Hại ở hào liên quan; dùng như tín hiệu phụ sau vượng suy, sinh khắc và động biến.');}
+ return Object.assign({},r,{raw,dir:raw>=4?1:raw<=-4?-1:0,notes,secondaryRelations:x});
+}
+window.HUYEN_CO_V71={triads:V71_TRIADS,harms:V71_HARMS,punishKind:v71PunishKind,triadState:v71TriadState,secondaryRelations:v71SecondaryRelations,liuYaoPriority:v71LiuYaoPriority};
+window.HuyenCo.v71SecondaryRelations=window.HUYEN_CO_V71;
+window.HuyenCo.v67LiuYaoPriority=v71LiuYaoPriority;
+})();
+</script>
+<script id="v71-triad-punish-harm-fixture">
+(function(){
+ const errors=[];
+ const triads=window.HUYEN_CO_V71.triads;
+ if(triads.length!==4)errors.push('triad count');
+ const flat=triads.flatMap(x=>x.branches);if(new Set(flat).size!==12)errors.push('triads do not cover 12 branches exactly once');
+ for(const [a,b] of Object.entries(window.HUYEN_CO_V71.harms))if(window.HUYEN_CO_V71.harms[b]!==a)errors.push('harm symmetry '+a);
+ for(const [a,b] of [['子','卯'],['寅','巳'],['巳','申'],['丑','未'],['未','戌']])if(!window.HUYEN_CO_V71.punishKind(a,b))errors.push('punish missing '+a+b);
+ for(const a of ['辰','午','酉','亥'])if(window.HUYEN_CO_V71.punishKind(a,a)!=='self-punish')errors.push('self punish '+a);
+ let checked=0;for(const h of HEX){const c={h,moving:[1,3],question:'việc này có thuận lợi không?',date:new Date('2026-11-01T12:00:00Z')};try{const x=window.HUYEN_CO_V71.secondaryRelations('general',c);checked++;if(!x.triads||!Array.isArray(x.triads.results))errors.push('triad runtime '+h.id)}catch(e){errors.push('runtime '+h.id+': '+e.message)}}
+ const base=window.HUYEN_CO_V70_FIXTURE||{};
+ window.HUYEN_CO_V71_FIXTURE={ok:errors.length===0&&base.ok!==false,errors:[...(base.errors||[]),...errors],checkedHexagrams:checked,fixes:['三合 requires an active configuration; branch coexistence alone is insufficient','Two active members can be marked 虛一待用 instead of prematurely forming a bureau','Completed 三合 is judged by relation to 用神/世, not by a universal lucky score','三刑/六害 are secondary evidence only when directly tied to 用神 and relevant active/世應 lines']};
+})();
+</script>
+
+<script id="v72-lifecycle-engine">
+/* v72: fix v71 branch-script mismatch + conservative 生旺墓絕 layer based on 增刪卜易. */
+(function(){
+const TRIADS=[
+ {branches:['Thân','Tý','Thìn'],element:'Thủy',name:'Thân–Tý–Thìn'},
+ {branches:['Tỵ','Dậu','Sửu'],element:'Kim',name:'Tỵ–Dậu–Sửu'},
+ {branches:['Dần','Ngọ','Tuất'],element:'Hỏa',name:'Dần–Ngọ–Tuất'},
+ {branches:['Hợi','Mão','Mùi'],element:'Mộc',name:'Hợi–Mão–Mùi'}
+];
+const HARMS={Tý:'Mùi',Mùi:'Tý',Sửu:'Ngọ',Ngọ:'Sửu',Dần:'Tỵ',Tỵ:'Dần',Mão:'Thìn',Thìn:'Mão',Thân:'Hợi',Hợi:'Thân',Dậu:'Tuất',Tuất:'Dậu'};
+function punishKind(a,b){
+ if(a===b&&['Thìn','Ngọ','Dậu','Hợi'].includes(a))return 'self-punish';
+ if((a==='Tý'&&b==='Mão')||(a==='Mão'&&b==='Tý'))return 'mutual-punish';
+ if(['Dần','Tỵ','Thân'].includes(a)&&['Dần','Tỵ','Thân'].includes(b)&&a!==b)return 'tri-punish-member';
+ if(['Sửu','Mùi','Tuất'].includes(a)&&['Sửu','Mùi','Tuất'].includes(b)&&a!==b)return 'tri-punish-member';
+ return null;
+}
+function triadState(topic,c){
+ const n=najiaLines(c.h),nn=najiaLines(changedHex(c)),z=calendarLayer(c),moving=new Set(c.moving||[]),active=[];
+ for(const x of n.lines)if(moving.has(x.pos))active.push({branch:x.branch,pos:x.pos,kind:'moving',line:x});
+ for(const pos of moving){const x=nn.lines[pos-1];if(x)active.push({branch:x.branch,pos,kind:'changed',line:x});}
+ const sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c);
+ const main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+ const shi=n.lines[(z.sy&&z.sy.shi?z.sy.shi:1)-1],results=[];
+ for(const g of TRIADS){
+   const present=new Set(active.filter(x=>g.branches.includes(x.branch)).map(x=>x.branch));
+   if(present.size>=2){for(const x of n.lines)if(g.branches.includes(x.branch))present.add(x.branch);}
+   const complete=g.branches.every(b=>present.has(b)),missing=g.branches.filter(b=>!present.has(b));
+   const mainIn=!!(main&&g.branches.includes(main.branch)),shiIn=!!(shi&&g.branches.includes(shi.branch));
+   let relationToMain='neutral';
+   if(main){if(g.element===main.element)relationToMain='same';else if(GENERATES[g.element]===main.element)relationToMain='generate-main';else if(CONTROLS[g.element]===main.element)relationToMain='control-main';else if(GENERATES[main.element]===g.element)relationToMain='main-generates';else if(CONTROLS[main.element]===g.element)relationToMain='main-controls';}
+   if(complete||present.size===2)results.push({name:g.name,element:g.element,complete,virtualOne:!complete&&present.size===2,missing,mainIn,shiIn,relationToMain});
+ }
+ return {main,shi,results};
+}
+function secondaryRelations(topic,c){
+ const n=najiaLines(c.h),z=calendarLayer(c),sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c);
+ const main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+ if(!main)return {main:null,punishments:[],harms:[],triads:triadState(topic,c)};
+ const relevant=n.lines.filter(x=>x.pos===main.pos||(c.moving||[]).includes(x.pos)||x.pos===z.sy.shi||x.pos===z.sy.ying),punishments=[],harms=[];
+ for(const x of relevant){if(x.pos===main.pos)continue;const pk=punishKind(main.branch,x.branch);if(pk)punishments.push({with:x,kind:pk});if(HARMS[main.branch]===x.branch)harms.push({with:x,kind:'six-harm'});}
+ return {main,punishments,harms,triads:triadState(topic,c)};
+}
+// 野鶴 profile: only 生、旺、墓、絕 are operational; the other eight 十二長生 states are intentionally ignored.
+const LIFE={
+ Kim:{birth:'Tỵ',prosper:'Dậu',tomb:'Sửu',absolute:'Dần'},
+ Mộc:{birth:'Hợi',prosper:'Mão',tomb:'Mùi',absolute:'Thân'},
+ Hỏa:{birth:'Dần',prosper:'Ngọ',tomb:'Tuất',absolute:'Hợi'},
+ Thủy:{birth:'Thân',prosper:'Tý',tomb:'Thìn',absolute:'Tỵ'},
+ Thổ:{birth:'Thân',prosper:'Tý',tomb:'Thìn',absolute:'Tỵ'}
+};
+function lifeState(element,branch){const m=LIFE[element];if(!m)return null;for(const k of ['birth','prosper','tomb','absolute'])if(m[k]===branch)return k;return null;}
+function tombOpened(tombBranch,c,z){
+ const mb=monthBranch(z.date),db=z.gz.branch;if(BRANCH_CLASH[tombBranch]===mb||BRANCH_CLASH[tombBranch]===db)return true;
+ const n=najiaLines(c.h);return (c.moving||[]).some(p=>{const x=n.lines[p-1];return x&&BRANCH_CLASH[tombBranch]===x.branch;});
+}
+function lifecycleLayer(topic,c){
+ const sel=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c),z=calendarLayer(c);
+ const main=sel.primary&&sel.primary.line?sel.primary.line:(sel.mainHidden&&sel.mainHidden.hidden?sel.mainHidden.hidden:null);
+ if(!main)return {main:null,day:null,movingTomb:false,transform:null,notes:[],delta:0};
+ const day=lifeState(main.element,z.gz.branch),n=najiaLines(c.h),movingTomb=(c.moving||[]).some(p=>{const x=n.lines[p-1];return x&&lifeState(main.element,x.branch)==='tomb';});
+ let transform=null;if(main.pos&&(c.moving||[]).includes(main.pos)){const nn=najiaLines(changedHex(c)),to=nn.lines[main.pos-1];if(to)transform={to,state:lifeState(main.element,to.branch)};}
+ const power=main.power?main.power.score:0,weak=power<0,notes=[];let delta=0;
+ if(day==='birth'){if(!weak){delta+=1;notes.push('Dụng gặp Trường Sinh theo Nhật; chỉ trợ khi bản thân có khí.');}else notes.push('Dụng gặp Trường Sinh nhưng đang suy; không lấy chữ Sinh để lấn át khắc chế thực tế.');}
+ if(day==='prosper'){delta+=1;notes.push('Dụng gặp Đế Vượng theo Nhật, tăng lực nếu không bị trọng thương.');}
+ if(day==='tomb'){const opened=tombOpened(z.gz.branch,c,z);if(weak&&!opened){delta-=1;notes.push('Dụng suy lại nhập Nhật Mộ: trì trệ rõ hơn.');}else notes.push('Có tượng nhập Mộ nhưng Dụng có khí hoặc Mộ được xung khai; không coi là chân Mộ.');}
+ if(day==='absolute'){if(weak){delta-=1;notes.push('Dụng suy gặp Tuyệt theo Nhật: bất lợi tăng.');}else notes.push('Dụng gặp Tuyệt nhưng còn vượng/sinh phù; không phán tuyệt đối là Hung.');}
+ if(movingTomb){if(weak){delta-=1;notes.push('Dụng suy lại gặp động Mộ.');}else notes.push('Có động Mộ nhưng Dụng còn khí; chờ xung khai thay vì coi là vô dụng.');}
+ if(transform&&transform.state){
+   if(transform.state==='birth'){delta+=1;notes.push('Dụng động hóa Trường Sinh.');}
+   if(transform.state==='prosper'){delta+=1;notes.push('Dụng động hóa Đế Vượng.');}
+   if(transform.state==='tomb'){if(weak){delta-=1;notes.push('Dụng suy động hóa Mộ; cần xét xung khai Mộ庫.');}else notes.push('Dụng động hóa Mộ nhưng bản hào có khí; không định thất bại chỉ vì hóa Mộ.');}
+   if(transform.state==='absolute')notes.push(weak?'Dụng suy động hóa Tuyệt; bất lợi đã được lớp biến hào ghi nhận.':'Dụng động hóa Tuyệt nhưng bản hào có khí/sinh phù; không định Hung tuyệt đối.');
+ }
+ return {main,day,movingTomb,transform,notes,delta:Math.max(-3,Math.min(3,delta))};
+}
+const basePriority=window.HuyenCo.v67LiuYaoPriority;
+function priority(topic,c){
+ const r=basePriority(topic,c),sec=secondaryRelations(topic,c),life=lifecycleLayer(topic,c);let raw=r.raw,notes=[...(r.notes||[])];
+ for(const g of sec.triads.results){if(!g.complete){notes.push(`Tam Hợp ${g.name} còn thiếu ${g.missing.join('–')}: chưa thành cục.`);continue;}if(g.mainIn||g.shiIn||g.relationToMain==='generate-main'||g.relationToMain==='control-main'){if(g.relationToMain==='generate-main'||g.relationToMain==='same'||g.mainIn){raw+=1;notes.push(`Tam Hợp ${g.name} liên hệ Dụng/Thế và có trợ lực.`);}if(g.relationToMain==='control-main'){raw-=2;notes.push(`Tam Hợp ${g.name} thành cục khắc Dụng.`);}}}
+ if(sec.punishments.length){raw-=1;notes.push('Hình liên hệ trực tiếp Dụng thần: chỉ dùng như chứng phụ.');}
+ if(sec.harms.length){raw-=1;notes.push('Lục Hại liên hệ trực tiếp Dụng thần: chỉ dùng như chứng phụ.');}
+ raw+=life.delta;notes.push(...life.notes);
+ return Object.assign({},r,{raw,dir:raw>=4?1:raw<=-4?-1:0,notes,secondaryRelations:sec,lifecycle:life});
+}
+window.HUYEN_CO_V72={life:LIFE,lifeState,tombOpened,lifecycleLayer,triads:TRIADS,harms:HARMS,punishKind,triadState,secondaryRelations,liuYaoPriority:priority};
+window.HuyenCo.v71SecondaryRelations=secondaryRelations;
+window.HuyenCo.v72LifecycleLayer=lifecycleLayer;
+window.HuyenCo.v67LiuYaoPriority=priority;
+})();
+</script>
+<script id="v72-lifecycle-fixture">
+(function(){
+ const errors=[],V=window.HUYEN_CO_V72;
+ const expected={Kim:{birth:'Tỵ',prosper:'Dậu',tomb:'Sửu',absolute:'Dần'},Mộc:{birth:'Hợi',prosper:'Mão',tomb:'Mùi',absolute:'Thân'},Hỏa:{birth:'Dần',prosper:'Ngọ',tomb:'Tuất',absolute:'Hợi'},Thủy:{birth:'Thân',prosper:'Tý',tomb:'Thìn',absolute:'Tỵ'},Thổ:{birth:'Thân',prosper:'Tý',tomb:'Thìn',absolute:'Tỵ'}};
+ for(const [el,m] of Object.entries(expected))for(const [k,b] of Object.entries(m))if(V.lifeState(el,b)!==k)errors.push(`life ${el}/${k}`);
+ const flat=V.triads.flatMap(x=>x.branches);if(new Set(flat).size!==12||!flat.includes('Tý')||flat.includes('子'))errors.push('v71 branch-script mismatch not repaired');
+ for(const [a,b] of Object.entries(V.harms))if(V.harms[b]!==a)errors.push('harm symmetry '+a);
+ let checked=0,triadRuntime=0;for(const h of HEX){const c={h,moving:[1,3],question:'việc này có thuận lợi không?',date:new Date('2026-11-01T12:00:00Z')};try{const x=V.secondaryRelations('general',c),l=V.lifecycleLayer('general',c);checked++;if(x.triads&&Array.isArray(x.triads.results))triadRuntime++;if(!l||!Array.isArray(l.notes))errors.push('life runtime '+h.id);}catch(e){errors.push('runtime '+h.id+': '+e.message);}}
+ const base=window.HUYEN_CO_V70_FIXTURE||{};
+ window.HUYEN_CO_V72_FIXTURE={ok:errors.length===0&&base.ok!==false,errors:[...(base.errors||[]),...errors],checkedHexagrams:checked,triadRuntime,fixes:['Repaired v71 Chinese-branch/Vietnamese-branch mismatch','野鶴 profile operationalizes only 生/旺/墓/絕, not all 12 stages','入墓 is not automatically fatal: strength and 沖墓 are checked','化墓/化絕 are conditional; strong or supported 用神 is not auto-failed','Lifecycle evidence is capped as a secondary layer under 用神 strength and core 生剋']};
+})();
+</script>
+<script id="v73-six-spirits-fix">
+// v73 · Lục Thần: an theo Nhật Can, từ sơ hào lên thượng hào.
+// Lục Thần chỉ bổ trợ tượng nghĩa; tuyệt đối không tự đảo verdict Cát/Hung.
+(function(){
+const ORDER=['Thanh Long','Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ','Huyền Vũ'];
+const START={
+ 'Giáp':'Thanh Long','Ất':'Thanh Long','Bính':'Chu Tước','Đinh':'Chu Tước',
+ 'Mậu':'Câu Trần','Kỷ':'Đằng Xà','Canh':'Bạch Hổ','Tân':'Bạch Hổ','Nhâm':'Huyền Vũ','Quý':'Huyền Vũ'
+};
+const MEANING={
+ 'Thanh Long':'tăng sắc thái hòa thuận, vui mừng, trợ lực hoặc điều kiện dễ phối hợp',
+ 'Chu Tước':'nhấn mạnh lời nói, tin tức, văn thư, tranh luận hoặc việc cần nói cho rõ',
+ 'Câu Trần':'nhấn mạnh sự trì trệ, ràng buộc, đất đai, thủ tục hoặc việc kéo dài',
+ 'Đằng Xà':'nhấn mạnh nghi ngại, quanh co, bất an hoặc thông tin cần kiểm chứng thêm',
+ 'Bạch Hổ':'nhấn mạnh áp lực, tổn hao, va chạm hoặc việc cần đặc biệt thận trọng',
+ 'Huyền Vũ':'nhấn mạnh phần kín, thiếu minh bạch, thất thoát hoặc động cơ chưa lộ rõ'
+};
+function sixSpiritsByStem(stem){let start=ORDER.indexOf(START[stem]||'Thanh Long');return Array.from({length:6},(_,i)=>ORDER[(start+i)%6]);}
+function sixSpiritLayer(c,topic){
+ let z=calendarLayer(c),arr=sixSpiritsByStem(z.gz.stem),cl=classicalLayer(topic,c),main=cl.main;
+ return {stem:z.gz.stem,spirits:arr,main:main?{pos:main.pos,name:arr[main.pos-1],relation:main.relation}:null};
+}
+function sixSpiritNarrative(topic,c){
+ let x=sixSpiritLayer(c,topic);if(!x.main)return '';
+ return `Lục Thần: Dụng thần chính tại hào ${x.main.pos} lâm ${x.main.name}; lớp tượng này ${MEANING[x.main.name]}. Đây chỉ là tín hiệu bổ trợ sau Dụng thần, Nhật–Nguyệt và sinh khắc, không tự quyết Cát/Hung.`;
+}
+// Fixture 10 Nhật Can × 6 hào = 60 vị trí.
+const EXPECT={
+ 'Giáp':['Thanh Long','Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ','Huyền Vũ'],
+ 'Ất':['Thanh Long','Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ','Huyền Vũ'],
+ 'Bính':['Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ','Huyền Vũ','Thanh Long'],
+ 'Đinh':['Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ','Huyền Vũ','Thanh Long'],
+ 'Mậu':['Câu Trần','Đằng Xà','Bạch Hổ','Huyền Vũ','Thanh Long','Chu Tước'],
+ 'Kỷ':['Đằng Xà','Bạch Hổ','Huyền Vũ','Thanh Long','Chu Tước','Câu Trần'],
+ 'Canh':['Bạch Hổ','Huyền Vũ','Thanh Long','Chu Tước','Câu Trần','Đằng Xà'],
+ 'Tân':['Bạch Hổ','Huyền Vũ','Thanh Long','Chu Tước','Câu Trần','Đằng Xà'],
+ 'Nhâm':['Huyền Vũ','Thanh Long','Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ'],
+ 'Quý':['Huyền Vũ','Thanh Long','Chu Tước','Câu Trần','Đằng Xà','Bạch Hổ']
+};
+let checked=0,errors=[];Object.keys(EXPECT).forEach(st=>{let got=sixSpiritsByStem(st);for(let i=0;i<6;i++){checked++;if(got[i]!==EXPECT[st][i])errors.push(`${st} hào ${i+1}: ${got[i]} != ${EXPECT[st][i]}`)}});
+window.HUYEN_CO_V73_SIX_SPIRITS={version:'73.0',checked,errors,pass:checked===60&&errors.length===0,sixSpiritsByStem,sixSpiritLayer,sixSpiritNarrative};
+if(window.HuyenCo){Object.assign(window.HuyenCo,{sixSpiritsByStem,sixSpiritLayer,sixSpiritNarrative});}
+})();
+</script>
+<script id="v74-shi-ying-fix">
+// v74 · Thế–Ứng relationship layer. 世為己，應為人/事; context, not a flat lucky/unlucky score.
+(function(){
+const GEN={Mộc:'Hỏa',Hỏa:'Thổ',Thổ:'Kim',Kim:'Thủy',Thủy:'Mộc'};
+const CTL={Mộc:'Thổ',Thổ:'Thủy',Thủy:'Hỏa',Hỏa:'Kim',Kim:'Mộc'};
+function syRel(a,b){if(a===b)return 'tỷ hòa';if(GEN[a]===b)return 'Thế sinh Ứng';if(GEN[b]===a)return 'Ứng sinh Thế';if(CTL[a]===b)return 'Thế khắc Ứng';if(CTL[b]===a)return 'Ứng khắc Thế';return 'bình';}
+function syLineState(line,c,z){const p=linePower(line,c,z),moving=(c.moving||[]).includes(line.pos);return {line,p,moving,voided:p.temporal&&p.temporal.voided,monthBreak:p.temporal&&p.temporal.monthBreak};}
+function shiYingLayer(topic,c){
+ const z=calendarLayer(c),n=najiaLines(c.h),shi=n.lines.find(x=>x.pos===z.sy.shi),ying=n.lines.find(x=>x.pos===z.sy.ying);
+ if(!shi||!ying)return null;
+ const S=syLineState(shi,c,z),Y=syLineState(ying,c,z),rel=syRel(shi.element,ying.element);
+ let direction='neutral',notes=[];
+ if(rel==='Ứng sinh Thế'){direction='support-to-self';notes.push('Ứng sinh Thế: phía đối diện/hoàn cảnh có xu hướng trợ cho người hỏi.');}
+ else if(rel==='Thế sinh Ứng'){direction='self-supports-other';notes.push('Thế sinh Ứng: người hỏi phải bỏ lực, lợi ích dễ nghiêng sang phía đối diện nếu không có Dụng thần hỗ trợ.');}
+ else if(rel==='Ứng khắc Thế'){direction='pressure-on-self';notes.push('Ứng khắc Thế: phía đối diện/hoàn cảnh tạo áp lực trực tiếp lên người hỏi.');}
+ else if(rel==='Thế khắc Ứng'){direction='self-controls-other';notes.push('Thế khắc Ứng: người hỏi có thế chủ động/kiểm soát hơn, nhưng vẫn phải xét sức của Thế và Dụng thần.');}
+ else if(rel==='tỷ hòa'){direction='peer';notes.push('Thế–Ứng tỷ hòa: hai phía đồng khí, thành bại phụ thuộc vượng suy, động biến và Dụng thần.');}
+ if(S.voided)notes.push('Thế rơi Tuần Không: ý chí/năng lực thực thi của người hỏi cần xét điều kiện xuất Không, không phán thất bại tuyệt đối.');
+ if(Y.voided)notes.push('Ứng rơi Tuần Không: phía đối diện/sự việc có phần chưa thực hoặc chưa vào vị trí.');
+ if(S.monthBreak)notes.push('Thế Nguyệt Phá: phía người hỏi hiện suy, cần xét thực Phá/hợp Phá và thời điểm phục hồi.');
+ if(Y.monthBreak)notes.push('Ứng Nguyệt Phá: phía đối diện/sự việc hiện yếu hoặc khó giữ trạng thái hiện tại.');
+ if(S.moving)notes.push('Thế động: người hỏi là phía đang chủ động thay đổi hoặc phải hành động.');
+ if(Y.moving)notes.push('Ứng động: phía đối diện/sự việc có biến chuyển chủ động, cần đọc thêm hào biến.');
+ const cl=classicalLayer(topic,c),main=cl.main;
+ if(main){if(main.pos===shi.pos)notes.push('Dụng thần chính đồng vị Thế: kết quả gắn trực tiếp với năng lực/quyết định của người hỏi.');if(main.pos===ying.pos)notes.push('Dụng thần chính đồng vị Ứng: kết quả phụ thuộc mạnh vào phía đối diện hoặc đối tượng được hỏi.');}
+ return {z,shi:S,ying:Y,relation:rel,direction,main,notes};
+}
+function shiYingNarrative(topic,c){const x=shiYingLayer(topic,c);if(!x)return '';return `Thế hào ${x.shi.line.pos} ${x.shi.line.stem}${x.shi.line.branch} (${x.shi.line.element}) · Ứng hào ${x.ying.line.pos} ${x.ying.line.stem}${x.ying.line.branch} (${x.ying.line.element}). Quan hệ: ${x.relation}. ${x.notes.join(' ')}`;}
+// Fixture: all 64 hexagrams; positions must be opposite by 3 and relation must be one of five valid states.
+let checked=0,errors=[];const allowed=new Set(['tỷ hòa','Thế sinh Ứng','Ứng sinh Thế','Thế khắc Ứng','Ứng khắc Thế','bình']);
+for(const h of HEX){const c={h,moving:[],question:'việc này có thuận lợi không?',date:new Date('2026-11-01T12:00:00Z')};try{const x=shiYingLayer('general',c);checked++;if(!x)errors.push(`missing ${h.id}`);else{if((((x.shi.line.pos-x.ying.line.pos)%6)+6)%6!==3)errors.push(`positions ${h.id}`);if(!allowed.has(x.relation))errors.push(`relation ${h.id}`);}}catch(e){errors.push(`${h.id}: ${e.message}`)}}
+window.HUYEN_CO_V74_SHI_YING={version:'74.0',checked,errors,pass:checked===64&&errors.length===0,shiYingLayer,shiYingNarrative};
+if(window.HuyenCo){Object.assign(window.HuyenCo,{shiYingLayer,shiYingNarrative});}
+})();
+</script>
+<script id="v75-intervening-lines-fix">
+// v75 · Gian hào / intermediary layer. Only intervening lines between Thế and Ứng are considered.
+(function(){
+const GEN={Mộc:'Hỏa',Hỏa:'Thổ',Thổ:'Kim',Kim:'Thủy',Thủy:'Mộc'};
+const CTL={Mộc:'Thổ',Thổ:'Thủy',Thủy:'Hỏa',Hỏa:'Kim',Kim:'Mộc'};
+function v75Rel(a,b){if(a===b)return 'tỷ hòa';if(GEN[a]===b)return 'sinh';if(CTL[a]===b)return 'khắc';return 'khác';}
+function betweenPositions(a,b){const lo=Math.min(a,b),hi=Math.max(a,b),out=[];for(let p=lo+1;p<hi;p++)out.push(p);return out;}
+function interveningLinesLayer(topic,c){
+ const sy=window.HUYEN_CO_V74_SHI_YING&&window.HUYEN_CO_V74_SHI_YING.shiYingLayer?window.HUYEN_CO_V74_SHI_YING.shiYingLayer(topic,c):null;
+ if(!sy)return null;
+ const n=najiaLines(c.h),z=calendarLayer(c),positions=betweenPositions(sy.shi.line.pos,sy.ying.line.pos),items=[];
+ for(const pos of positions){
+   const line=n.lines[pos-1];if(!line)continue;const moving=(c.moving||[]).includes(pos),p=linePower(line,c,z),toShi=v75Rel(line.element,sy.shi.line.element),toYing=v75Rel(line.element,sy.ying.line.element);
+   let role='trung tính',notes=[];
+   if(moving){
+     if(toShi==='sinh'&&toYing!=='sinh'){role='trợ Thế';notes.push('gian hào động sinh Thế: có thể tượng trợ lực/người trung gian nghiêng về phía người hỏi');}
+     else if(toYing==='sinh'&&toShi!=='sinh'){role='trợ Ứng';notes.push('gian hào động sinh Ứng: trợ lực có xu hướng nghiêng về phía đối diện');}
+     if(toShi==='khắc'){role='cản Thế';notes.push('gian hào động khắc Thế: có thể là trở lực đối với người hỏi');}
+     if(toYing==='khắc'&&toShi!=='khắc'){role='cản Ứng';notes.push('gian hào động khắc Ứng: trở lực thiên về phía đối diện');}
+     if(BRANCH_COMBINE[line.branch]===sy.shi.line.branch){role=role==='trung tính'?'hợp Thế':role;notes.push('gian hào động hợp Thế: có liên kết/trợ duyên với phía người hỏi, nhưng động gặp hợp phải xét hợp bán');}
+     if(BRANCH_COMBINE[line.branch]===sy.ying.line.branch){role=role==='trung tính'?'hợp Ứng':role;notes.push('gian hào động hợp Ứng: có liên kết với phía đối diện, đồng thời phải xét hợp bán');}
+   }
+   const dayHeld=BRANCH_COMBINE[z.gz.branch]===line.branch,monthHeld=BRANCH_COMBINE[monthBranch(z.date)]===line.branch;
+   if(moving&&(dayHeld||monthHeld))notes.push('gian hào động đang bị Nhật/Nguyệt hợp trú: tác dụng có thể bị giữ lại, ứng kỳ thiên về lúc xung khai');
+   items.push({pos,line,moving,power:p,toShi,toYing,role,held:moving&&(dayHeld||monthHeld),notes});
+ }
+ return {shi:sy.shi.line.pos,ying:sy.ying.line.pos,positions,items};
+}
+function interveningLinesNarrative(topic,c){
+ const x=interveningLinesLayer(topic,c);if(!x||!x.items.length)return '';
+ const active=x.items.filter(i=>i.moving||i.notes.length);if(!active.length)return `Gian hào giữa Thế–Ứng ở hào ${x.positions.join(' và ')} đều tĩnh; không nâng chúng thành dấu hiệu cản trở/trợ lực chính.`;
+ return active.map(i=>`Gian hào ${i.pos} ${i.line.stem}${i.line.branch} (${i.line.element})${i.moving?' động':' tĩnh'}: ${i.role}. ${i.notes.join(' ')}`).join(' ')+ ' Gian hào chỉ là lớp phụ trợ; không tự đảo Cát/Hung khi Dụng thần và thời lệnh cho kết luận ngược lại.';
+}
+// Fixture: 64 hexagrams; exactly two intervening positions because Thế/Ứng oppose by three lines.
+let checked=0,errors=[];
+for(const h of HEX){
+ const c={h,moving:[2,3,4,5].filter(x=>x<=6),question:'việc giữa hai phía có người trung gian không?',date:new Date('2026-11-01T12:00:00Z')};
+ try{const x=interveningLinesLayer('dispute',c);checked++;if(!x)errors.push(`missing ${h.id}`);else{if(x.positions.length!==2)errors.push(`between-count ${h.id}:${x.positions}`);if(x.items.some(i=>i.pos===x.shi||i.pos===x.ying))errors.push(`includes shi/ying ${h.id}`);}}
+ catch(e){errors.push(`${h.id}: ${e.message}`)}
+}
+window.HUYEN_CO_V75_INTERVENING={version:'75.0',checked,errors,pass:checked===64&&errors.length===0,betweenPositions,interveningLinesLayer,interveningLinesNarrative};
+if(window.HuyenCo){Object.assign(window.HuyenCo,{betweenPositions,interveningLinesLayer,interveningLinesNarrative});}
+})();
+</script>
+
+<script id="v76-intent-polarity-fix">
+/* v76 · Intent-sensitive 六合/六沖 interpretation.
+   Classical basis: 增刪卜易 六合章 / 六沖章.
+   Harmony favors goals of forming/maintaining; clash can favor goals of dispersing/ending.
+   This layer is contextual evidence only: 用神 strength remains primary. */
+(function(){
+const FORM_IDS=new Set(['reconcile','marriage','feelings','job','promotion','partner','invest','sale','contract','deal','move','trip']);
+const DISSOLVE_IDS=new Set(['quit','legal']);
+const FORM_WORDS=/成|成功|得到|拿到|签|簽|合作|结婚|結婚|复合|復合|和好|维持|維持|继续|繼續|留下|留住|买到|買到|卖成|賣成|录取|錄取|升职|升職|通过|通過|成交|达成|達成|团聚|團聚|回来|回來/i;
+const DISSOLVE_WORDS=/结束|結束|终止|終止|解除|解约|解約|分开|分開|离婚|離婚|辞职|辭職|离职|離職|退出|停止|摆脱|擺脫|散|撤诉|撤訴|了结|了結|解决纠纷|解決糾紛|断开|斷開/i;
+function intentPolarity(topic,c){
+  const q=((c&&c.question)||'').trim(),intent=v65Intent(topic,c),id=intent&&intent.id||topic;
+  if(DISSOLVE_WORDS.test(q))return {kind:'dissolve',intent,reason:'Câu hỏi hướng tới giải/tán/chấm dứt một trạng thái.'};
+  if(FORM_WORDS.test(q))return {kind:'form',intent,reason:'Câu hỏi hướng tới thành/tụ/duy trì một kết quả.'};
+  if(DISSOLVE_IDS.has(id))return {kind:'dissolve',intent,reason:'Intent mặc định thiên về giải/tán/chấm dứt.'};
+  if(FORM_IDS.has(id))return {kind:'form',intent,reason:'Intent mặc định thiên về thành/tụ/duy trì.'};
+  return {kind:'neutral',intent,reason:'Mục tiêu không đủ rõ để ưu tiên Hợp hay Xung.'};
+}
+function intentHarmonyClash(topic,c){
+  const p=intentPolarity(topic,c),x=window.HUYEN_CO_V70.mainInteraction(topic,c),notes=[];let trajectory='neutral',context=0;
+  const baseHe=x.base.liuHe,baseChong=x.base.liuChong;
+  if(p.kind==='form'){
+    if(baseHe){context+=1;notes.push('Mục tiêu muốn thành/tụ: Lục Hợp là tín hiệu thuận về kết nối/duy trì, nhưng chỉ hữu ích khi Dụng thần có khí.');}
+    if(baseChong){context-=1;notes.push('Mục tiêu muốn thành/tụ: Lục Xung biểu thị lực phân tán; phải xem Dụng thần có đủ vượng để chịu xung hay không.');}
+  }else if(p.kind==='dissolve'){
+    if(baseChong){context+=1;notes.push('Mục tiêu muốn giải/tán: Lục Xung có thể giúp sự việc phân tán/kết thúc, nên không coi Xung mặc định là Hung.');}
+    if(baseHe){context-=1;notes.push('Mục tiêu muốn giải/tán: Lục Hợp có thể làm sự việc dây dưa/khó dứt, nên không coi Hợp mặc định là Cát.');}
+  }else{
+    if(baseHe)notes.push('Lục Hợp hiện diện nhưng mục tiêu câu hỏi trung tính: chỉ ghi nhận xu hướng tụ/hợp, không cộng Cát máy móc.');
+    if(baseChong)notes.push('Lục Xung hiện diện nhưng mục tiêu câu hỏi trung tính: chỉ ghi nhận xu hướng tán/động, không trừ Hung máy móc.');
+  }
+  if(x.transition==='chong-to-he'){
+    trajectory='first-disperse-then-unite';
+    notes.push('Lục Xung → Lục Hợp: quỹ đạo trước tán/khó rồi sau tụ/hòa; với mục tiêu thành việc đây là tín hiệu hậu vận thuận hơn, nhưng vẫn phải xét Dụng thần.');
+  }else if(x.transition==='he-to-chong'){
+    trajectory='first-unite-then-disperse';
+    notes.push('Lục Hợp → Lục Xung: quỹ đạo trước hợp rồi sau tán; với việc cần bền lâu phải cảnh giác có đầu mà khó có cuối.');
+  }else if(x.transition==='he-to-he'){
+    trajectory='sustained-union';notes.push('Lục Hợp → Lục Hợp: xu hướng duy trì liên kết; tốt cho việc cần lâu bền, nhưng bất lợi nếu mục tiêu là mau giải thoát/chấm dứt.');
+  }else if(x.transition==='chong-to-chong'){
+    trajectory='sustained-dispersion';notes.push('Lục Xung → Lục Xung: biến động/phân tán kéo dài; có thể thuận cho việc cần giải tán nhưng bất lợi cho việc cần ổn định.');
+  }
+  return {polarity:p,interaction:x,context,trajectory,notes};
+}
+function intentHarmonyClashNarrative(topic,c){
+  const r=intentHarmonyClash(topic,c),label=r.polarity.kind==='form'?'THÀNH · TỤ · DUY TRÌ':r.polarity.kind==='dissolve'?'GIẢI · TÁN · CHẤM DỨT':'TRUNG TÍNH';
+  return `Mục tiêu Hợp–Xung: ${label}. ${r.polarity.reason} ${r.notes.join(' ')} Lớp này chỉ điều chỉnh cách hiểu quỹ đạo sự việc; Dụng thần, Nhật–Nguyệt và động biến vẫn quyết định chính.`;
+}
+window.HUYEN_CO_V76_INTENT_POLARITY={version:'76.0',intentPolarity,intentHarmonyClash,intentHarmonyClashNarrative};
+if(window.HuyenCo)Object.assign(window.HuyenCo,{intentPolarity,intentHarmonyClash,intentHarmonyClashNarrative});
+})();
+</script>
+<script id="v76-intent-polarity-fixture">
+(function(){
+ const V=window.HUYEN_CO_V76_INTENT_POLARITY,errors=[];let checked=0,form=0,dissolve=0,neutral=0;
+ const tests=[
+  ['love','Tôi muốn tái hợp và tiếp tục mối quan hệ','form'],
+  ['work','Tôi muốn nghỉ việc và chấm dứt công việc hiện tại','dissolve'],
+  ['dispute','Tôi muốn chấm dứt tranh chấp này','dissolve'],
+  ['money','Hợp đồng này có ký thành công không?','form'],
+  ['general','Tình hình này sẽ thay đổi ra sao?','neutral']
+ ];
+ for(const [topic,q,want] of tests){const h=HEX[0],c={h,moving:[],question:q,date:new Date('2026-11-01T12:00:00Z')};try{const p=V.intentPolarity(topic,c);checked++;if(p.kind!==want)errors.push(`polarity ${topic}: ${p.kind} != ${want}`);}catch(e){errors.push(`${topic}: ${e.message}`)}}
+ for(const h of HEX){for(const spec of [['love','Tôi muốn kết hôn và duy trì quan hệ'],['work','Tôi muốn nghỉ việc và kết thúc công việc'],['general','Việc này diễn biến thế nào?']]){const c={h,moving:[1],question:spec[1],date:new Date('2026-11-01T12:00:00Z')};try{const r=V.intentHarmonyClash(spec[0],c);checked++;if(r.polarity.kind==='form')form++;else if(r.polarity.kind==='dissolve')dissolve++;else neutral++;if(!['neutral','first-disperse-then-unite','first-unite-then-disperse','sustained-union','sustained-dispersion'].includes(r.trajectory))errors.push(`trajectory ${h.id}`);}catch(e){errors.push(`${h.id}/${spec[0]}: ${e.message}`)}}}
+ window.HUYEN_CO_V76_FIXTURE={ok:errors.length===0,errors,checked,form,dissolve,neutral,fixes:['六合/六沖 meaning now depends on the user goal: form/maintain vs dissolve/end','六合 is not automatically auspicious and 六沖 is not automatically inauspicious','六沖→六合 and 六合→六沖 are preserved as directional trajectories','Intent polarity is narrative/context evidence only and cannot independently overturn 用神 verdict']};
+})();
+</script>
+
+<script id="v77-topic-specialization-fix">
+(function(){
+'use strict';
+const V76=window.HUYEN_CO_V76_INTENT_POLARITY;
+const TOPIC_RULES={
+ love:{label:'TÌNH CẢM · HÔN NHÂN',use:['Thê Tài','Quan Quỷ'],good:'Dụng thần phối ngẫu có lực, Thế–Ứng tương sinh/tương hợp và quỹ đạo sau biến giữ được liên kết.',bad:'Dụng thần phối ngẫu suy/Không/Phá, Thế–Ứng tương khắc hoặc Hợp chuyển Xung.',focus:'Không đồng nhất “còn tình cảm” với “sẽ thành hôn”; phải xét khả năng đáp lại, cam kết và diễn biến sau biến.'},
+ work:{label:'CÔNG VIỆC · SỰ NGHIỆP',use:['Quan Quỷ','Phụ Mẫu'],good:'Quan Quỷ có lực, được sinh trợ hoặc gắn với Thế; Phụ Mẫu hỗ trợ hồ sơ/quy trình.',bad:'Quan Quỷ suy hoặc bị Tử Tôn trực tiếp chế, Thế yếu mà gánh áp lực từ Ứng.',focus:'Tách cơ hội có việc/chức vị khỏi khả năng nắm giữ và thực thi quyền hạn.'},
+ money:{label:'TÀI CHÍNH · KINH DOANH',use:['Thê Tài','Tử Tôn'],good:'Thê Tài có lực, Tử Tôn sinh Tài và không bị Huynh Đệ mạnh trực tiếp đoạt tài.',bad:'Tài suy/Không/Phá hoặc Huynh Đệ động mạnh khắc Tài; lợi nhuận chỉ tồn tại ở kỳ vọng.',focus:'Tách “có tiền vào” khỏi “giữ được tiền”; quẻ không thay thế kiểm tra dòng tiền, giá và rủi ro.'},
+ dispute:{label:'TRANH CHẤP · HỢP TÁC',use:['Quan Quỷ','Phụ Mẫu','Ứng'],good:'Chứng cứ/quy trình có lực, Thế không bị Ứng áp chế và có đường thương lượng rõ.',bad:'Ứng khắc Thế, Quan Quỷ gây áp lực, Hợp làm vụ việc kéo dài khi mục tiêu là chấm dứt.',focus:'Trong kiện tụng, Hợp chưa chắc tốt vì có thể dây dưa; khi muốn giải quyết dứt điểm, Xung đôi lúc lại có nghĩa tháo/tán.'}
+};
+function topicSpecialization(topic,c){
+ const r=TOPIC_RULES[topic]; if(!r)return null;
+ const cl=classicalLayer(topic,c), sy=window.HUYEN_CO_V74_SHI_YING&&window.HUYEN_CO_V74_SHI_YING.shiYingLayer?window.HUYEN_CO_V74_SHI_YING.shiYingLayer(topic,c):null;
+ const hc=V76&&V76.intentHarmonyClash?V76.intentHarmonyClash(topic,c):null;
+ const main=cl.main, tags=main&&main.power&&main.power.tags?main.power.tags:[];
+ let state=cl.level, evidence=[];
+ if(main)evidence.push(`Dụng trọng tâm: hào ${main.pos} ${main.stem}${main.branch} · ${main.relation} · ${state}`);
+ if(tags.length)evidence.push(`trạng thái: ${tags.join(', ')}`);
+ if(sy)evidence.push(`Thế–Ứng: ${sy.relation}`);
+ if(hc&&hc.trajectory!=='neutral')evidence.push(`quỹ đạo Hợp/Xung: ${hc.trajectory}`);
+ return {topic,label:r.label,good:r.good,bad:r.bad,focus:r.focus,evidence};
+}
+function topicSpecializationNarrative(topic,c){const x=topicSpecialization(topic,c);if(!x)return '';return `${x.label}: ${x.focus} Điểm thuận cần kiểm: ${x.good} Điểm nghịch cần kiểm: ${x.bad}${x.evidence.length?' Hiện trạng engine: '+x.evidence.join('; ')+'.':''}`;}
+window.HUYEN_CO_V77_TOPIC_SPECIALIZATION={version:'77.0',topicSpecialization,topicSpecializationNarrative,rules:TOPIC_RULES};
+if(window.HuyenCo)Object.assign(window.HuyenCo,{topicSpecialization,topicSpecializationNarrative});
+const btn=document.getElementById('cast');
+if(btn){btn.addEventListener('click',()=>{try{const topic=document.getElementById('topic').value,q=document.getElementById('question').value.trim();if(!q)return;setTimeout(()=>{const c=window.HuyenCo&&window.HuyenCo.lastCast;if(c)return;},0);}catch(e){console.warn('[v77 topic hook]',e);}},false)}
+})();
+</script>
+<script id="v77-topic-specialization-render-hook">
+(function(){
+'use strict';
+const old=document.getElementById('cast').onclick;
+if(typeof old!=='function')return;
+document.getElementById('cast').onclick=function(){
+ const ret=old.apply(this,arguments);
+ try{
+   const topic=document.getElementById('topic').value,q=document.getElementById('question').value.trim();if(!q)return ret;
+   const seed=nowSeed(q),c=Object.assign(cast(seed),{question:q});
+   const text=window.HUYEN_CO_V77_TOPIC_SPECIALIZATION.topicSpecializationNarrative(topic,c);
+   if(text){const deep=document.getElementById('deep');if(deep&&!deep.textContent.includes(text))deep.textContent+=' '+text;}
+ }catch(e){console.warn('[v77 render hook]',e)}
+ return ret;
+};
+})();
+</script>
+<script id="v77-topic-specialization-fixture">
+(function(){
+'use strict';
+const errors=[];let checked=0;
+for(const h of HEX){for(const topic of ['love','work','money','dispute']){try{const c={h,moving:[1],question:'kiểm tra chuyên đề',date:new Date('2026-11-01T12:00:00Z')};const r=window.HUYEN_CO_V77_TOPIC_SPECIALIZATION.topicSpecialization(topic,c);checked++;if(!r||!r.label||!r.good||!r.bad)errors.push(`${h.id}/${topic}: incomplete`);}catch(e){errors.push(`${h.id}/${topic}: ${e.message}`)}}}
+const unique=new Set(Object.values(window.HUYEN_CO_V77_TOPIC_SPECIALIZATION.rules).map(x=>x.focus));if(unique.size!==4)errors.push('topic narratives are not distinct');
+window.HUYEN_CO_V77_FIXTURE={ok:errors.length===0,errors,checked,expected:256,fixes:['love/work/money/dispute receive separate decision lenses','topic layer reads actual Use God + Shi/Ying + harmony/clash state','topic narrative cannot independently overwrite priority verdict']};
+})();
+</script>
+
 </body></html>
