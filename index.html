@@ -1933,7 +1933,8 @@ function v94TimingCandidates(topic,c){
  if(st.monthBreak){addUnique(out,main.branch,'Nguyệt Phá: thực Phá','unlock',1);addUnique(out,BRANCH_COMBINE[main.branch],'Nguyệt Phá: gặp hợp để giải Phá','unlock',1);notes.push('Dụng thần Nguyệt Phá: chờ thực Phá/hợp Phá hoặc qua thời phá.');}
  if(BRANCH_COMBINE[z.gz.branch]===main.branch){addUnique(out,BRANCH_CLASH[main.branch],'Nhật hợp/hợp trú: xung khai','unlock',1);notes.push('Dụng thần có tượng hợp trú: ưu tiên xung khai.');}
  // 入墓 / 化墓: only add an opening condition; do not equate tomb with failure.
- const tomb=LIFE[main.element]&&LIFE[main.element].tomb;
+ const lifeTable=(window.HUYEN_CO_V72&&window.HUYEN_CO_V72.life)||{};
+ const tomb=lifeTable[main.element]&&lifeTable[main.element].tomb;
  const life=typeof lifecycleLayer==='function'?lifecycleLayer(topic,c):null;
  if(tomb&&(life&&(life.day==='tomb'||life.movingTomb||(life.transform&&life.transform.state==='tomb')))){
    addUnique(out,BRANCH_CLASH[tomb],`Mộ ${tomb}: gặp xung để khai Mộ`,'unlock',1);notes.push('Có tượng nhập/hóa Mộ: xét xung khai Mộ cùng sức Dụng, không phán chậm/hung chỉ từ chữ Mộ.');
