@@ -700,7 +700,7 @@ if(window.HuyenCo){window.HuyenCo.liuYaoEvidence=liuYaoEvidence;window.HuyenCo.c
 function v68VisibleCandidates(topic,c){const ly=hiddenLiuYao(topic,c),z=calendarLayer(c),wanted=v65PrimaryTargets(topic,c),out=[];for(const rel of wanted){if(rel==='Thế'){const x=ly.najia.lines.find(a=>a.pos===z.sy.shi);if(x)out.push(x);continue}if(rel==='Ứng'){const x=ly.najia.lines.find(a=>a.pos===z.sy.ying);if(x)out.push(x);continue}ly.najia.lines.filter(a=>a.relation===rel).forEach(x=>out.push(x))}return {ly,z,wanted,lines:out}}
 function v68CandidateState(x,c,z){const power=linePower(x,c,z),t=power.temporal||{},moving=(c.moving||[]).includes(x.pos),monthV=((SEASON_POWER[t.mb]||{})[x.element]||0);let injury=0,injuryTags=[];if(t.monthBreak&&!t.breakRelief){injury+=2;injuryTags.push('Nguyệt Phá')}if(t.voided&&!t.voidFilled){injury++;injuryTags.push('Tuần Không')}if(t.dayClash&&!t.voidFilled&&!moving){injury++;injuryTags.push('Nhật xung')}const tuple=[monthV>=1?1:0,moving?1:0,t.monthBreak&&!t.breakRelief?0:1,t.voided&&!t.voidFilled?0:1,injury===0?1:0,power.score];return {line:Object.assign({},x,{power}),moving,monthV,injury,injuryTags,tuple}}
 function v68Compare(a,b){for(let i=0;i<a.tuple.length;i++){if(a.tuple[i]!==b.tuple[i])return b.tuple[i]-a.tuple[i]}return a.line.pos-b.line.pos}
-function v68SelectUseGod(topic,c){const q=v68VisibleCandidates(topic,c),states=q.lines.map(x=>v68CandidateState(x,c,q.z)).sort(v68Compare);if(!states.length){const hidden=q.wanted.map(r=>v66HiddenStatus(topic,c,r)).filter(Boolean).sort((a,b)=>b.score-a.score);return {z:q.z,wanted:q.wanted,primary:null,secondary:[],hidden,mainHidden:hidden[0]||null,mode:hidden.length?'hidden':'missing',ambiguous:false,timing:[]}}const primary=states[0],secondary=states.slice(1),timing=secondary.filter(s=>s.power.temporal&&(s.power.temporal.voided||s.power.temporal.monthBreak)).map(s=>({pos:s.line.pos,relation:s.line.relation,reason:s.injuryTags.join('、')||'候時'}));return {z:q.z,wanted:q.wanted,primary,secondary,hidden:[],mainHidden:null,mode:states.length>1?'multiple-visible':'single-visible',ambiguous:secondary.length>0&&v68Compare(primary,secondary[0])===0,timing}}
+function v68SelectUseGod(topic,c){const q=v68VisibleCandidates(topic,c),states=q.lines.map(x=>v68CandidateState(x,c,q.z)).sort(v68Compare);if(!states.length){const hidden=q.wanted.map(r=>v66HiddenStatus(topic,c,r)).filter(Boolean).sort((a,b)=>b.score-a.score);return {z:q.z,wanted:q.wanted,primary:null,secondary:[],hidden,mainHidden:hidden[0]||null,mode:hidden.length?'hidden':'missing',ambiguous:false,timing:[]}}const primary=states[0],secondary=states.slice(1),timing=secondary.filter(s=>s.line&&s.line.power&&s.line.power.temporal&&(s.line.power.temporal.voided||s.line.power.temporal.monthBreak)).map(s=>({pos:s.line.pos,relation:s.line.relation,reason:s.injuryTags.join('、')||'候時'}));return {z:q.z,wanted:q.wanted,primary,secondary,hidden:[],mainHidden:null,mode:states.length>1?'multiple-visible':'single-visible',ambiguous:secondary.length>0&&v68Compare(primary,secondary[0])===0,timing}}
 function targetLines(topic,c){const s=v68SelectUseGod(topic,c);return [s.primary,...s.secondary].filter(Boolean).map(x=>x.line)}
 function classicalLayer(topic,c){const s=v68SelectUseGod(topic,c),z=s.z,main=s.primary?s.primary.line:null,targets=[s.primary,...s.secondary].filter(Boolean).map(x=>x.line),mainHidden=s.mainHidden||null,avg=main?main.power.score:(mainHidden?mainHidden.score:0),useEl=main?main.element:(mainHidden?mainHidden.hidden.element:null),roles=useEl?spiritRoles(z.sy.element,useEl):null,level=avg>=4?'vượng':avg>=2?'khá vượng':avg>=0?'trung bình':avg>=-2?'suy':'rất suy';return {z,targets,avg,main,mainHidden,roles,level,month:monthBranch(z.date),primaryTargets:s.wanted,hiddenSpirits:s.hidden||[],dualUseGod:s}}
 window.HUYEN_CO_V68={selectUseGod:v68SelectUseGod,candidateState:v68CandidateState};if(window.HuyenCo){window.HuyenCo.targetLines=targetLines;window.HuyenCo.classicalLayer=classicalLayer;window.HuyenCo.v68DualUseGod=window.HUYEN_CO_V68}
@@ -1278,4 +1278,55 @@ window.HUYEN_CO_V77_FIXTURE={ok:errors.length===0,errors,checked,expected:256,fi
 })();
 </script>
 
+
+<script id="v78-topic-expansion-fix">
+(function(){
+'use strict';
+const V77=window.HUYEN_CO_V77_TOPIC_SPECIALIZATION;
+const EXTRA_RULES={
+ study:{label:'HỌC TẬP · THI CỬ',use:['Phụ Mẫu','Quan Quỷ'],good:'Phụ Mẫu có lực để nâng văn thư, kiến thức và bài vở; khi hỏi thi cử/công danh thì Quan Quỷ có lực và sinh/hợp Thế là tín hiệu hỗ trợ.',bad:'Phụ Mẫu Không/Phá/Mộ/Tuyệt hoặc bị khắc nặng; khi hỏi thi cử mà Quan Quỷ suy, bị Tử Tôn mạnh trực tiếp chế hoặc Thế không đủ lực tiếp nhận.',focus:'Tách học lực/quá trình ôn tập khỏi kết quả kỳ thi. Phụ Mẫu chủ bài vở-văn thư; Quan Quỷ chỉ được nâng trọng số khi câu hỏi thật sự nhắm đến thi đỗ, danh vị hoặc tuyển chọn.'},
+ travel:{label:'ĐI XA · CHUYỂN CHỖ',use:['Thế','Ứng','Phụ Mẫu'],good:'Thế có lực, quỹ đạo đi–đến thông, Ứng/nơi đến không khắc Thế; giấy tờ và phương tiện không bị cản trở rõ.',bad:'Thế suy Không/Phá, Ứng khắc Thế, gian hào tạo trở lực hoặc Phụ Mẫu yếu khi câu hỏi phụ thuộc giấy tờ/phương tiện.',focus:'Tách khả năng khởi hành khỏi khả năng đến nơi thuận lợi. Với chuyển chỗ, Ứng thiên về nơi/điều kiện phía mới; với chuyến đi, ưu tiên Thế, động hào và trở lực thực tế.'},
+ lost:{label:'TÌM NGƯỜI · TÌM ĐỒ',use:['Thê Tài','Phụ Mẫu','Ứng'],good:'Dụng thần tìm kiếm còn có lực, được sinh trợ hoặc có động/ứng kỳ giúp thu hẹp quá trình tìm.',bad:'Dụng thần suy, Không/Phá nặng, bị khắc mà không có cứu; nhiều tín hiệu tán khiến phạm vi tìm khó thu hẹp.',focus:'Không biến quẻ thành GPS. Tìm đồ phải nhận diện loại vật để chọn Dụng thần phù hợp; tìm người phải chọn Dụng theo quan hệ với người hỏi và ưu tiên biện pháp tìm kiếm thực tế.'},
+ timing:{label:'THỜI ĐIỂM · ỨNG KỲ',use:['Dụng thần','Hào động'],good:'Dụng thần có căn và xuất hiện mốc kích hoạt rõ: tĩnh gặp trị/xung, động gặp trị/hợp, Không chờ điền thực/xung Không, Phá chờ thực Phá/hợp Phá.',bad:'Dụng thần vô căn hoặc nhiều điều kiện cứu giải chưa đủ; khi đó không nên ép thành một ngày cụ thể.',focus:'Ứng kỳ trả về điều kiện và địa chi kích hoạt trước, rồi mới quy đổi thành ngày/tháng theo độ xa gần của sự việc; không trình bày như lịch định mệnh chắc chắn.'}
+};
+function expandedTopicSpecialization(topic,c){
+ if(V77&&V77.topicSpecialization){const old=V77.topicSpecialization(topic,c);if(old)return old;}
+ const r=EXTRA_RULES[topic];if(!r)return null;
+ const cl=classicalLayer(topic,c),sy=window.HUYEN_CO_V74_SHI_YING&&window.HUYEN_CO_V74_SHI_YING.shiYingLayer?window.HUYEN_CO_V74_SHI_YING.shiYingLayer(topic,c):null;
+ const tk=window.HUYEN_CO_V69_TIMING&&window.HUYEN_CO_V69_TIMING.timingEngine?window.HUYEN_CO_V69_TIMING.timingEngine(topic,c):null;
+ const main=cl&&cl.main,tags=main&&main.power&&main.power.tags?main.power.tags:[],evidence=[];
+ if(main)evidence.push(`Dụng trọng tâm: hào ${main.pos} ${main.stem}${main.branch} · ${main.relation} · ${cl.level}`);
+ if(tags.length)evidence.push(`trạng thái: ${tags.join(', ')}`);
+ if(sy&&(topic==='travel'||topic==='lost'))evidence.push(`Thế–Ứng: ${sy.relation}`);
+ if(tk&&topic==='timing'&&tk.notes&&tk.notes.length)evidence.push(`ứng kỳ: ${tk.notes.slice(0,2).join(' ')}`);
+ return {topic,label:r.label,good:r.good,bad:r.bad,focus:r.focus,evidence};
+}
+function expandedTopicNarrative(topic,c){const x=expandedTopicSpecialization(topic,c);if(!x)return '';return `${x.label}: ${x.focus} Điểm thuận cần kiểm: ${x.good} Điểm nghịch cần kiểm: ${x.bad}${x.evidence.length?' Hiện trạng engine: '+x.evidence.join('; ')+'.':''}`;}
+window.HUYEN_CO_V78_TOPIC_EXPANSION={version:'78.0',expandedTopicSpecialization,expandedTopicNarrative,rules:EXTRA_RULES};
+if(window.HuyenCo)Object.assign(window.HuyenCo,{expandedTopicSpecialization,expandedTopicNarrative});
+})();
+</script>
+<script id="v78-topic-expansion-render-hook">
+(function(){
+'use strict';
+const btn=document.getElementById('cast');if(!btn||typeof btn.onclick!=='function')return;
+const old=btn.onclick;
+btn.onclick=function(){const ret=old.apply(this,arguments);try{const topic=document.getElementById('topic').value,q=document.getElementById('question').value.trim();if(!q||!['study','travel','lost','timing'].includes(topic))return ret;const seed=nowSeed(q),c=Object.assign(cast(seed),{question:q});const text=window.HUYEN_CO_V78_TOPIC_EXPANSION.expandedTopicNarrative(topic,c);const deep=document.getElementById('deep');if(text&&deep&&!deep.textContent.includes(text))deep.textContent+=' '+text;}catch(e){console.warn('[v78 topic expansion hook]',e)}return ret;};
+})();
+</script>
+<script id="v78-topic-expansion-fixture">
+(function(){
+'use strict';
+const errors=[];let checked=0;
+const topics=['study','travel','lost','timing'];
+for(const h of HEX){for(const topic of topics){try{const q=topic==='study'?'Kỳ thi này kết quả thế nào?':topic==='travel'?'Chuyến đi này có thuận lợi không?':topic==='lost'?'Tôi có tìm lại đồ bị mất không?':'Bao giờ việc này có kết quả?';const c={h,moving:[1],question:q,date:new Date('2026-11-01T12:00:00Z')};const r=window.HUYEN_CO_V78_TOPIC_EXPANSION.expandedTopicSpecialization(topic,c);checked++;if(!r||!r.label||!r.good||!r.bad||!r.focus)errors.push(`${h.id}/${topic}: incomplete`);}catch(e){errors.push(`${h.id}/${topic}: ${e.message}`)}}}
+const unique=new Set(Object.values(window.HUYEN_CO_V78_TOPIC_EXPANSION.rules).map(x=>x.focus));if(unique.size!==4)errors.push('expanded topic narratives are not distinct');
+window.HUYEN_CO_V78_FIXTURE={ok:errors.length===0,errors,checked,expected:256,fixes:['study/travel/lost/timing now have separate classical decision lenses','study separates learning process from exam/result logic','lost-person/item narrative explicitly avoids false precise geolocation','timing uses activation conditions instead of guaranteed dates','topic expansion remains subordinate to Use God and priority verdict']};
+})();
+</script>
+
+
+<script id="v79-runtime-hotfix-marker">
+window.HUYEN_CO_V79_RUNTIME_HOTFIX={issue:"v68 secondary candidate referenced s.power.temporal although power is stored on s.line.power",fix:"guarded access via s.line.power.temporal",date:"2026-11-01"};
+</script>
 </body></html>
