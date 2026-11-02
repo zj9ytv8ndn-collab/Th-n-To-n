@@ -760,7 +760,7 @@ timingNarrative=v69TimingNarrative;
 <script id="timing-fixture-v69">
 (function(){const errors=[];let checked=0,withCandidates=0;for(const h of HEX){for(const topic of ['general','money','work','timing']){const c={h,moving:[1],question:'khi nào việc này có kết quả?',date:new Date('2026-11-01T12:00:00Z')};try{const r=window.HuyenCo.v69TimingCandidates(topic,c);checked++;if(r.main&&r.candidates.length)withCandidates++;if(r.candidates.some(x=>!['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'].includes(x.branch)))errors.push(`bad branch ${h.id}/${topic}`)}catch(e){errors.push(`${h.id}/${topic}: ${e.message}`)}}}window.HUYEN_CO_V69_FIXTURE={ok:errors.length===0,errors,checked,withCandidates,fixes:['Ứng kỳ separated from Cát/Hung score','static line -> value/clash; moving line -> value/combine','旬空 -> fill/clash candidates','月破 -> fill/combine candidates','六合/合住 -> clash-open candidate','moving transformation contributes transformed-branch timing','near/far scale is described conditionally, never as deterministic date']};})();
 </script>
-\n<script id="v70-harmony-clash-engine">
+<script id="v70-harmony-clash-engine">
 /* v70 六合/六沖 interaction engine.
    Classical basis: 增刪卜易 六合章第十九、六沖章第二十.
    Harmony/clash is contextual: 用神 strength remains primary; no flat +1/-1 scoring. */
@@ -1696,7 +1696,7 @@ if(window.HuyenCo){window.HuyenCo.finalVerdictV90=finalVerdict;window.HuyenCo.ve
 try{window.HUYEN_CO_V90_FIXTURE=audit()}catch(e){window.HUYEN_CO_V90_FIXTURE={ok:false,errors:[String(e)]}}
 })();
 </script>
-\n<script id="v91-use-god-intent-audit">
+<script id="v91-use-god-intent-audit">
 /* v91 · Dụng thần theo đối tượng câu hỏi.
    Mục tiêu: không dùng một Dụng thần cố định cho cả topic; ưu tiên quan hệ/đối tượng được hỏi.
    Đây là profile Lục Hào của app, không tự nhận là quy tắc duy nhất của mọi truyền thừa. */
@@ -1772,7 +1772,8 @@ let errors=[];for(const [topic,question,want] of tests){try{const got=v91Primary
 let runtime=0;for(const h of HEX){for(const topic of ['love','work','money','study','travel','lost','timing','dispute','health','general']){try{const c={h,moving:[1],question:'fixture '+topic,date:new Date('2026-11-01T12:00:00Z')};const x=v68SelectUseGod(topic,c);runtime++;if(!x||!Array.isArray(x.wanted)||!x.wanted.length)errors.push(`runtime ${h.id}/${topic}`)}catch(e){errors.push(`runtime ${h.id}/${topic}: ${e.message}`)}}}
 window.HUYEN_CO_V91_FIXTURE={ok:errors.length===0,errors,semanticCases:tests.length,runtimeCases:runtime,expectedRuntime:640,fixes:['Dụng thần now follows the object/relationship in the question, not topic alone','Quit/job, contract/debt/sale, lawsuit/negotiation keep distinct target sets','Love does not invent querent gender; explicit husband/male -> Quan Quỷ, wife/female -> Thê Tài, otherwise both are retained','Health/lost-person questions can use the asked person’s 六親 relation','Multiple target relations are retained for v68 ranking instead of flattened into one generic line']};
 })();
-</script>\n\n<script id="v92-role-force-target-binding">
+</script>
+<script id="v92-role-force-target-binding">
 /* v92 · Bind 元神/忌神/仇神 to the actually selected 用神 element(s).
    Prevents a strong line of the wrong element from being counted as support. */
 (function(){
@@ -1842,7 +1843,8 @@ window.HUYEN_CO_V91_FIXTURE={ok:errors.length===0,errors,semanticCases:tests.len
  let runtime=0;for(const h of HEX){for(const topic of ['love','work','money','study','travel','lost','timing','dispute','health','general']){try{const c={h,moving:[1,3],question:'fixture '+topic,date:new Date('2026-11-01T12:00:00Z')};const x=v92LiuYaoPriority(topic,c);runtime++;if(!Number.isFinite(x.raw)||!x.roleForces)errors.push(`runtime ${h.id}/${topic}`);}catch(e){errors.push(`runtime ${h.id}/${topic}: ${e.message}`);}}}
  window.HUYEN_CO_V92_FIXTURE={ok:errors.length===0,errors,runtime,roleAlgebraCases:5,fixes:['元/忌/仇 bound to selected 用神 element','wrong-element strength cannot count as support','secondary 用神 evidence is exposed instead of blindly averaged']};
 })();
-</script>\n<script id="v93-hidden-spirit-release">
+</script>
+<script id="v93-hidden-spirit-release">
 /* v93: 伏神/飛神 release layer. Extends v66 without changing casting or DOM wiring. */
 function v93HiddenRelease(topic,c,relation){
  const base=v66HiddenStatus(topic,c,relation); if(!base)return null;
@@ -1908,7 +1910,7 @@ if(window.HuyenCo){window.HuyenCo.classicalLayer=classicalLayer;window.HuyenCo.v
  window.HUYEN_CO_V93_FIXTURE={ok:errors.length===0,errors,missingRelations:missing,resolvedHidden:resolved,voidCases,checks:['Không vong is treated as timing/availability, not automatic loss','Xung/khắc Phi may reveal Phục only with hidden-strength guard','Phi sinh Phục and weakened Phi-khắc-Phục are distinguished','Hidden main target propagates releaseScore into classicalLayer']};
 })();
 </script>
-\n<script id="v94-timing-release-engine">
+<script id="v94-timing-release-engine">
 /* v94 應期 refinement: Vietnamese branch normalization + hidden-spirit release + tomb opening.
    Returns activation conditions, never a guaranteed calendar date. */
 (function(){
@@ -1969,7 +1971,8 @@ window.HuyenCo.v69TimingCandidates=v94TimingCandidates;window.HuyenCo.v69TimingN
  for(const h of HEX){for(const topic of ['general','money','work','timing']){try{const c={h,moving:[1],question:'khi nào việc này có kết quả?',date:new Date('2026-11-01T12:00:00Z')};const r=window.HUYEN_CO_V94.timingCandidates(topic,c);checked++;if(r.main&&r.candidates.length)withCandidates++;if(r.candidates.some(x=>!B.includes(x.branch)))errors.push(`bad branch ${h.id}/${topic}`);}catch(e){errors.push(`${h.id}/${topic}: ${e.message}`);}}}
  window.HUYEN_CO_V94_FIXTURE={ok:errors.length===0,errors,checked,withCandidates,checks:['Ứng kỳ uses same Vietnamese branch notation as core engine','visible and hidden Use God share one timing path','void/month-break are release locks, not automatic failure','hidden spirit requires reveal condition before event completion','tomb adds clash-open condition without automatic fatalism','no deterministic date is promised']};
 })();
-</script>\n
+</script>
+
 <script id="v95-day-month-activation-engine">
 /* v95 · Nhật thần / Nguyệt kiến / Ám động / Nhật phá
    Principle: a static line clashed by the Day is not automatically broken.
@@ -2075,7 +2078,7 @@ if(v.dayState!=='void-filled')errors.push('void + day clash must classify as voi
 window.HUYEN_CO_V95_FIXTURE={ok:errors.length===0,errors,checked,hiddenMoving,dayBroken,movingClashed,voidFilled,checks:['Ám Động requires static line + Day clash + pre-clash qi >= 1','Weak static Day-clashed line is Nhật Phá','Moving line Day-clashed stays moving; it is not relabeled Ám Động','Xung Không is separated from Nhật Phá','Nguyệt Phá blocks automatic Ám Động classification','Downstream layers share the same linePower/temporalState path']};
 })();
 </script>
-\n<script id="v96-transform-direction-binding">
+<script id="v96-transform-direction-binding">
 (function(){
 'use strict';
 function v96TransformState(c,line,z){
@@ -2439,7 +2442,7 @@ window.HUYEN_CO_V100={version:'100.0',objectProfile,shiYingLayer:layer,shiYingNa
  window.HUYEN_CO_V100_FIXTURE={ok:errors.length===0,errors,semanticCases:semantic.length,runtimeCases:runtime,expectedRuntime:640,checks:['Thế is querent/acting subject','Ứng label follows question object','moving side determines initiative before flat lucky/unlucky reading','void/month-break modify actuality/strength, not identity','Use God on Shi/Ying is explicitly bound to the corresponding side']};
 })();
 </script>
-\n<script id="v101-intervening-line-context-binding">
+<script id="v101-intervening-line-context-binding">
 /* v101 · Gian hào theo ngữ cảnh Thế–Ứng.
    Chỉ nâng gian hào thành người trung gian/trở lực khi có kích hoạt thực: động, ám động, hợp trú, Không/Phá có điều kiện,
    và phải tác động rõ lên Thế/Ứng. Gian hào tĩnh thông thường không tự mang nghĩa "người thứ ba". */
@@ -2515,7 +2518,7 @@ window.HUYEN_CO_V101={version:'101.0',interveningLinesLayer:classify,intervening
  window.HUYEN_CO_V101_FIXTURE={ok:errors.length===0,errors:errors.slice(0,30),runtimeCases:runtime,expectedRuntime:640,staticNonPromoted:staticCases,checks:['exactly two positions between Shi and Ying','static unactivated lines are not promoted to literal intermediaries','moving/hidden-moving/held conditions gate relevance','Void/Month Break reduce actuality','intervening evidence cannot independently reverse the Use-God verdict']};
 })();
 </script>
-\n<script id="v102-six-spirit-context-binding">
+<script id="v102-six-spirit-context-binding">
 /* v102 · Lục Thần theo Dụng thần + chủ đề + kích hoạt.
    Lục Thần là tượng nghĩa phụ: không tự quyết Cát/Hung và không cộng điểm phẳng. */
 (function(){
@@ -2549,5 +2552,42 @@ for(const h of HEX){for(const topic of ['love','work','money','dispute','health'
 // An thần 10 Nhật Can × 6 hào remains 60 exact placements from v73.
 const base=window.HUYEN_CO_V73_SIX_SPIRITS;if(!base||base.pass!==true)errors.push('v73 placement fixture failed');
 window.HUYEN_CO_V102_FIXTURE={ok:errors.length===0,errors:errors.slice(0,30),runtimeCases:runtime,expectedRuntime:384,placementCases:base&&base.checked,checks:['Six Spirits remain secondary symbolism','moving/hidden-moving Use God raises relevance; static/void/broken lowers actuality','topic lens changes meaning without changing line placement','White Tiger is not automatically inauspicious; Azure Dragon is not automatically auspicious','health wording remains non-diagnostic']};})();
+</script>
+<script id="v103-lifecycle-use-god-binding">
+/* v103 · Sinh/Vượng/Mộ/Tuyệt bound to selected Use God.
+   野鶴 profile: lifecycle is secondary evidence under day/month strength and moving transformation. */
+(function(){
+const V72=window.HUYEN_CO_V72;if(!V72)return;
+const CLASH=window.BRANCH_CLASH||BRANCH_CLASH;
+function selected(topic,c){const s=(window.HuyenCo.v68SelectUseGod||v68SelectUseGod)(topic,c);return s.primary&&s.primary.line?s.primary.line:(s.mainHidden&&s.mainHidden.hidden?s.mainHidden.hidden:null);}
+function opened(tomb,c,z){if(!tomb)return false;const mb=monthBranch(z.date),db=z.gz.branch;if(CLASH[tomb]===mb||CLASH[tomb]===db)return true;const n=najiaLines(c.h),nn=najiaLines(changedHex(c));return (c.moving||[]).some(p=>{const a=n.lines[p-1],b=nn.lines[p-1];return (a&&CLASH[tomb]===a.branch)||(b&&CLASH[tomb]===b.branch);});}
+function layer(topic,c){
+ const z=calendarLayer(c),main=selected(topic,c);if(!main)return {main:null,delta:0,notes:[]};
+ const p=linePower(main,c,z),score=p&&typeof p.score==='number'?p.score:0,weak=score<0,strong=score>0;
+ const day=V72.lifeState(main.element,z.gz.branch),month=V72.lifeState(main.element,monthBranch(z.date));
+ const moving=(c.moving||[]).includes(main.pos),nn=moving?najiaLines(changedHex(c)):null,to=moving&&nn?nn.lines[main.pos-1]:null,transform=to?V72.lifeState(main.element,to.branch):null;
+ const tomb=(V72.life[main.element]||{}).tomb,tombOpen=opened(tomb,c,z);let delta=0;const notes=[];
+ if(day==='birth'||month==='birth'){if(!weak){delta+=1;notes.push('Dụng gặp Trường Sinh và bản thân còn khí: chỉ ghi trợ lực phụ.');}else notes.push('Dụng gặp Trường Sinh nhưng đang suy: không dùng chữ Sinh để lấn át Nhật–Nguyệt/sinh khắc thực tế.');}
+ if(day==='prosper'||month==='prosper'){if(!weak){delta+=1;notes.push('Dụng gặp Đế Vượng và không suy: tăng hậu thuẫn phụ.');}else notes.push('Có Đế Vượng nhưng Dụng đang chịu suy/khắc: không tự đảo verdict.');}
+ if(day==='tomb'||month==='tomb'){if(weak&&!tombOpen){delta-=1;notes.push('Dụng suy lại nhập Mộ chưa khai: trì trệ tăng.');}else notes.push(tombOpen?'Có Mộ nhưng đã gặp điều kiện xung khai; không coi là bị khóa tuyệt đối.':'Dụng có khí gặp Mộ: đọc là thu/tàng/chậm, không tự phán Hung.');}
+ if(day==='absolute'||month==='absolute'){if(weak){delta-=1;notes.push('Dụng suy lại gặp Tuyệt: bất lợi tăng nhưng vẫn là chứng cứ phụ.');}else notes.push('Dụng còn khí gặp Tuyệt: không phán tuyệt đối là Hung.');}
+ if(transform==='birth'){delta+=1;notes.push('Dụng động hóa Trường Sinh: hậu lực có hướng phục hồi/tăng trưởng.');}
+ if(transform==='prosper'){delta+=1;notes.push('Dụng động hóa Đế Vượng: hậu lực mạnh hơn, vẫn xét Hồi đầu Sinh/Khắc và Hóa Tiến/Thoái.');}
+ if(transform==='tomb'){if(weak&&!tombOpen){delta-=1;notes.push('Dụng suy động hóa Mộ chưa khai: hậu lực bị giữ/chậm.');}else notes.push('Dụng động hóa Mộ nhưng còn khí hoặc Mộ có cửa khai: không định thất bại chỉ từ chữ Mộ.');}
+ if(transform==='absolute'){if(weak){delta-=1;notes.push('Dụng suy động hóa Tuyệt: hậu lực yếu thêm.');}else notes.push('Dụng động hóa Tuyệt nhưng bản hào còn khí: cần đọc cùng biến hào, không phán tuyệt đối.');}
+ return {main,power:p,day,month,moving,transform,tomb,tombOpen,delta:Math.max(-2,Math.min(2,delta)),notes};
+}
+const prev=window.HuyenCo.v67LiuYaoPriority;
+function priority(topic,c){const r=prev(topic,c),old=r.lifecycle&&typeof r.lifecycle.delta==='number'?r.lifecycle.delta:0,x=layer(topic,c);let raw=(r.raw||0)-old+x.delta;const notes=[...(r.notes||[])];notes.push(...x.notes);return Object.assign({},r,{raw,dir:raw>=4?1:raw<=-4?-1:0,notes,lifecycle:x});}
+V72.lifecycleLayer=layer;window.HuyenCo.v72LifecycleLayer=layer;window.HuyenCo.v67LiuYaoPriority=priority;
+window.HUYEN_CO_V103={version:'103.0',layer,priority,profile:'野鶴：只操作 生/旺/墓/絕；十二長生其餘八位不作平面吉凶分數'};
+})();
+</script>
+<script id="v103-lifecycle-fixture">
+(function(){const V=window.HUYEN_CO_V103,errors=[];let runtime=0;if(!V){errors.push('v103 missing');return;}
+for(const h of HEX){for(const topic of ['love','work','money','study','travel','lost','timing','dispute','health','general']){try{const c={h,moving:[1],question:'fixture lifecycle',date:new Date('2026-11-01T12:00:00Z')},x=V.layer(topic,c);runtime++;if(!x||!Array.isArray(x.notes))errors.push(`${h.id}/${topic}:missing`);if(x&&Math.abs(x.delta)>2)errors.push(`${h.id}/${topic}:uncapped`);}catch(e){errors.push(`${h.id}/${topic}:${e.message}`);}}}
+const L=window.HUYEN_CO_V72&&window.HUYEN_CO_V72.life;if(!L||Object.keys(L).length!==5)errors.push('life table missing');
+for(const el of ['Kim','Mộc','Hỏa','Thủy','Thổ']){const m=L&&L[el];if(!m||!m.birth||!m.prosper||!m.tomb||!m.absolute)errors.push('bad '+el);}
+window.HUYEN_CO_V103_FIXTURE={ok:errors.length===0,errors:errors.slice(0,30),runtimeCases:runtime,expectedRuntime:640,checks:['Lifecycle is bound to the actually selected Use God','Only Sinh/Vuong/Mo/Tuyet are operational in this profile','Strong/support context prevents Mo/Tuyet from becoming automatic failure','Tomb opening checks day/month and moving/transformed clash','Old lifecycle delta is removed before v103 delta to avoid double counting','Lifecycle adjustment is capped at ±2 and remains secondary to core strength/transformation']};})();
 </script>
 </body></html>
