@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dịch Lý">
+<meta name="app-build" content="1.39">
 <link id="pwa-manifest" rel="manifest" href="">
 <title>Dịch Lý Huyền Học — Mai Hoa · Lục Hào · Tiểu Lục Nhâm</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
@@ -24,7 +25,7 @@ h1,h2,h3,.serif{font-family:'Playfair Display',serif}
 header{padding:26px 0 10px;text-align:center;position:relative}
 header .yin{font-size:30px;color:var(--gold);opacity:.9}
 header h1{font-size:clamp(24px,4vw,38px);letter-spacing:2px;background:linear-gradient(180deg,#f5e2a0,#c9a227);-webkit-background-clip:text;background-clip:text;color:transparent}
-header p{color:var(--mut);letter-spacing:3px;text-transform:uppercase;font-size:12px;margin-top:6px}
+header p{color:var(--mut);letter-spacing:2px;text-transform:uppercase;font-size:12px;margin:6px auto 0;line-height:1.6;max-width:100%;overflow-wrap:anywhere}
 .hdr-btns{position:absolute;right:18px;top:26px;display:flex;gap:8px}
 .hdr-btns button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px}
 .hdr-btns button:hover{border-color:var(--gold)}
@@ -33,7 +34,9 @@ header p{color:var(--mut);letter-spacing:3px;text-transform:uppercase;font-size:
 .qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .qcard{background:#121829;border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:.18s;text-align:left;color:var(--txt)}
 .qcard:hover{transform:translateY(-2px);border-color:#4a5480}
-.qcard.sel{border-color:var(--gold);background:linear-gradient(180deg,#1c2136,#171d31);box-shadow:0 0 0 1px var(--gold),0 8px 20px rgba(212,175,55,.12)}
+.qcard.sel,.qcard[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(180deg,#1c2136,#171d31);box-shadow:0 0 0 1px var(--gold),0 8px 20px rgba(212,175,55,.12)}
+.qcard:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+.qcard[aria-pressed="true"]:after{content:"✓ Đã chọn";display:block;color:var(--gold2);font-size:12px;margin-top:8px}
 .qcard .ic{font-size:24px}.qcard b{display:block;margin:8px 0 4px;font-size:15px}.qcard small{color:var(--mut);font-size:12px}
 label{display:block;color:var(--mut);font-size:13px;margin:14px 0 6px}
 input,textarea,select{width:100%;background:#0e1322;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px 14px;font-size:15px;font-family:inherit}
@@ -119,6 +122,15 @@ body.school-lh .mh-sec{display:none!important}
 
 @media(max-width:640px){
   header{padding-top:16px}
+  header p{font-size:10px;letter-spacing:1px;line-height:1.7;padding:0 8px}
+  .wrap{padding:0 14px}
+  .card{padding:18px;margin:14px 0}
+  .qgrid{grid-template-columns:1fr;gap:9px}
+  .qcard{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px;align-items:center;padding:12px 14px;min-height:70px}
+  .qcard .ic{grid-row:span 2}
+  .qcard b{margin:0;line-height:1.4}
+  .qcard small{line-height:1.45}
+  select{font-size:14px;padding:11px 10px;min-width:0}
   .hdr-btns{position:static;justify-content:center;flex-wrap:wrap;margin-top:14px;gap:8px}
   .hdr-btns button{padding:8px 12px;font-size:12px}
 }
@@ -137,7 +149,7 @@ details.tech[open] summary:before{content:"\25BE "}
 <header>
   <div class="yin">☯</div>
   <h1>DỊCH LÝ HUYỀN HỌC</h1>
-  <p>Mai Hoa Dịch Số · Lục Hào Na Giáp · Tiểu Lục Nhâm · <span style="color:var(--gold)">bản v1.36 — Khôi phục Bước 1</span></p>
+  <p>Mai Hoa Dịch Số · Lục Hào Na Giáp · Tiểu Lục Nhâm · <span style="color:var(--gold)">bản v1.39 — Minh bạch hồ sơ nguồn</span></p>
   <div class="hdr-btns">
     <button onclick="openHist()">📜 Lịch sử</button>
     <button onclick="toggleTheme()" id="themeBtn">🌓 Giao diện</button>
@@ -152,15 +164,15 @@ details.tech[open] summary:before{content:"\25BE "}
   <div class="card" id="step1">
     <span class="step-tag">Bước 1 — Chọn vấn đề muốn hỏi</span>
     <div class="qgrid" id="qgrid">
-      <button type="button" class="qcard" data-q="sn" onclick="selectQuestion('sn',this)"><span class="ic">💼</span><b>Sự nghiệp – công việc</b><small>VD: Tôi nên nhận việc mới không? Khi nào thăng tiến?</small></button>
-      <button type="button" class="qcard" data-q="tl" onclick="selectQuestion('tl',this)"><span class="ic">💰</span><b>Tài lộc – kinh doanh</b><small>VD: Đầu tư khoản này có lời không? Thu hồi nợ được không?</small></button>
-      <button type="button" class="qcard" data-q="td" onclick="selectQuestion('td',this)"><span class="ic">❤️</span><b>Tình duyên – hôn nhân</b><small>VD: Người ấy có thật lòng không? Khi nào nên cưới?</small></button>
-      <button type="button" class="qcard" data-q="sk" onclick="selectQuestion('sk',this)"><span class="ic">🌿</span><b>Sức khỏe</b><small>VD: Bệnh này có nguy hiểm không? Khi nào khỏi?</small></button>
-      <button type="button" class="qcard" data-q="gd" onclick="selectQuestion('gd',this)"><span class="ic">🏠</span><b>Gia đạo – bình an</b><small>VD: Nhà có yên không? Nên mua nhà lúc này không?</small></button>
-      <button type="button" class="qcard" data-q="kt" onclick="selectQuestion('kt',this)"><span class="ic">⚖️</span><b>Kiện tụng – tranh chấp</b><small>VD: Kiện có thắng không? Nên hòa giải hay theo đuổi?</small></button>
-      <button type="button" class="qcard" data-q="xh" onclick="selectQuestion('xh',this)"><span class="ic">🧭</span><b>Xuất hành – di chuyển</b><small>VD: Chuyến đi này có an toàn không?</small></button>
-      <button type="button" class="qcard" data-q="tc" onclick="selectQuestion('tc',this)"><span class="ic">📚</span><b>Học hành – thi cử</b><small>VD: Kỳ thi tới có đỗ không? Nên thi trường nào?</small></button>
-      <button type="button" class="qcard" data-q="tv" onclick="selectQuestion('tv',this)"><span class="ic">🌟</span><b>Thời vận tổng quát</b><small>VD: Vận thời gian tới của tôi thế nào?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="sn" onclick="selectQuestion('sn',this)"><span class="ic">💼</span><b>Sự nghiệp – công việc</b><small>VD: Tôi nên nhận việc mới không? Khi nào thăng tiến?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="tl" onclick="selectQuestion('tl',this)"><span class="ic">💰</span><b>Tài lộc – kinh doanh</b><small>VD: Đầu tư khoản này có lời không? Thu hồi nợ được không?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="td" onclick="selectQuestion('td',this)"><span class="ic">❤️</span><b>Tình duyên – hôn nhân</b><small>VD: Người ấy có thật lòng không? Khi nào nên cưới?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="sk" onclick="selectQuestion('sk',this)"><span class="ic">🌿</span><b>Sức khỏe</b><small>VD: Bệnh này có nguy hiểm không? Khi nào khỏi?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="gd" onclick="selectQuestion('gd',this)"><span class="ic">🏠</span><b>Gia đạo – bình an</b><small>VD: Nhà có yên không? Nên mua nhà lúc này không?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="kt" onclick="selectQuestion('kt',this)"><span class="ic">⚖️</span><b>Kiện tụng – tranh chấp</b><small>VD: Kiện có thắng không? Nên hòa giải hay theo đuổi?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="xh" onclick="selectQuestion('xh',this)"><span class="ic">🧭</span><b>Xuất hành – di chuyển</b><small>VD: Chuyến đi này có an toàn không?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="tc" onclick="selectQuestion('tc',this)"><span class="ic">📚</span><b>Học hành – thi cử</b><small>VD: Kỳ thi tới có đỗ không? Nên thi trường nào?</small></button>
+      <button type="button" class="qcard" aria-pressed="false" data-q="tv" onclick="selectQuestion('tv',this)"><span class="ic">🌟</span><b>Thời vận tổng quát</b><small>VD: Vận thời gian tới của tôi thế nào?</small></button>
     </div>
     <noscript><p class="mut" style="font-size:13px">Trình xem này đang tắt JavaScript. Để chọn vấn đề và lập quẻ, hãy mở file HTML bằng Safari hoặc Chrome.</p></noscript>
   </div>
@@ -173,9 +185,9 @@ details.tech[open] summary:before{content:"\25BE "}
     <select id="fmode" onchange="modeChange()"><option value="time">Theo giờ — Mai Hoa tam trùng</option><option value="coin">Gieo 3 đồng xu — Lục Hào</option><option value="num">Nhập số — đã gieo sẵn</option></select>
     <label>Ưu tiên phần luận giải</label>
     <select id="fschool" onchange="schoolChange()">
-      <option value="mix">Tích hợp — Mai Hoa + Lục Hào + Tiểu Lục Nhâm</option>
-      <option value="mh">Ưu tiên Mai Hoa — ẩn nhóm chi tiết Lục Hào</option>
-      <option value="lh">Ưu tiên Lục Hào — ẩn nhóm chi tiết Mai Hoa</option>
+      <option value="mix">Tích hợp — Mai Hoa + Lục Hào + TLN</option>
+      <option value="mh">Ưu tiên Mai Hoa</option>
+      <option value="lh">Ưu tiên Lục Hào</option>
     </select>
     <p class="mut" style="font-size:12px;margin:6px 0 12px">Đây là bộ lọc cách trình bày. Lời tổng luận và chỉ số vẫn dùng mô hình tích hợp Mai Hoa, Lục Hào và Tiểu Lục Nhâm; chọn ưu tiên không biến phép luận thành một hệ thuần riêng.</p>
     <div class="row">
@@ -223,6 +235,7 @@ details.tech[open] summary:before{content:"\25BE "}
     <button onclick="exportData()">⬇ Xuất dữ liệu (JSON)</button>
     <button onclick="document.getElementById('impfile').click()">⬆ Nạp dữ liệu từ file</button>
     <button onclick="resetData()">🗑 Xoá dữ liệu tùy chỉnh</button>
+    <button onclick="auditCurrentData()">🔎 Kiểm tra dữ liệu</button>
   </div>
   <input type="file" id="impfile" accept=".json" class="hidden" onchange="importFile(event)">
   <label>Hoặc dán JSON vào đây để nạp:</label>
@@ -233,6 +246,7 @@ details.tech[open] summary:before{content:"\25BE "}
     <button onclick="closeData()">Đóng</button>
   </div>
   <div id="dinfo" class="mut" style="font-size:12px"></div>
+  <div id="dataAuditOutput" class="read" role="status" aria-live="polite" style="display:none;font-size:13px;line-height:1.65;margin-top:12px"></div>
 </div></div>
 
 <!-- MODAL LỊCH SỬ -->
@@ -290,7 +304,7 @@ function normalizeCopyText(data){
 }
 normalizeCopyText(DEFAULT_DATA);
 function loadDB(){try{const s=localStorage.getItem('dlyh_db');if(s){const d=JSON.parse(s);if(validDataShape(d)){if(normalizeCopyText(d)){try{localStorage.setItem('dlyh_db',JSON.stringify(d));}catch(e){}}return d;}}}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_DATA));}
-function saveDB(){ try{localStorage.setItem('dlyh_db',JSON.stringify(DB));}catch(e){} }
+function saveDB(){ try{localStorage.setItem('dlyh_db',JSON.stringify(DB));return true;}catch(e){return false;} }
 DB = loadDB();
 DB.hexes.forEach(h=>{const d0=DEFAULT_DATA.hexes.find(x=>x.n===h.n)||{};["tong","xu","a","hd","qt","dt","ht","advice"].forEach(f=>{if(!h[f])h[f]=d0[f]})});
 DB.thanSx=DB.thanSx||DEFAULT_DATA.thanSx;DB.tpl=Object.assign({},DEFAULT_DATA.tpl,DB.tpl||{});
@@ -672,14 +686,14 @@ function zhouYiRuleTrace(mvs,base,changed){
   const count=mvs.length, nm=["Sơ","Nhị","Tam","Tứ","Ngũ","Thượng"];
   const line=(hex,pos)=>"hào "+nm[pos-1]+" của quẻ "+hex.name+": <i>“"+hex.ht[pos-1]+"”</i> — "+hex.hd[pos-1];
   if(count===0)return{mode:"quẻ tĩnh",html:"Không có hào động; theo 《易学启蒙》, đọc quẻ từ quẻ gốc <b>"+base.name+"</b>: <i>“"+base.qt+"”</i> (nội quái làm Trinh, ngoại quái làm Hối)."};
-  if(count===1)return{mode:"một hào động",html:"Dùng hào động của quẻ gốc: "+line(base,mvs[0])+". Nguồn quy tắc: Chu Hi, 《易学启蒙》, quy tắc một hào biến."};
-  if(count===2)return{mode:"hai hào động",html:"Đọc hai hào động của quẻ gốc; hào trên làm trọng: "+line(base,mvs[0])+"; "+line(base,mvs[1])+". Nguồn quy tắc: Chu Hi, 《易学启蒙》, quy tắc hai hào biến."};
+  if(count===1)return{mode:"một hào động",html:"Dùng hào động của quẻ gốc: "+line(base,mvs[0])+". Nguồn quy tắc: Chu Hi, 《易學啟蒙》, quy tắc một hào biến."};
+  if(count===2)return{mode:"hai hào động",html:"Đọc hai hào động của quẻ gốc; hào trên làm trọng: "+line(base,mvs[0])+"; "+line(base,mvs[1])+". Nguồn văn bản: Chu Hi, 《易學啟蒙》卷四〈考變占〉. Chính văn ghi “經傳無文，今以例推之” — đây là phép suy theo lệ, không phải quy tắc có chứng cứ trực tiếp trong Kinh truyện."};
   if(count===3){
     const key=mvs.join(""),idx=THREE_CHANGE_ORDER.indexOf(key),hostFirst=idx>=0&&idx<10;
     return{mode:"ba hào động",html:"Đọc cả hai lời quẻ: <b>Trinh</b> — quẻ gốc "+base.name+" (<i>“"+base.qt+"”</i>); <b>Hối</b> — quẻ biến "+changed.name+" (<i>“"+changed.qt+"”</i>). Tổ hợp hào động "+key+" xếp thứ "+(idx+1)+"/20 trong 《易学启蒙》; trọng tâm là "+(hostFirst?"quẻ gốc (Trinh)":"quẻ biến (Hối)")+". Bảng thứ tự được mã hóa tường minh để có thể đối chiếu."};
   }
-  if(count===4){const still=[1,2,3,4,5,6].filter(x=>!mvs.includes(x));return{mode:"bốn hào động",html:"Đọc hai hào tĩnh của quẻ biến; hào dưới làm trọng: "+line(changed,still[0])+"; "+line(changed,still[1])+". Nguồn quy tắc: Chu Hi, 《易学启蒙》, quy tắc bốn hào biến."};}
-  if(count===5){const still=[1,2,3,4,5,6].find(x=>!mvs.includes(x));return{mode:"năm hào động",html:"Đọc hào tĩnh duy nhất của quẻ biến: "+line(changed,still)+". Nguồn quy tắc: Chu Hi, 《易学启蒙》, quy tắc năm hào biến."};}
+  if(count===4){const still=[1,2,3,4,5,6].filter(x=>!mvs.includes(x));return{mode:"bốn hào động",html:"Đọc hai hào tĩnh của quẻ biến; hào dưới làm trọng: "+line(changed,still[0])+"; "+line(changed,still[1])+". Nguồn văn bản: Chu Hi, 《易學啟蒙》卷四〈考變占〉. Chính văn ghi “經傳亦無文，今以例推之” — đây là phép suy theo lệ, không phải quy tắc có chứng cứ trực tiếp trong Kinh truyện."};}
+  if(count===5){const still=[1,2,3,4,5,6].find(x=>!mvs.includes(x));return{mode:"năm hào động",html:"Đọc hào tĩnh duy nhất của quẻ biến: "+line(changed,still)+". Nguồn quy tắc: Chu Hi, 《易學啟蒙》, quy tắc năm hào biến."};}
   if(base.n===1)return{mode:"sáu hào động — Càn",html:"Dùng <b>Dụng Cửu</b> của Càn: <i>“用九：見群龍無首，吉”</i> — hiện bầy rồng không đầu, cát. Đây là ngoại lệ Càn trong 《易学启蒙》."};
   if(base.n===2)return{mode:"sáu hào động — Khôn",html:"Dùng <b>Dụng Lục</b> của Khôn: <i>“用六：利永貞”</i> — lợi ở sự chính bền lâu. Đây là ngoại lệ Khôn trong 《易学启蒙》."};
   return{mode:"sáu hào động",html:"Đọc quẻ từ quẻ biến <b>"+changed.name+"</b>: <i>“"+changed.qt+"”</i>. Nguồn quy tắc: Chu Hi, 《易学啟蒙》, quy tắc sáu hào biến."};
@@ -941,8 +955,9 @@ function selectQuestion(key,button){
   selType=q.k;
   document.querySelectorAll("#qgrid .qcard").forEach(x=>x.classList.remove("sel"));
   const active=button||document.querySelector('#qgrid .qcard[data-q="'+String(key).replace(/["\\]/g,"")+ '"]');
+  document.querySelectorAll("#qgrid .qcard").forEach(x=>x.setAttribute("aria-pressed",x===active?"true":"false"));
   if(active)active.classList.add("sel");
-  const hint=document.getElementById("hint");if(hint)hint.textContent="💡 "+q.hint;
+  const hint=document.getElementById("hint");if(hint){hint.textContent="💡 "+q.hint;hint.setAttribute("role","status");hint.setAttribute("aria-live","polite");}
   const step=document.getElementById("step2");if(step)step.scrollIntoView({behavior:"smooth"});
 }
 function buildQGrid(){
@@ -950,12 +965,18 @@ function buildQGrid(){
   const frag=document.createDocumentFragment();
   DB.qtypes.forEach(q=>{
     if(!q||typeof q.k!=="string")return;
-    const b=document.createElement("button");b.type="button";b.className="qcard";b.dataset.q=q.k;
-    b.innerHTML=`<span class="ic">${q.icon||"❖"}</span><b>${q.t||"Chủ đề"}</b><small>${q.hint||"Chọn để tiếp tục"}</small>`;
-    b.onclick=()=>selectQuestion(q.k,b);
+    const b=document.createElement("button");b.type="button";b.className="qcard";b.dataset.q=q.k;b.setAttribute("aria-pressed","false");
+    const icon=document.createElement("span");icon.className="ic";icon.textContent=q.icon||"❖";
+    const title=document.createElement("b");title.textContent=q.t||"Chủ đề";
+    const hint=document.createElement("small");hint.textContent=q.hint||"Chọn để tiếp tục";
+    b.append(icon,title,hint);b.onclick=()=>selectQuestion(q.k,b);
     frag.appendChild(b);
   });
-  if(frag.childNodes.length)g.replaceChildren(frag);
+  if(frag.childNodes.length){
+    g.replaceChildren(frag);
+    if(selType&&!DB.qtypes.some(q=>q.k===selType))selType=null;
+    if(selType){const selected=Array.from(g.querySelectorAll(".qcard")).find(b=>b.dataset.q===selType);if(selected){selected.classList.add("sel");selected.setAttribute("aria-pressed","true");}}
+  }
 }
 function getCalendarTZ(){const el=document.getElementById("ftimezone");return el?Number(el.value):7;}
 function formatUtcOffset(tz){const z=Math.round(Number(tz)*60),sign=z>=0?"+":"−",abs=Math.abs(z),hh=String(Math.floor(abs/60)).padStart(2,"0"),mm=String(abs%60).padStart(2,"0");return "UTC"+sign+hh+":"+mm;}
@@ -1111,7 +1132,14 @@ function renderResult(r){
       </div>
     ${buildTongLuan(r,hostHex,biHex,v,qp,ak,mvLine)}
     <details class="tech"><summary>🔬 Xem luận giải kỹ thuật đầy đủ — Quẻ từ · Đại tượng · Tự Quái · Thể Dụng · Lục Hào · Thẩm hào · Thần sát · Dụng thần · Tiểu Lục Nhâm</summary>
-    <div class="read"><b>Quy tắc chọn lời — Chu Hi, 《易学启蒙》卷四〈考变〉:</b><br>${r.ruleTrace.html}<br><span class="mut" style="font-size:12px">Quy tắc chọn lời Kinh Dịch được trình bày riêng; phần Lục Hào Na Giáp vẫn xét các hào động theo hệ Lục Hào.</span></div>
+    <div class="read"><b>Quy tắc chọn lời — Chu Hi, 《易學啟蒙》卷四〈考變占〉:</b><br>${r.ruleTrace.html}<br><span class="mut" style="font-size:12px">Quy tắc chọn lời Kinh Dịch được trình bày riêng; phần Lục Hào Na Giáp vẫn xét các hào động theo hệ Lục Hào.</span></div>
+    <div class="read"><b>Hồ sơ nguồn và cấp chứng cứ</b><br>
+      • <b>Chọn lời Kinh Dịch:</b> Chu Hi, 《易學啟蒙》卷四〈考變占〉. Quy tắc hai và bốn hào động được chính văn nói rõ là “經傳無文，今以例推之” (không có văn chứng trong Kinh truyện, suy theo lệ); app đánh dấu đây là suy lệ.<br>
+      • <b>Mai Hoa theo thời:</b> app có công thức lập quẻ theo giờ; phiên bản văn bản cổ/ấn bản làm căn cứ cho từng bước chưa được gắn ngay trong kết quả.<br>
+      • <b>Lục Hào Na Giáp và Tiểu Lục Nhâm:</b> được tính như các lớp luận riêng; hồ sơ hiện chưa dẫn ấn bản/trang cho từng quy tắc chi tiết nên không coi trích dẫn Chu Hi ở trên là nguồn chứng minh cho hai hệ này.<br>
+      • <b>Điểm tổng hợp:</b> trọng số do ứng dụng đặt, không phải công thức cổ thư và không phải xác suất dự báo.<br>
+      <span class="mut" style="font-size:12px">Trạng thái: quy tắc chọn lời đã có căn cứ văn bản; nguồn và dị bản của các lớp còn lại cần được kiểm chứng riêng trước khi gắn nhãn “đã xác minh”.</span>
+    </div>
     <div class="read"><b>Minh bạch chỉ số quy tắc — ${r.score} điểm (${verdictOf(r.score).t})</b><br>${r.scoreTrace.map(x=>"• "+escHtml(x.label)+": "+(x.delta>0?"+":"")+x.delta+" điểm"+(x.requested!==undefined&&x.requested!==x.delta?" (yêu cầu "+(x.requested>0?"+":"")+x.requested+", sau giới hạn)":"")+(x.reason?" — "+escHtml(x.reason):"")).join("<br>")}<br><span class="mut" style="font-size:12px">Ngưỡng nhãn: 75–98 Đại Cát; 60–74 Cát; 45–59 Trung Bình; 30–44 Hung; 2–29 Đại Hung. Các trọng số và ngưỡng là quy ước nội bộ, chưa được kiểm định dự báo.</span></div>
     <div style="flex:1;min-width:260px">
         <h3 class="sec">📖 Tổng quan quẻ</h3>
@@ -1420,9 +1448,44 @@ function openHistItem(i){const h=getHist()[i];if(!h||!h.o)return;applyShared(JSO
 function clearHist(){try{localStorage.removeItem("dlyh_hist")}catch(e){toast("Không xoá được lịch sử trên thiết bị này.");return}openHist();toast("Đã xoá lịch sử")}
 
 /* ================= QUẢN LÝ DỮ LIỆU (NẠP / XOÁ) ================= */
-function openData(){document.getElementById("modalData").classList.add("open");
-  document.getElementById("dinfo").textContent=`Đang dùng: ${DB.hexes.length} quẻ · ${DB.tln.length} cung TLN · ${DB.qtypes.length} loại câu hỏi${localStorage.getItem("dlyh_db")?" (bản tùy chỉnh)":" (bản mặc định)"}`}
+function openData(){
+  document.getElementById("modalData").classList.add("open");
+  let custom=false;try{custom=!!localStorage.getItem("dlyh_db")}catch(e){}
+  document.getElementById("dinfo").textContent=`Đang dùng: ${DB.hexes.length} quẻ · ${DB.tln.length} cung TLN · ${DB.qtypes.length} loại câu hỏi${custom?" (bản tùy chỉnh)":" (bản mặc định hoặc bộ nhớ bị hạn chế)"}`;
+}
 function closeData(){document.getElementById("modalData").classList.remove("open")}
+function auditCurrentData(){
+  const box=document.getElementById("dataAuditOutput");if(!box)return;
+  const required=["sn","tl","td","sk","gd","kt","xh","tc","tv"];
+  const present=new Set((DB.qtypes||[]).map(q=>q&&q.k));
+  const missingTopics=required.filter(k=>!present.has(k));
+  const duplicateTopics=[];const contentIssues=[];
+  const norm=v=>String(v||"").normalize("NFC").replace(/\s+/g," ").trim().toLowerCase();
+  const topicName=Object.fromEntries(required.map(k=>{const q=(DB.qtypes||[]).find(x=>x&&x.k===k);return[k,q?q.t:k]}));
+  for(const k of required){
+    const groups=new Map();
+    for(const h of DB.hexes||[]){
+      const text=k==="tv"?h.tong:(h.a&&h.a[k]);
+      if(typeof text!=="string"||!text.trim()){contentIssues.push("Quẻ "+(h.n||"?")+" thiếu nội dung chủ đề "+topicName[k]+".");continue;}
+      const key=norm(text);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(h.name||("Quẻ "+h.n));
+    }
+    for(const names of groups.values())if(names.length>1)duplicateTopics.push(topicName[k]+": "+names.join(", "));
+  }
+  const nums=new Set((DB.hexes||[]).map(h=>h&&h.n)),pairs=new Set((DB.hexes||[]).map(h=>h&&h.u+":"+h.l));
+  const structureOK=validDataShape(DB)&&nums.size===64&&pairs.size===64&&(DB.tln||[]).length===6;
+  const faults=[];
+  if(!structureOK)faults.push("Cấu trúc chưa đủ chuẩn: cần 64 quẻ duy nhất, 6 cung Tiểu Lục Nhâm và các khóa dữ liệu hợp lệ.");
+  if(missingTopics.length)faults.push("Thiếu loại câu hỏi: "+missingTopics.map(k=>topicName[k]||k).join(", ")+".");
+  faults.push(...contentIssues.slice(0,12));
+  if(contentIssues.length>12)faults.push("Còn "+(contentIssues.length-12)+" nội dung thiếu khác.");
+  if(duplicateTopics.length)faults.push("Có "+duplicateTopics.length+" nhóm văn bản trùng chính xác sau chuẩn hóa khoảng trắng/chữ hoa-thường.");
+  box.replaceChildren();box.style.display="block";
+  const h=document.createElement("b");h.textContent=faults.length?"⚠ Cần rà soát dữ liệu":"✓ Kiểm tra cấu trúc đạt";box.appendChild(h);
+  const p=document.createElement("p");p.style.margin="6px 0";p.textContent="64 quẻ · "+(DB.tln||[]).length+" cung Tiểu Lục Nhâm · "+(DB.qtypes||[]).length+" loại câu hỏi · "+(required.length-missingTopics.length)+"/"+required.length+" chủ đề đủ dữ liệu · "+duplicateTopics.length+" nhóm trùng nguyên văn.";box.appendChild(p);
+  const note=document.createElement("p");note.className="mut";note.style.fontSize="12px";note.textContent="Phép kiểm tra này chỉ rà cấu trúc, trường bắt buộc và câu trùng nguyên văn; không xác nhận công thức hay nội dung đã đúng cổ pháp.";box.appendChild(note);
+  if(faults.length){const ul=document.createElement("ul");ul.style.margin="8px 0 0 18px";faults.forEach(t=>{const li=document.createElement("li");li.textContent=t;ul.appendChild(li)});box.appendChild(ul);}
+  else{const ok=document.createElement("p");ok.textContent="Không phát hiện trường bắt buộc bị thiếu hoặc nội dung trùng nguyên văn trong các chủ đề.";box.appendChild(ok);}
+}
 function exportData(){
   const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="dich-ly-du-lieu.json";a.click();
@@ -1452,9 +1515,9 @@ function applyImport(t){
     if(!h.name)h.name=d0.name;
     if(typeof h.u!=="number"||typeof h.l!=="number"){h.u=d0.u;h.l=d0.l;fixed++}
   }
-  DB=d;saveDB();HEXBYKEY={};DB.hexes.forEach(h=>HEXBYKEY[h.u*10+h.l]=h);
+  DB=d;const saved=saveDB();HEXBYKEY={};DB.hexes.forEach(h=>HEXBYKEY[h.u*10+h.l]=h);
   buildQGrid();closeData();
-  toast(fixed?("Đã nạp — tự động vá "+fixed+" trường bị thiếu/lỗi từ bản mặc định"):"Đã nạp dữ liệu mới thành công — 64 quẻ hợp lệ");
+  toast(saved?(fixed?("Đã nạp và lưu — tự động vá "+fixed+" trường bị thiếu/lỗi từ bản mặc định"):"Đã nạp và lưu dữ liệu mới — 64 quẻ hợp lệ"):"Đã nạp trong phiên này nhưng chưa lưu được trên thiết bị; hãy xuất JSON để giữ bản dữ liệu.");
 }
 function resetData(){try{localStorage.removeItem("dlyh_db")}catch(e){toast("Không xoá được dữ liệu tùy chỉnh trên thiết bị này.");return}DB=loadDB();HEXBYKEY={};DB.hexes.forEach(h=>HEXBYKEY[h.u*10+h.l]=h);buildQGrid();closeData();toast("Đã xoá dữ liệu tùy chỉnh, về bản mặc định")}
 function showDefaultJSON(){document.getElementById("impjson").value=JSON.stringify({hexes:DEFAULT_DATA.hexes.slice(0,2),tln:DEFAULT_DATA.tln,qtypes:DEFAULT_DATA.qtypes},null,2);toast("Cấu trúc mẫu (2 quẻ đầu) — nạp bản đủ 64 quẻ mới hợp lệ")}
