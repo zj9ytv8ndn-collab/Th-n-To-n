@@ -5368,6 +5368,23 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @media(max-width:430px){#researchHome .new-header{min-height:142px!important;padding:12px 8px!important}#researchHome .new-brand{gap:12px!important;width:96vw!important;max-width:96vw!important}#researchHome .new-brand .rh-logo{width:116px!important;height:116px!important;min-width:116px!important;flex-basis:116px!important}#researchHome .new-brandtext>div{font-size:31px!important;letter-spacing:.09em!important}#researchHome .new-card{border-width:1.75px!important}}
 @media(max-width:375px){#researchHome .new-brand{gap:9px!important}#researchHome .new-brand .rh-logo{width:104px!important;height:104px!important;min-width:104px!important;flex-basis:104px!important}#researchHome .new-brandtext>div{font-size:27px!important;letter-spacing:.07em!important}}
 </style>
+<style id="research-home-ui-fix-852">
+/* Safe dashboard fallback when optional artwork is missing; prevent clipped mobile cards and duplicate navigation. */
+#researchHome .new-card:nth-child(n+11){background-image:none!important;background-color:#080e16!important}
+#researchHome .new-card:nth-child(n+11) .new-icon,
+#researchHome .new-card:nth-child(n+11) .new-copy{opacity:1!important;visibility:visible!important}
+#researchHome .new-card:nth-child(n+11) .new-icon,
+#researchHome .new-card:nth-child(n+11) .new-copy{position:relative!important;z-index:1!important}
+@media(max-width:900px){
+ body.rh-dashboard-open #tabs{display:none!important}
+ #researchHome .new-grid{grid-auto-rows:minmax(205px,auto)!important;align-items:stretch!important}
+ #researchHome .new-card{height:auto!important;min-height:205px!important;overflow:visible!important;padding:12px 8px!important}
+ #researchHome .new-card .new-copy{max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important}
+ #researchHome .new-card .new-copy small{white-space:normal!important;overflow-wrap:anywhere!important}
+ #researchHome .new-main{padding-bottom:18px!important}
+ #researchHome .new-bottom{padding-bottom:calc(8px + env(safe-area-inset-bottom))!important;min-height:calc(106px + env(safe-area-inset-bottom))!important}
+}
+</style>
 <script id="research-home-clean-runtime-v7">(function(){function fix(){var h=document.getElementById('researchHome');if(!h)return;var p=h.querySelector('.new-brandtext p');if(p&&/Gieo\\s+quẻ\\s+Kinh\\s+Dịch/i.test(p.textContent||''))p.remove();var b=h.querySelector('.new-brand');if(b){b.style.setProperty('flex-direction','row','important');b.style.setProperty('flex-wrap','nowrap','important')}}document.addEventListener('DOMContentLoaded',fix);fix();})();</script>\n
 <script id="kd-lazy-bundle-loader-412">
 (function(){
@@ -12835,10 +12852,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="kd-liujian-month-general-profile-850">
 (function(){'use strict';function tr(vi,en){return(window.S_ICHING_LANGUAGE||'vi')==='en'?en:vi;}function add(){var card=document.getElementById('kd436-liuren-profile-card');if(!card||card.querySelector('#kd850-month-general-profile'))return;var d=document.createElement('details');d.id='kd850-month-general-profile';d.innerHTML='<summary><b>'+tr('Hồ sơ đổi Nguyệt Tướng · đối chiếu truyền bản','Month-general transition profile · source comparison')+'</b></summary>'+'<p>'+tr('Cách tính đang dùng theo đoạn “月将即日宿太阳” trong 《六壬指南》卷一: sau khi Mặt Trời qua các cung được nêu (như 雨水后 vào 亥宫, 登明), Nguyệt Tướng đổi theo kinh độ biểu kiến; mã dùng các cung 30° bắt đầu tại 330° cho mốc 雨水. HKO xác nhận 24 tiết khí cách nhau 15°, vì vậy profile này đổi ở mỗi mốc trung khí tương ứng, không phải mọi tiết khí.','The active method follows the “月将即日宿太阳” passage in Liu Ren Zhi Nan, volume 1: after the Sun enters the listed sectors (for example, after Rain Water into Hai palace, Dengming), the month general changes by apparent solar longitude. The code uses 30° sectors starting at 330° for the Rain Water boundary. HKO describes the 24 solar terms as 15° apart, so this profile changes at the corresponding Zhongqi, every other term.')+'</p>'+'<p>'+tr('Đối chiếu 《六壬翠雨歌》卷下, mục “定交月将”, thấy một phép khác: ghi độ trễ riêng sau từng trung khí, chẳng hạn 雨水两日七刻、春分四日. App hiện không áp dụng bảng độ trễ này và không trộn hai phép. Đây là khác biệt phương pháp cần giữ theo hồ sơ nguồn; chưa kết luận phép nào đại diện cho mọi dòng Lục Nhâm.','A separate procedure appears in Da Liu Ren Cui Yu Ge, volume 2, “Fixing the Month-General Transition”: it gives a different delay after each Zhongqi, such as two days and seven ke after Rain Water and four days after the Spring Equinox. The app does not apply that delay table or blend the procedures. This is a source-profile difference; neither method is asserted here as universal across Liu Ren lineages.')+'</p>'+'<p>'+tr('Nguồn: ','Sources: ')+'<a href="https://zh.wikisource.org/zh-hans/六壬指南/1" target="_blank" rel="noopener">《六壬指南》卷一</a> · <a href="https://ctext.org/wiki.pl?chapter=108096&if=gb&remap=gb" target="_blank" rel="noopener">《六壬翠雨歌》卷下</a> · <a href="https://www.hko.gov.hk/en/gts/time/24solarterms.htm" target="_blank" rel="noopener">HKO · 24 Solar Terms</a></p>';card.appendChild(d);}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add();new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true});})();
 </script>
-<script id="kd-release-final-411851">
+<script id="kd-release-final-411852">
 (function(){
   'use strict';
-  var VERSION='4.11.851';
+  var VERSION='4.11.852';
   function stamp(){window.KD_RELEASE=VERSION;window.KD_RELEASE_MANIFEST={release:VERSION,liurenTrace:'4.11.840',liurenEngineAudit:'4.11.848',solarLongitude:'4.11.849',liurenMonthGeneral:'LIUREN_ZHINAN_SOLAR_LONGITUDE_30DEG',liurenGuiRenProfile:'LIUREN_WUXINGJINGJI_TABLE_TANYUAN_HOUR_CUTOFF',releaseStamp:'AFTER_ALL_MODULE_PATCHES'};}
   stamp();
   document.addEventListener('kd:module-ready',stamp);
