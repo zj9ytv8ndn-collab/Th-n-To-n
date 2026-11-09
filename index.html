@@ -11825,7 +11825,7 @@ window.KD_TAB_NAVIGATION_FIX_V336={version:'4.11-v336',apply:apply,hold:hold,sta
 <script id="kd-cast-state-reset-fix-v337">
 (function(){'use strict';
 var NON_CAST=['scr-home','scr-kymon','scr-thaiat','scr-tuvi','scr-battu','scr-lucnham','scr-astrology','scr-study'];
-var casting=false;
+var casting=false, routeSequence=0;
 function clearCastOwnership(){
  casting=false;
  var app=document.getElementById('app');
@@ -11863,10 +11863,15 @@ function requested(el){
 }
 document.addEventListener('click',function(e){
  var id=requested(e.target);if(!id)return;
+ var token=++routeSequence;
  if(id==='scr-cast'){casting=true;return}
  if(id.indexOf('scr-')===0){
    clearCastOwnership();
-   [0,1,16,50,120,300,700,1200,2000].forEach(function(ms){setTimeout(function(){forceScreen(id)},ms)});
+   [0,100].forEach(function(ms){setTimeout(function(){
+     if(token!==routeSequence)return;
+     var active=document.querySelector('.screen.active');
+     if(!active||active.id!==id)forceScreen(id);
+   },ms)});
  }
 },true);
 /* Home is a hard reset boundary: after returning home, a previous casting result may no longer own routing. */
