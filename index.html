@@ -1321,6 +1321,18 @@ window.KD_V178_VERIFY=function(){
 <script id="kd180-native-execution-evidence" type="application/json">{"version":"V180","source":"V179","environment":"Chromium headless via Playwright set_content","cases":4096,"native_mapping_passed":4096,"native_mapping_failed":0,"selection_exact_match":2816,"selection_mismatch":1280,"selection_unavailable":0,"finding":"All 1280 selection mismatches are the 3-moving-line cases; fixture uses zhen/hui roles, app uses primary/secondary and sometimes reverses order. This is a profile/protocol disagreement, not evidence that a specific historical school is correct.","next_step":"Explicitly separate profiles; decide desired 3-moving-line convention based on cited source before changing selection engine.","safari_test":"not performed","page_error_count":2,"page_error_samples":["Failed to execute 'write' on 'Document': Invalid or unexpected token","Failed to execute 'write' on 'Document': Unexpected identifier 'use'"]}</script>
 <script id="kd180-audit-summary">(function(){'use strict';window.KD_V180_EVIDENCE=JSON.parse(document.getElementById('kd180-native-execution-evidence').textContent);window.KD_V180_SUMMARY=function(){return Object.assign({},window.KD_V180_EVIDENCE,{live:typeof window.KD_V179_NATIVE_AUDIT==='function'?window.KD_V179_NATIVE_AUDIT():null});};})();</script>
 
+<style id="kd-v189-profile-menu-style">
+/* Reading-profile selector lives only in the existing navigation drawer. */
+#tabs #kd-v181-control.kd-v189-profile-menu { position:static!important; inset:auto!important; z-index:auto!important; display:block; width:100%; max-width:100%; box-sizing:border-box; margin:10px 0; padding:0; border:1px solid rgba(204,167,88,.48); border-radius:12px; background:rgba(16,29,40,.74); box-shadow:none; color:#e8d6a8; font:inherit; }
+#tabs #kd-v181-control > summary { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:13px 15px; cursor:pointer; list-style:none; font-size:14px; font-weight:600; line-height:1.35; }
+#tabs #kd-v181-control > summary::-webkit-details-marker { display:none; }
+#tabs #kd-v181-control .kd-v189-chevron { transition:transform .2s ease; }
+#tabs #kd-v181-control[open] .kd-v189-chevron { transform:rotate(180deg); }
+#tabs #kd-v181-control .kd-v189-profile-inner { padding:0 13px 13px; }
+#tabs #kd-v181-control label { display:block; font-size:12px; margin:0 0 7px; }
+#tabs #kd-v181-profile { display:block; width:100%; max-width:100%; box-sizing:border-box; font-size:16px; padding:10px 8px; color:#16202a; background:#fffaf0; border-radius:9px; }
+#tabs #kd-v181-control p { margin:8px 0 0; opacity:.84; font-size:12px; line-height:1.5; }
+</style>
 <script id="kd-v181-profile-adapter">(function(){'use strict';
 var KEY='kd-v181-reading-profile', VALID={legacy:true,zhen_hui:true};
 function profile(){try{var p=localStorage.getItem(KEY);return VALID[p]?p:'legacy';}catch(e){return 'legacy';}}
@@ -1334,9 +1346,15 @@ old.select=function(n,bn,mv){var r=original(n,bn,mv);if(profile()!=='zhen_hui'||
 return Object.assign({},r,{items:[{kind:'judgment',hexagram:n,line:0,role:'zhen'},{kind:'judgment',hexagram:bn,line:0,role:'hui'}],profile:'zhen_hui',profileNote:'Alternative three-moving-line convention; not independently certified as universal classical rule'});
 };
 window.KD_V181_PROFILE={get:profile,set:setProfile,profiles:['legacy','zhen_hui'],originalSelect:original,select:old.select};
-var box=document.createElement('div');box.id='kd-v181-control';box.style.cssText='position:fixed;bottom:12px;right:12px;z-index:2147483000;background:#15202b;color:#f4e5b9;border:1px solid #c2a56b;border-radius:10px;padding:8px 12px;font:13px sans-serif;box-shadow:0 4px 18px #0006;max-width:290px';
-box.innerHTML='<label for="kd-v181-profile">Quy tắc chọn lời / Reading profile</label><br><select id="kd-v181-profile" style="max-width:100%;margin-top:5px;padding:4px;background:#fff;color:#111"><option value="legacy">Hiện hành · Legacy</option><option value="zhen_hui">3 hào động · Trinh/Hối</option></select><div style="font-size:10px;opacity:.85;margin-top:4px">Đổi profile rồi gieo lại để xem kết quả mới.</div>';
-(document.body||document.documentElement).appendChild(box);sync();box.querySelector('select').addEventListener('change',function(e){setProfile(e.target.value);});
+// V189: keep the profile control INSIDE the slide-out menu, never as a floating overlay.
+var menu=document.getElementById('tabs');
+if(!menu){window.KD_V181_PROFILE.menuError='Menu #tabs not available';return;}
+var box=document.createElement('details');box.id='kd-v181-control';
+box.className='kd-v189-profile-menu';
+box.innerHTML='<summary aria-label="Quy tắc chọn lời">⚙ Quy tắc chọn lời <span class="kd-v189-chevron" aria-hidden="true">▾</span></summary><div class="kd-v189-profile-inner"><label for="kd-v181-profile">Quy tắc chọn lời / Reading profile</label><select id="kd-v181-profile"><option value="legacy">Hiện hành · Legacy</option><option value="zhen_hui">3 hào động · Trinh/Hối</option></select><p>Đổi profile rồi gieo lại để xem kết quả mới.</p></div>';
+var destination=menu.querySelector('.kd351-menu-label');
+if(destination)menu.insertBefore(box,destination);else menu.appendChild(box);
+sync();box.querySelector('select').addEventListener('change',function(e){setProfile(e.target.value);});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();</script>
