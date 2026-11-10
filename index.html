@@ -12733,3 +12733,34 @@ panel.addEventListener('click',function(e){var b=e.target.closest('[data-act]');
 window.KD_V206_DIAGNOSTICS={collect:collect,report:report};
 })();
 </script>
+
+<style id="fortune-v3-isolation">
+.screen.fortune-v3-reading > :not(.fortune-v3-stage){display:none!important}
+.screen .fortune-v3-stage{display:none}
+.screen.fortune-v3-reading > .fortune-v3-stage{display:block!important;position:relative;max-width:980px;margin:12px auto 60px;padding:clamp(16px,4vw,30px);border:1px solid #b99a5b;border-radius:18px;background:var(--card-bg,rgba(35,29,21,.96));color:inherit;box-shadow:0 8px 28px #0002;min-height:45vh}
+.fortune-v3-stage h2{font-size:clamp(22px,4vw,32px);margin:0 0 14px;color:inherit}
+.fortune-v3-stage .fortune-v3-body{line-height:1.85;overflow-wrap:anywhere;font-size:1.05rem}
+.fortune-v3-stage .fortune-v3-body :is(script,style,button,input,select,textarea,iframe,canvas,svg,table,form,nav,details,[hidden],[aria-hidden="true"]){display:none!important}
+.fortune-v3-stage .fortune-v3-body :is(h1,h2,h3,h4,p,li){margin-block:.65em}
+.fortune-v3-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.fortune-v3-actions button{padding:11px 16px;border:1px solid #b99a5b;border-radius:12px;background:#342819;color:#ffe4a7;cursor:pointer;font:600 14px system-ui}
+</style>
+<script id="fortune-v3-isolation-script">(function(){'use strict';
+/* Isolate presentation only. Original engines and result nodes remain mounted. */
+var routes={'scr-cast':['result'],'scr-lucnham':['lnResult'],'scr-thaiat':['taResult'],'scr-battu':['btuResult','cxResult'],'scr-tuvi':['tvResult'],'scr-tarot':['tarotResult','astroResult','numerologyResult'],'scr-kymon':['qmResult','kmResult'],'scr-hdlt':['hlResult'],'scr-hk':['hkResult']};
+var labels={vi:{title:'Luận giải chi tiết',back:'Gieo quẻ / lập lá số mới',empty:'Chưa có lời luận giải.'},en:{title:'Detailed interpretation',back:'New reading',empty:'No interpretation available.'}};
+function language(){return (window.S_ICHING_LANGUAGE==='en'||document.documentElement.lang==='en')?'en':'vi'}
+function clean(root){var copy=root.cloneNode(true);copy.querySelectorAll('script,style,button,input,select,textarea,iframe,canvas,svg,table,form,nav,details,[hidden],[aria-hidden="true"],.kd-debug,.debug,.audit,.technical,.diagnostics').forEach(function(n){n.remove()});return copy}
+function meaningful(root){var t=(root.innerText||root.textContent||'').trim();return t.length>75 && !/^\s*(?:chưa có|no result|loading|đang tải)/i.test(t)}
+function init(screen,ids){var nodes=ids.map(function(id){return document.getElementById(id)}).filter(function(n){return n&&screen.contains(n)});if(!nodes.length)return;
+var stage=document.createElement('article');stage.className='fortune-v3-stage';stage.setAttribute('aria-live','polite');var title=document.createElement('h2');var actions=document.createElement('div');actions.className='fortune-v3-actions';var again=document.createElement('button');again.type='button';actions.appendChild(again);var body=document.createElement('div');body.className='fortune-v3-body';stage.append(title,actions,body);screen.appendChild(stage);
+function localize(){var l=labels[language()];title.textContent=l.title;again.textContent=l.back}
+again.addEventListener('click',function(){screen.classList.remove('fortune-v3-reading');body.replaceChildren();screen.scrollIntoView({block:'start',behavior:'instant'});});
+var scheduled=false;function update(){scheduled=false;var ready=nodes.filter(meaningful);if(!ready.length)return;var fragment=document.createDocumentFragment();ready.forEach(function(node){var copy=clean(node);fragment.appendChild(copy)});var plain=(fragment.textContent||'').trim();if(plain.length<50)return;body.replaceChildren(fragment);localize();screen.classList.add('fortune-v3-reading');if(screen.classList.contains('active'))stage.scrollIntoView({block:'start',behavior:'instant'});}
+function queue(){if(scheduled)return;scheduled=true;requestAnimationFrame(update)}
+nodes.forEach(function(node){new MutationObserver(queue).observe(node,{subtree:true,childList:true,characterData:true});});
+document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#fortune-v2-lang'))setTimeout(localize,0)});
+}
+function boot(){Object.keys(routes).forEach(function(id){var screen=document.getElementById(id);if(screen)init(screen,routes[id]);});window.FORTUNE_V3={version:'3.0',mode:'isolated-reading',preservesOriginalEngines:true};}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();</script>
