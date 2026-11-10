@@ -52,12 +52,12 @@ function capture(kind,raw){
  var message=String(raw||'Unknown error').slice(0,500),now=Date.now();
  if(message===last&&now-lastAt<1500)return;
  last=message;lastAt=now;total++;
- events.push({time:new Date(now).toISOString(),kind:kind,message:message});
+ events.push({time:new Date(now).toISOString(),kind:kind,message:message,details:window.__KD_V36_LAST_DETAIL||null});window.__KD_V36_LAST_DETAIL=null;
  if(events.length>100)events.shift();
  if(document.body&&!muted)render();
 }
-function report(){return{version:'V30',count:total,events:events.slice(),lazy:window.KD_LAZY494&&window.KD_LAZY494.report?window.KD_LAZY494.report():null,package:window.KD_PACK498&&window.KD_PACK498.report?window.KD_PACK498.report():null,navigation:window.KD_V6_NAV_AUDIT?window.KD_V6_NAV_AUDIT.report():null};}
-function download(){var data=JSON.stringify(report(),null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='S_I_CHING_DIAGNOSTICS_V30.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},2000);}
+function report(){return{version:'V36',count:total,events:events.slice(),lazy:window.KD_LAZY494&&window.KD_LAZY494.report?window.KD_LAZY494.report():null,package:window.KD_PACK498&&window.KD_PACK498.report?window.KD_PACK498.report():null,navigation:window.KD_V6_NAV_AUDIT?window.KD_V6_NAV_AUDIT.report():null};}
+function download(){var data=JSON.stringify(report(),null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='S_I_CHING_DIAGNOSTICS_V36.json';a.click();setTimeout(function(){URL.revokeObjectURL(url)},2000);}
 function render(){
  if(!document.body||muted||!total)return;
  try{
@@ -76,8 +76,19 @@ function render(){
   notice.querySelector('#kd-v5-error-label').textContent='Phát hiện '+total+' lỗi kỹ thuật.\nLỗi gần nhất: '+(item?item.message:'Không rõ');
  }catch(_){}
 }
-window.addEventListener('error',function(e){if(e&&e.target&&e.target!==window)return;capture('error',e&&e.message);});
-window.addEventListener('unhandledrejection',function(e){capture('promise',e&&e.reason&&(e.reason.stack||e.reason.message||String(e.reason)));});
+window.addEventListener('error',function(e){
+ if(e&&e.target&&e.target!==window){
+  var t=e.target;
+  window.__KD_V36_LAST_DETAIL={resource:true,tag:t.tagName||'',url:t.src||t.href||'',id:t.id||''};
+  capture('resource-error','Tài nguyên không tải được: '+(t.src||t.href||t.tagName||'unknown'));
+  return;
+ }
+ var detail={filename:e&&e.filename||'',line:e&&e.lineno||0,column:e&&e.colno||0,stack:e&&e.error&&e.error.stack||'',module:window.KD_LOADING_MODULE545||null};
+ window.__KD_V36_LAST_DETAIL=detail;
+ var msg=e&&e.message||'Unknown error';
+ capture(msg==='Script error.'?'opaque-script-error':'error',msg);
+},true);
+window.addEventListener('unhandledrejection',function(e){window.__KD_V36_LAST_DETAIL={stack:e&&e.reason&&e.reason.stack||'',module:window.KD_LOADING_MODULE545||null};capture('promise',e&&e.reason&&(e.reason.stack||e.reason.message||String(e.reason)));});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
 window.KD_V5_DIAGNOSTICS={report:report,download:download};
 })();</script><script id="kd-v6-nav-probe">(function(){'use strict';
