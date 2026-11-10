@@ -315,10 +315,10 @@ function reportError(err,context='runtime'){
   ERROR_LOG.push(entry);if(ERROR_LOG.length>30)ERROR_LOG.shift();
   console.error('[S I CHING]',context,err);
   const notice=document.getElementById('appError');
-  if(notice){notice.hidden=false;notice.textContent='Có lỗi tại '+context+'. Vui lòng thử lại hoặc tải lại ứng dụng.'}
+  if(notice){notice.hidden=false;notice.textContent='Lỗi '+context+': '+entry.message+' — Vui lòng thử lại.'}
 }
 function safely(fn,context){try{return fn()}catch(err){reportError(err,context);return null}}
-window.addEventListener('error',e=>reportError(e.error||e.message,'window'));
+window.addEventListener('error',e=>{if(e.target&&e.target!==window)return;reportError(e.error||e.message,'window')});
 window.addEventListener('unhandledrejection',e=>reportError(e.reason,'promise'));
 
 const TR=[['Càn',7,'☰'],['Đoài',3,'☱'],['Ly',5,'☲'],['Chấn',1,'☳'],['Tốn',6,'☴'],['Khảm',2,'☵'],['Cấn',4,'☶'],['Khôn',0,'☷']];
@@ -332,8 +332,8 @@ const modules=[['☯','Kinh Dịch','64 quẻ · gieo quẻ','cast'],['✿','Mai
 let lines=[],latest=null,selectedModule=0;const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function go(id){if(!document.getElementById(id)?.classList.contains('screen')){reportError(new Error('Màn hình không tồn tại: '+id),'navigation');return}document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('on',x.dataset.go===id));window.scrollTo(0,0);if(id==='library')renderJournal();if(id==='interpret')renderInterpret();}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
-function moduleButtons(target){$(target).innerHTML=modules.map((m,i)=>`<button class="module" data-module="${i}"><span>${m[0]}</span><b>${m[1]}</b><small>${m[2]}</small></button>`).join('')}
-['#homeModules','#libraryModules','#allModules'].forEach(moduleButtons);
+function moduleButtons(target){const container=$(target);if(!container)return;container.innerHTML=modules.map((m,i)=>`<button class="module" data-module="${i}"><span>${m[0]}</span><b>${m[1]}</b><small>${m[2]}</small></button>`).join('')}
+['#libraryModules','#allModules'].forEach(moduleButtons);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-module]');if(!b)return;selectedModule=+b.dataset.module;if(!selectedModule){go('cast');return}go('modules');$('#moduleDetail').innerHTML=`<div class="panel"><h2>${modules[selectedModule][1]}</h2><p class="sub">Chưa kích hoạt lập quẻ/an lá số. Cần xác định trường phái, tài liệu nguồn, lịch pháp, ví dụ đối chiếu và kiểm thử trước khi cho phép tính kết quả.</p><div class="notice">Không sinh lá số hoặc luận giải ngẫu nhiên thay cho công thức cổ pháp.</div></div>`;});
 function lineHTML(v,moving=false){return `<div class="line ${moving?'moving':''}" aria-label="${v?'Hào dương':'Hào âm'}">${v?'<i></i>':'<i></i><i></i>'}${moving?'<span class="mark">○</span>':''}</div>`}
 function figure(bits,moving=[]){return `<div class="hex">${Array.from({length:6},(_,i)=>lineHTML((bits>>(5-i))&1,moving.includes(5-i))).join('')}</div>`}
