@@ -70,7 +70,124 @@ h2.title{white-space:nowrap}
 <div class="pills" style="margin-top:6px"><div class="pill" id="cxNhuan" onclick="this.classList.toggle('on')">Tháng nhuận</div><div class="pill on" id="cxPNam" onclick="this.classList.add('on');document.getElementById('cxPNu').classList.remove('on')">Nam mệnh</div><div class="pill" id="cxPNu" onclick="this.classList.add('on');document.getElementById('cxPNam').classList.remove('on')">Nữ mệnh</div></div>
 <div class="row" style="gap:6px;flex-wrap:wrap;margin:8px 0"><input type="date" id="cxSolar" style="flex:1;min-width:150px"><button class="btn ghost" id="cxFill" style="flex:1;margin:0;padding:11px">📅 Điền âm lịch từ ngày dương</button></div><button class="btn" id="cxGo" style="margin-top:8px">CÂN XƯƠNG TÍNH SỐ</button></div>
 <div id="cxResult"></div></section>
-<section class="screen" id="scr-his"><div class="card"><div class="row"><h2 class="grow">Lịch Sử Các Môn</h2><button class="del" id="btnTongHop" style="background:rgba(212,175,55,.16);color:var(--gold2,#e8c766);border-color:var(--line)">䷀ Tổng Hợp Liên Môn</button><button class="del" id="clearHis">Xóa tất cả</button><button class="del" id="btnBackup" style="background:rgba(212,175,55,.16);color:var(--gold2,#e8c766);border-color:var(--line)">💾 Sao lưu</button><button class="del" id="btnRestore" style="background:rgba(212,175,55,.16);color:var(--gold2,#e8c766);border-color:var(--line)">📥 Khôi phục</button><input type="file" id="restoreFile" accept=".json" style="display:none"></div><p class="dim" style="margin-bottom:6px">Mọi lần gieo quẻ, lập cục Kỳ Môn, an lá số Tử Vi · Cân Xương đều được lưu lại trên máy của bạn (tối đa 80 mục) — có thể xóa từng mục, xóa theo môn, hoặc xóa tất cả.</p><div id="hisList"></div></div></section><section class="screen" id="scr-tuvi"><div class="card"><h2>Lá Số Tử Vi Đẩu Số</h2><p class="dim" style="margin-bottom:8px">Nhập đầy đủ thông tin để an lá số chính xác nhất.</p><input type="text" id="tvName" placeholder="Họ và tên đương số" style="margin-bottom:8px"><div class="pills" style="margin-bottom:8px"><div class="pill on" id="tvSolar">Dương lịch</div><div class="pill" id="tvLunar">Âm lịch</div></div><div class="row" style="gap:6px;margin-bottom:8px"><input type="number" id="tvDay" placeholder="Ngày" min="1" max="31" style="flex:1"><input type="number" id="tvMonth" placeholder="Tháng" min="1" max="12" style="flex:1"><input type="number" id="tvYear" placeholder="Năm" min="1900" max="2100" style="flex:1.4"></div><div class="row" style="gap:6px;margin-bottom:8px"><select id="tvHour" style="flex:1.4"><option value="0">Giờ Tý (23h–1h)</option><option value="1">Giờ Sửu (1h–3h)</option><option value="2">Giờ Dần (3h–5h)</option><option value="3">Giờ Mão (5h–7h)</option><option value="4">Giờ Thìn (7h–9h)</option><option value="5">Giờ Tỵ (9h–11h)</option><option value="6">Giờ Ngọ (11h–13h)</option><option value="7">Giờ Mùi (13h–15h)</option><option value="8">Giờ Thân (15h–17h)</option><option value="9">Giờ Dậu (17h–19h)</option><option value="10">Giờ Tuất (19h–21h)</option><option value="11">Giờ Hợi (21h–23h)</option></select><div class="pills" style="flex:1;margin:0"><div class="pill on" id="tvNam">Nam</div><div class="pill" id="tvNu">Nữ</div></div></div><div class="row" style="gap:6px;margin-bottom:8px"><select id="tvTS" style="flex:1" title="Phái an vòng Tràng Sinh"><option value="ttl">Tràng Sinh: Thái Thứ Lang (phổ dụng)</option><option value="oneway">Tràng Sinh: một chiều thuận</option><option value="hl">Tràng Sinh: Hà Lạc Dã Phu</option></select></div><button class="btn" id="tvGo">AN LÁ SỐ</button></div><div id="tvResult"></div><div class="card"><h2>Lá Số Đã Lưu</h2><div id="tvHisList"></div></div></section></main><button id="uiGear" title="Cài đặt giao diện" aria-label="Cài đặt giao diện">⚙</button><button id="menuBtn" title="Mở menu các môn" aria-label="Mở menu">☰</button><div id="menuBack"></div><nav id="tabs"><div id="menuTitle">䷀ KINH DỊCH 64 QUẺ</div><button class="tab on" data-s="scr-cast"><span class="ic">䷀</span>Gieo Quẻ</button><button class="tab" data-s="scr-list"><span class="ic">☷</span>64 Quẻ</button><button class="tab" data-s="scr-hdlt"><span class="ic">◎</span>Hà Lạc</button><button class="tab" data-s="scr-tuvi"><span class="ic">✦</span>Tử Vi</button><button class="tab" data-s="scr-kymon"><span class="ic">◈</span>Kỳ Môn</button><button class="tab" data-s="scr-lucnham"><span class="ic">𓆩</span>Lục Nhâm</button><button class="tab" data-s="scr-thaiat"><span class="ic">☰</span>Thái Ất</button><button class="tab" data-s="scr-battu"><span class="ic">☷</span>Bát Tự</button><button class="tab" data-s="scr-tarot"><span class="ic">🃏</span>Tarot</button><button class="tab" data-s="scr-kd"><span class="ic">📜</span>Kinh Điển</button><button class="tab" data-s="scr-his"><span class="ic">❖</span>Lịch Sử</button><button class="tab" data-s="scr-legal"><span class="ic">⚖</span>Pháp Lý</button></nav></div><div id="modal"><div class="backdrop" id="mBack"></div><div class="sheet"><div class="mtools"><button class="mtool" id="mExport" title="Xuất kết quả ra file HTML">📄 Xuất file</button><button class="mtool" id="mPrint" title="In hoặc lưu thành PDF">🖨 In / PDF</button><button class="close" id="mClose" style="float:none">✕</button></div><div id="mBody"></div></div></div><script>
+<section class="screen" id="scr-his"><div class="card"><div class="row"><h2 class="grow">Lịch Sử Các Môn</h2><button class="del" id="btnTongHop" style="background:rgba(212,175,55,.16);color:var(--gold2,#e8c766);border-color:var(--line)">䷀ Tổng Hợp Liên Môn</button><button class="del" id="clearHis">Xóa tất cả</button><button class="del" id="btnBackup" style="background:rgba(212,175,55,.16);color:var(--gold2,#e8c766);border-color:var(--line)">💾 Sao lưu</button><button class="del" id="btnRestore" style="background:rgba(212,175,55,.16);color:var(--gold2,#e8c766);border-color:var(--line)">📥 Khôi phục</button><input type="file" id="restoreFile" accept=".json" style="display:none"></div><p class="dim" style="margin-bottom:6px">Mọi lần gieo quẻ, lập cục Kỳ Môn, an lá số Tử Vi · Cân Xương đều được lưu lại trên máy của bạn (tối đa 80 mục) — có thể xóa từng mục, xóa theo môn, hoặc xóa tất cả.</p><div id="hisList"></div></div></section><section class="screen" id="scr-tuvi"><div class="card"><h2>Lá Số Tử Vi Đẩu Số</h2><p class="dim" style="margin-bottom:8px">Nhập đầy đủ thông tin để an lá số chính xác nhất.</p><input type="text" id="tvName" placeholder="Họ và tên đương số" style="margin-bottom:8px"><div class="pills" style="margin-bottom:8px"><div class="pill on" id="tvSolar">Dương lịch</div><div class="pill" id="tvLunar">Âm lịch</div></div><div class="row" style="gap:6px;margin-bottom:8px"><input type="number" id="tvDay" placeholder="Ngày" min="1" max="31" style="flex:1"><input type="number" id="tvMonth" placeholder="Tháng" min="1" max="12" style="flex:1"><input type="number" id="tvYear" placeholder="Năm" min="1900" max="2100" style="flex:1.4"></div><div class="row" style="gap:6px;margin-bottom:8px"><select id="tvHour" style="flex:1.4"><option value="0">Giờ Tý (23h–1h)</option><option value="1">Giờ Sửu (1h–3h)</option><option value="2">Giờ Dần (3h–5h)</option><option value="3">Giờ Mão (5h–7h)</option><option value="4">Giờ Thìn (7h–9h)</option><option value="5">Giờ Tỵ (9h–11h)</option><option value="6">Giờ Ngọ (11h–13h)</option><option value="7">Giờ Mùi (13h–15h)</option><option value="8">Giờ Thân (15h–17h)</option><option value="9">Giờ Dậu (17h–19h)</option><option value="10">Giờ Tuất (19h–21h)</option><option value="11">Giờ Hợi (21h–23h)</option></select><div class="pills" style="flex:1;margin:0"><div class="pill on" id="tvNam">Nam</div><div class="pill" id="tvNu">Nữ</div></div></div><div class="row" style="gap:6px;margin-bottom:8px"><select id="tvTS" style="flex:1" title="Phái an vòng Tràng Sinh"><option value="ttl">Tràng Sinh: Thái Thứ Lang (phổ dụng)</option><option value="oneway">Tràng Sinh: một chiều thuận</option><option value="hl">Tràng Sinh: Hà Lạc Dã Phu</option></select></div><button class="btn" id="tvGo">AN LÁ SỐ</button></div><div id="tvResult"></div><div class="card"><h2>Lá Số Đã Lưu</h2><div id="tvHisList"></div></div></section></main><button id="uiGear" title="Cài đặt giao diện" aria-label="Cài đặt giao diện">⚙</button><button id="menuBtn" title="Mở menu các môn" aria-label="Mở menu">☰</button><div id="menuBack"></div><nav id="tabs"><div id="menuTitle">䷀ KINH DỊCH 64 QUẺ</div><button class="tab on" data-s="scr-cast"><span class="ic">䷀</span>Gieo Quẻ</button><button class="tab" data-s="scr-list"><span class="ic">☷</span>64 Quẻ</button><button class="tab" data-s="scr-hdlt"><span class="ic">◎</span>Hà Lạc</button><button class="tab" data-s="scr-tuvi"><span class="ic">✦</span>Tử Vi</button><button class="tab" data-s="scr-kymon"><span class="ic">◈</span>Kỳ Môn</button><button class="tab" data-s="scr-lucnham"><span class="ic">𓆩</span>Lục Nhâm</button><button class="tab" data-s="scr-thaiat"><span class="ic">☰</span>Thái Ất</button><button class="tab" data-s="scr-battu"><span class="ic">☷</span>Bát Tự</button><button class="tab" data-s="scr-tarot"><span class="ic">🃏</span>Tarot</button><button class="tab" data-s="scr-kd"><span class="ic">📜</span>Kinh Điển</button><button class="tab" data-s="scr-his"><span class="ic">❖</span>Lịch Sử</button><button class="tab" data-s="scr-legal"><span class="ic">⚖</span>Pháp Lý</button></nav></div><div id="modal"><div class="backdrop" id="mBack"></div><div class="sheet"><div class="mtools"><button class="mtool" id="mExport" title="Xuất kết quả ra file HTML">📄 Xuất file</button><button class="mtool" id="mPrint" title="In hoặc lưu thành PDF">🖨 In / PDF</button><button class="close" id="mClose" style="float:none">✕</button></div><div id="mBody"></div></div></div><script id="siching-foundation-v1">
+/* S I CHING FOUNDATION — isolated infrastructure; never alters existing UI markup/styles. */
+(function(global){
+ 'use strict';
+ if(global.SIArchitecture) return;
+ const modules=new Map(), listeners=new Map(), logs=[];
+ const freeze=x=>Object.freeze(x);
+ const report=(level,scope,message)=>{logs.push(freeze({at:new Date().toISOString(),level,scope,message:String(message)}));if(logs.length>100)logs.shift();};
+ const api={
+  version:'1.0.0',
+  register(name,definition){if(!/^[a-z][a-z0-9._-]*$/i.test(name)||modules.has(name))throw Error('Invalid or duplicate module: '+name);modules.set(name,freeze({name,definition,status:'registered'}));return name;},
+  list(){return Array.from(modules.keys());},
+  get(name){return modules.get(name)?.definition;},
+  on(event,callback){if(typeof callback!=='function')throw TypeError('callback');let group=listeners.get(event);if(!group){group=new Set();listeners.set(event,group);}group.add(callback);return ()=>group.delete(callback);},
+  emit(event,payload){for(const callback of listeners.get(event)||[]){try{callback(payload);}catch(err){report('error','event:'+event,err?.message||err);}}},
+  storage:freeze({
+   read(key,fallback=null){try{const raw=localStorage.getItem('si:'+key);return raw===null?fallback:JSON.parse(raw);}catch(err){report('warn','storage.read',err?.message||err);return fallback;}},
+   write(key,value){try{localStorage.setItem('si:'+key,JSON.stringify(value));return true;}catch(err){report('warn','storage.write',err?.message||err);return false;}},
+   remove(key){try{localStorage.removeItem('si:'+key);return true;}catch(err){return false;}}
+  }),
+  diagnostics(){return freeze({version:api.version,modules:api.list(),recentErrors:logs.filter(x=>x.level==='error').slice(-20),events:logs.length});},
+  assert(name,condition){if(!condition){report('error','assert',name);return false;}return true;}
+ };
+ global.SIArchitecture=freeze(api);
+ global.addEventListener('error',e=>report('error','window',e.message||'Unknown error'));
+ global.addEventListener('unhandledrejection',e=>report('error','promise',e.reason?.message||e.reason||'Unhandled rejection'));
+ api.register('core.events',api.on);
+ api.register('core.storage',api.storage);
+ api.register('core.diagnostics',api.diagnostics);
+})(window);
+</script>
+<script id="siching-observability-v2">
+/* S I CHING V2: passive instrumentation, no visual/DOM changes or event interception. */
+(function(global){
+ 'use strict';
+ if(global.SIObservability) return;
+ var errors=[], navigation=[], MAX=80, lastScreen=null, lastAt=0;
+ function now(){return global.performance&&performance.now?performance.now():Date.now();}
+ function record(kind,detail){errors.push({kind:kind,detail:String(detail).slice(0,300),time:new Date().toISOString()});if(errors.length>MAX)errors.shift();}
+ function activeScreen(){
+  var screens=document.querySelectorAll('.screen');
+  for(var i=0;i<screens.length;i++){
+   var el=screens[i];
+   if(el.classList.contains('active') || el.classList.contains('on')) return el.id||'(unnamed)';
+  }
+  return null;
+ }
+ function sample(){
+  var current=activeScreen();
+  if(current!==lastScreen){
+   var t=now();
+   if(lastScreen!==null){navigation.push({from:lastScreen,to:current,elapsedSincePreviousMs:Math.round(t-lastAt)});if(navigation.length>MAX)navigation.shift();}
+   lastScreen=current;lastAt=t;
+  }
+ }
+ function snapshot(){
+  var screens=document.querySelectorAll('.screen');
+  var ids=new Set(),duplicates=[];
+  document.querySelectorAll('[id]').forEach(function(el){if(ids.has(el.id))duplicates.push(el.id);ids.add(el.id);});
+  return {version:'2.0.0',capturedAt:new Date().toISOString(),screenCount:screens.length,activeScreen:activeScreen(),duplicateIds:duplicates.slice(0,30),navigationSamples:navigation.slice(),errors:errors.slice(),foundation:global.SIArchitecture&&global.SIArchitecture.diagnostics?global.SIArchitecture.diagnostics():null};
+ }
+ var api=Object.freeze({version:'2.0.0',snapshot:snapshot,check:function(){var s=snapshot();return {ok:s.screenCount>0&&s.duplicateIds.length===0,screenCount:s.screenCount,duplicateIds:s.duplicateIds};},navigation:function(){return navigation.slice();}});
+ Object.defineProperty(global,'SIObservability',{value:api,writable:false,configurable:false});
+ global.addEventListener('error',function(e){record('script',e.message||'Script error');});
+ global.addEventListener('unhandledrejection',function(e){record('promise',e.reason&&e.reason.message||e.reason||'Unknown rejection');});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){sample();}, {once:true});else sample();
+ // Low-cost passive observer. Does not prevent, wrap or delay existing navigation.
+ var observer;
+ function watch(){
+  if(!document.body)return;
+  sample();
+  observer=new MutationObserver(function(mutations){for(var i=0;i<mutations.length;i++){if(mutations[i].attributeName==='class'){sample();break;}}});
+  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch,{once:true});else watch();
+})(window);
+</script>
+<script id="siching-contracts-v3">
+/* V3: read-only architecture contracts. Does not alter UI, handlers, or business logic. */
+(function(global){
+ 'use strict';
+ if(global.SIContracts) return;
+ var definitions=Object.create(null), MAX=120, history=[];
+ function copy(x){try{return JSON.parse(JSON.stringify(x));}catch(e){return String(x);}}
+ function note(type,name,detail){history.push({type:type,name:name,detail:String(detail||''),at:new Date().toISOString()});if(history.length>MAX)history.shift();}
+ function define(name,options){
+  if(typeof name!=='string'||!name||definitions[name])return false;
+  options=options||{};
+  definitions[name]={dependencies:Array.isArray(options.dependencies)?options.dependencies.slice():[],check:typeof options.check==='function'?options.check:null};
+  return true;
+ }
+ function inspect(){
+  var names=Object.keys(definitions), result=[], visiting=Object.create(null), visited=Object.create(null);
+  function visit(name,stack){
+   if(visiting[name]){result.push({module:name,status:'cycle',path:stack.concat(name)});return;}
+   if(visited[name])return;
+   visiting[name]=true;
+   var d=definitions[name];
+   d.dependencies.forEach(function(dep){if(!definitions[dep])result.push({module:name,status:'missing-dependency',dependency:dep});else visit(dep,stack.concat(name));});
+   visiting[name]=false;visited[name]=true;
+   if(d.check){try{result.push({module:name,status:d.check()?'ok':'failed-check'});}catch(e){result.push({module:name,status:'check-error',detail:String(e&&e.message||e)});}}
+   else result.push({module:name,status:'registered'});
+  }
+  names.forEach(function(name){visit(name,[]);});
+  return result;
+ }
+ function snapshot(){
+  var checks=inspect(),issues=checks.filter(function(x){return ['cycle','missing-dependency','failed-check','check-error'].indexOf(x.status)!==-1;});
+  return {version:'3.0.0',checkedAt:new Date().toISOString(),ok:issues.length===0,contracts:checks,issues:issues,history:history.slice()};
+ }
+ define('core.foundation',{check:function(){return !!(global.SIArchitecture&&global.SIArchitecture.diagnostics);}});
+ define('core.observability',{dependencies:['core.foundation'],check:function(){return !!(global.SIObservability&&global.SIObservability.snapshot);}});
+ define('core.dom',{dependencies:['core.observability'],check:function(){return !!(document.querySelector('body')&&document.querySelectorAll('.screen').length);}});
+ var api=Object.freeze({version:'3.0.0',define:define,inspect:inspect,snapshot:snapshot,record:note});
+ Object.defineProperty(global,'SIContracts',{value:api,writable:false,configurable:false});
+})(window);
+</script>
+<script>
 'use strict';
 /* ===== PATCH P0-1a (audit v2.3): an toàn scroll cho mọi WebView ===== */
 try{ if(typeof Element!=='undefined'&&!Element.prototype.scrollIntoView){Element.prototype.scrollIntoView=function(){};} }catch(e){}
@@ -9097,4 +9214,334 @@ document.getElementById('restoreFile').addEventListener('change',function(){
 
 /* ===== PATCH v1.0.1 — bảo đảm 4 handler inline luôn thuộc window (chống vỡ nếu đóng gói module/SW) ===== */
 try{window.toggleSnd=toggleSnd;window.toggleFavOnly=toggleFavOnly;window.kdSub=kdSub;window.ddjOpenAll=ddjOpenAll;}catch(e){}
+</script><script id="siching-boundary-audit-v4">
+/* V4 passive architecture boundary audit: no DOM writes, no event handlers replaced. */
+(function(global){
+ 'use strict';
+ if(global.SIBoundaryAudit)return;
+ var LIMIT=100;
+ function snapshot(){
+  var nodes=document.querySelectorAll('[id]'), seen=Object.create(null), duplicates=[];
+  for(var i=0;i<nodes.length;i++){
+   var id=nodes[i].id;
+   if(seen[id]){if(duplicates.length<LIMIT)duplicates.push(id);}else seen[id]=1;
+  }
+  var scripts=document.querySelectorAll('script'), inventory=[];
+  for(var j=0;j<scripts.length;j++){
+   var sc=scripts[j];
+   inventory.push({id:sc.id||null,external:!!sc.src,bytes:sc.src?null:sc.textContent.length});
+  }
+  var handlers=document.querySelectorAll('[onclick],[onchange],[oninput],[onsubmit]');
+  var screens=document.querySelectorAll('.screen'), screenNames=[];
+  for(var k=0;k<screens.length;k++)screenNames.push(screens[k].id||'(unnamed)');
+  var storage={available:false,keys:0,error:null};
+  try{storage.keys=global.localStorage.length;storage.available=true;}catch(e){storage.error=String(e&&e.message||e);}
+  return {version:'4.0.0',at:new Date().toISOString(),dom:{ids:nodes.length,duplicateIds:duplicates,inlineHandlerElements:handlers.length,screens:screenNames},scripts:inventory,storage:storage,contracts:typeof global.SIContracts==='object',observability:typeof global.SIObservability==='object'};
+ }
+ function verify(){var r=snapshot();return {pass:r.dom.duplicateIds.length===0,issues:r.dom.duplicateIds.map(function(id){return 'Duplicate DOM id: '+id;}),inventory:r};}
+ global.SIBoundaryAudit=Object.freeze({snapshot:snapshot,verify:verify});
+})(window);
+</script><script id="siching-regression-v5">
+/* V5: read-only regression checks and architectural inventory. No UI mutation. */
+(function(global){
+ 'use strict';
+ if(global.SIRegression)return;
+ var checks=Object.freeze([
+  {id:'root',selector:'html'},
+  {id:'head',selector:'head'},
+  {id:'body',selector:'body'},
+  {id:'casting',selector:'#scr-cast'},
+  {id:'library',selector:'#scr-list'},
+  {id:'history',selector:'#scr-his'}
+ ]);
+ function inspect(){
+  var failures=[], results=[], seen=Object.create(null);
+  checks.forEach(function(c){var found=!!document.querySelector(c.selector);results.push({id:c.id,pass:found});if(!found)failures.push('Missing '+c.selector);});
+  var screens=Array.prototype.slice.call(document.querySelectorAll('.screen'));
+  var active=screens.filter(function(el){return el.classList.contains('active');});
+  results.push({id:'one-active-screen',pass:active.length===1,actual:active.map(function(el){return el.id;})});
+  if(active.length!==1)failures.push('Expected exactly one active screen, found '+active.length);
+  Array.prototype.forEach.call(document.querySelectorAll('[id]'),function(el){if(seen[el.id])failures.push('Duplicate id '+el.id);seen[el.id]=true;});
+  var report={version:'5.0.0',at:new Date().toISOString(),pass:failures.length===0,results:results,failures:failures,
+   architecture:{screens:screens.map(function(el){return el.id;}),scripts:Array.prototype.map.call(document.scripts,function(s){return {id:s.id||null,inline:!s.src,chars:s.src?null:s.textContent.length};}),
+   foundations:{core:!!global.SIFoundation,observability:!!global.SIObservability,contracts:!!global.SIContracts,boundaries:!!global.SIBoundaryAudit}}};
+  return report;
+ }
+ function validateNavigationSequence(ids){
+  if(!Array.isArray(ids))return {pass:false,reason:'Expected array of screen ids'};
+  var missing=ids.filter(function(id){return typeof id!=='string'||!document.getElementById(id);});
+  return {pass:missing.length===0,missing:missing,note:'Validation only: does not navigate or change screen'};
+ }
+ global.SIRegression=Object.freeze({inspect:inspect,validateNavigationSequence:validateNavigationSequence});
+})(window);
+</script><script id="siching-hexagram-core-v6">
+/* V6 pure hexagram domain module. No DOM reads/writes, no changes to legacy handlers. */
+(function(global){'use strict';
+ if(global.SIHexagramCore) return;
+ function assertLines(lines){
+  if(!Array.isArray(lines)||lines.length!==6||!lines.every(function(v){return v===0||v===1;}))
+   throw new TypeError('Six lines required, bottom to top; 0=yin, 1=yang');
+  return lines.slice();
+ }
+ function assertChanges(changes){
+  if(!Array.isArray(changes)||changes.length!==6||!changes.every(function(v){return typeof v==='boolean';}))
+   throw new TypeError('Six boolean change flags required, bottom to top');
+  return changes.slice();
+ }
+ function fromValues(values){
+  if(!Array.isArray(values)||values.length!==6||!values.every(function(v){return v===6||v===7||v===8||v===9;}))
+   throw new TypeError('Six traditional values required: 6,7,8,9; bottom to top');
+  return Object.freeze({lines:Object.freeze(values.map(function(v){return v===7||v===9?1:0;})),
+   changes:Object.freeze(values.map(function(v){return v===6||v===9;}))});
+ }
+ function transform(lines,changes){
+  var l=assertLines(lines),c=assertChanges(changes);
+  return Object.freeze(l.map(function(v,i){return c[i]?1-v:v;}));
+ }
+ function encode(lines){return assertLines(lines).reduce(function(n,v,i){return n+(v<<i);},0);}
+ function decode(code){
+  if(!Number.isInteger(code)||code<0||code>63)throw new RangeError('Pattern code must be 0..63');
+  return Object.freeze(Array.from({length:6},function(_,i){return (code>>i)&1;}));
+ }
+ function runTests(){
+  var failures=[],tested=0;
+  function check(name,condition){tested++;if(!condition)failures.push(name);}
+  for(var i=0;i<64;i++){
+   var a=decode(i);check('roundtrip '+i,encode(a)===i);
+   check('double change '+i,encode(transform(transform(a,[true,true,true,true,true,true]),[true,true,true,true,true,true]))===i);
+  }
+  var c=fromValues([6,7,8,9,6,9]);
+  check('traditional yin-yang',encode(c.lines)===encode([0,1,0,1,0,1]));
+  check('traditional changing flags',c.changes.join(',')==='true,false,false,true,true,true');
+  check('transformation',encode(transform([0,1,0,1,0,1],[true,false,false,true,true,true]))===encode([1,1,0,0,1,0]));
+  try{decode(64);failures.push('invalid code accepted');}catch(e){check('invalid code rejected',e instanceof RangeError);}
+  return Object.freeze({version:'6.0.0',passed:failures.length===0,tested:tested,failures:Object.freeze(failures)});
+ }
+ global.SIHexagramCore=Object.freeze({fromValues:fromValues,transform:transform,encode:encode,decode:decode,runTests:runTests,
+  conventions:Object.freeze({lineOrder:'bottom-to-top',yin:0,yang:1,changingYin:6,staticYang:7,staticYin:8,changingYang:9})});
+})(window);
+</script><script id="siching-fixture-contract-v7">
+/* V7: immutable, mechanically verifiable pattern fixtures. No historical text claims. */
+(function(global){'use strict';
+ if(global.SIFixtureRegistry)return;
+ var core=global.SIHexagramCore;
+ if(!core)throw new Error('V7 requires SIHexagramCore V6');
+ var fixtures=Object.freeze(Array.from({length:64},function(_,pattern){
+  var lines=core.decode(pattern);
+  return Object.freeze({pattern:pattern,lines:lines,
+   lowerTrigram:pattern&7,upperTrigram:(pattern>>3)&7,
+   lineSlots:Object.freeze(Array.from({length:6},function(_,i){
+    return Object.freeze({position:i+1,polarity:lines[i],sourceStatus:'not-reviewed',text:null});
+   }))});
+ }));
+ function get(pattern){
+  if(!Number.isInteger(pattern)||pattern<0||pattern>63)throw new RangeError('Pattern must be 0..63');
+  return fixtures[pattern];
+ }
+ function lookupValues(values){var result=core.fromValues(values),pattern=core.encode(result.lines);
+  return Object.freeze({primary:get(pattern),changed:get(core.encode(core.transform(result.lines,result.changes))),
+   changingPositions:Object.freeze(result.changes.reduce(function(a,v,i){if(v)a.push(i+1);return a;},[]))});
+ }
+ function audit(){var failures=[],count=0;
+  function check(label,condition){count++;if(!condition)failures.push(label);}
+  check('64 unique fixtures',fixtures.length===64&&new Set(fixtures.map(function(f){return f.pattern;})).size===64);
+  fixtures.forEach(function(f,i){
+   check('code '+i,core.encode(f.lines)===i);
+   check('trigrams '+i,f.lowerTrigram===(i&7)&&f.upperTrigram===((i>>3)&7));
+   check('six slots '+i,f.lineSlots.length===6);
+   f.lineSlots.forEach(function(slot,j){check('slot '+i+':'+j,slot.position===j+1&&slot.polarity===f.lines[j]&&slot.text===null);});
+  });
+  for(var i=0;i<64;i++)for(var j=0;j<6;j++){
+   var values=core.decode(i).map(function(v,k){return k===j?(v?9:6):(v?7:8);});
+   var result=lookupValues(values);
+   check('single change '+i+':'+j,result.primary.pattern===i&&result.changed.pattern===(i^(1<<j))&&result.changingPositions.length===1&&result.changingPositions[0]===j+1);
+  }
+  return Object.freeze({version:'7.0.0',passed:failures.length===0,tested:count,
+   patterns:fixtures.length,lineSlots:fixtures.length*6,verifiedClassicalTexts:0,failures:Object.freeze(failures)});
+ }
+ global.SIFixtureRegistry=Object.freeze({get:get,lookupValues:lookupValues,audit:audit,
+  conventions:Object.freeze({patternEncoding:'bottom-to-top, bit 0 = first line',
+   numbering:'binary pattern index, NOT King Wen sequence',
+   historicalTexts:'not included; independent source verification required'})});
+})(window);
+</script><script id="siching-compatibility-v8">
+/* V8: read-only compatibility boundary. Never hooks, replaces or invokes legacy UI. */
+(function(global){'use strict';
+ if(global.SICompatibilityV8)return;
+ var core=global.SIHexagramCore, registry=global.SIFixtureRegistry;
+ function ensure(){if(!core||!registry)throw new Error('V8 requires V6 core and V7 registry');}
+ function normalize(values,order){
+  if(!Array.isArray(values)||values.length!==6)throw new TypeError('Expected six line values');
+  if(order!=='bottom-to-top'&&order!=='top-to-bottom')throw new TypeError('Explicit line order required');
+  var copy=values.slice();if(order==='top-to-bottom')copy.reverse();
+  return core.fromValues(copy);
+ }
+ function calculate(values,order){
+  ensure();var result=normalize(values,order);
+  var primary=core.encode(result.lines),changed=core.encode(core.transform(result.lines,result.changes));
+  var changing=[];result.changes.forEach(function(flag,i){if(flag)changing.push(i+1);});
+  return Object.freeze({primaryPattern:primary,changedPattern:changed,
+   changingPositions:Object.freeze(changing),primary:registry.get(primary),changed:registry.get(changed),
+   convention:'binary, first line = least significant bit; NOT King Wen order'});
+ }
+ function compare(values,order){
+  ensure();var actual=calculate(values,order);
+  var normalized=order==='top-to-bottom'?values.slice().reverse():values.slice();
+  var legacyIndependent=registry.lookupValues(normalized);
+  var matches=actual.primaryPattern===legacyIndependent.primary.pattern&&
+   actual.changedPattern===legacyIndependent.changed.pattern&&
+   JSON.stringify(actual.changingPositions)===JSON.stringify(legacyIndependent.changingPositions);
+  return Object.freeze({matches:matches,actual:actual,reference:legacyIndependent,
+   note:'Compares two new-domain paths only; does not verify existing app legacy engine'});
+ }
+ function audit(){
+  ensure();var total=0,failures=[];
+  function check(name,ok){total++;if(!ok&&failures.length<100)failures.push(name);}
+  for(var pattern=0;pattern<64;pattern++){
+   for(var mask=0;mask<64;mask++){
+    var values=core.decode(pattern).map(function(bit,i){return mask&(1<<i)?(bit?9:6):(bit?7:8);});
+    var r=calculate(values,'bottom-to-top');
+    check('pattern '+pattern+' mask '+mask,r.primaryPattern===pattern&&r.changedPattern===(pattern^mask)&&r.changingPositions.length===popcount(mask));
+    var reversed=calculate(values.slice().reverse(),'top-to-bottom');
+    check('order '+pattern+' mask '+mask,reversed.primaryPattern===r.primaryPattern&&reversed.changedPattern===r.changedPattern);
+    check('registry '+pattern+' mask '+mask,compare(values,'bottom-to-top').matches);
+   }
+  }
+  var invalid=[[6,7,8], [6,7,8,9,6,10],null];
+  invalid.forEach(function(v,i){var rejected=false;try{calculate(v,'bottom-to-top');}catch(e){rejected=true;}check('invalid '+i,rejected);});
+  var badOrder=false;try{calculate([6,7,8,9,6,7],'unspecified');}catch(e){badOrder=true;}check('explicit order',badOrder);
+  return Object.freeze({version:'8.0.0',passed:failures.length===0,tested:total,failures:Object.freeze(failures),
+   legacyParityVerified:false,uiIntegration:false,sourceTextVerified:false});
+ }
+ function popcount(n){var c=0;while(n){c+=n&1;n>>=1;}return c;}
+ global.SICompatibilityV8=Object.freeze({calculate:calculate,compare:compare,audit:audit});
+})(window);
+</script><script>
+/* V10: explicit, opt-in legacy parity adapter. No UI, DOM or storage writes. */
+(function(global){'use strict';
+ if(global.SILegacyParityV10)return;
+ var core=global.SIHexagramCore, modern=global.SICompatibilityV8;
+ function validateResult(result){
+  if(!result||!Number.isInteger(result.primaryPattern)||result.primaryPattern<0||result.primaryPattern>63||
+     !Number.isInteger(result.changedPattern)||result.changedPattern<0||result.changedPattern>63||
+     !Array.isArray(result.changingPositions)||result.changingPositions.some(function(x){return !Number.isInteger(x)||x<1||x>6;}))
+    throw new TypeError('Legacy adapter must return {primaryPattern:0..63,changedPattern:0..63,changingPositions:[1..6]}');
+  var positions=result.changingPositions;
+  if(new Set(positions).size!==positions.length)throw new TypeError('Duplicate changing positions');
+  return result;
+ }
+ function compareWith(adapter,values,order){
+  if(typeof adapter!=='function')throw new TypeError('Explicit legacy adapter function required');
+  var safeValues=values.slice(),expected=modern.calculate(safeValues,order);
+  var legacy=validateResult(adapter(safeValues.slice(),order));
+  return Object.freeze({matches:expected.primaryPattern===legacy.primaryPattern&&
+   expected.changedPattern===legacy.changedPattern&&
+   expected.changingPositions.slice().sort().join(',')===legacy.changingPositions.slice().sort().join(','),
+   expected:expected,legacy:legacy});
+ }
+ function auditWith(adapter){
+  if(typeof adapter!=='function')throw new TypeError('A verified adapter to the existing legacy engine is required');
+  var total=0,mismatches=[],errors=[];
+  for(var pattern=0;pattern<64;pattern++)for(var mask=0;mask<64;mask++){
+   var values=core.decode(pattern).map(function(bit,i){return mask&(1<<i)?(bit?9:6):(bit?7:8);});
+   total++;
+   try{var comparison=compareWith(adapter,values,'bottom-to-top');
+    if(!comparison.matches&&mismatches.length<30)mismatches.push({pattern:pattern,mask:mask,legacy:comparison.legacy});
+   }catch(err){if(errors.length<30)errors.push({pattern:pattern,mask:mask,error:String(err)});}
+  }
+  return Object.freeze({version:'10.0.0',total:total,passed:mismatches.length===0&&errors.length===0,
+   mismatches:mismatches,errors:errors,warning:'Only meaningful when adapter invokes the actual original application engine.'});
+ }
+ function selfTest(){
+  var fake=function(values,order){var r=modern.calculate(values,order);return {
+   primaryPattern:r.primaryPattern,changedPattern:r.changedPattern,changingPositions:r.changingPositions.slice()};};
+  var ok=compareWith(fake,[6,7,8,9,6,9],'bottom-to-top').matches;
+  var rejects=false;try{compareWith(null,[6,7,8,9,6,9],'bottom-to-top');}catch(e){rejects=true;}
+  return Object.freeze({passed:ok&&rejects,adapterContractVerified:ok&&rejects,
+   legacyEngineCompared:false,realBrowserNavigationTested:false});
+ }
+ global.SILegacyParityV10=Object.freeze({compareWith:compareWith,auditWith:auditWith,selfTest:selfTest});
+})(window);
+</script><script id="siching-legacy-bridge-v12">
+/* V12 repairs V11's incorrect assumptions: TRI and HEXMAT are lexical arrays,
+   not window objects keyed by trigram names. Read-only, opt-in parity audit. */
+(function(global){'use strict';
+ if(global.SILegacyBridgeV12)return;
+ function mapping(){
+  if(typeof yangFromTri!=='function'||typeof numFromYang!=='function'||
+     typeof TRI==='undefined'||typeof HEXMAT==='undefined'||
+     !Array.isArray(TRI)||TRI.length!==8||!Array.isArray(HEXMAT)||HEXMAT.length!==8)
+   throw new Error('Legacy trigram engine unavailable or incompatible');
+  var reverse=Object.create(null);
+  for(var up=0;up<8;up++)for(var lo=0;lo<8;lo++){
+   var bits=yangFromTri(up,lo),result=numFromYang(bits);
+   if(!Array.isArray(bits)||bits.length!==6||!result||!Number.isInteger(result.num)||result.num<1||result.num>64)
+    throw new Error('Invalid original hexagram mapping');
+   var pattern=bits.reduce(function(n,b,i){return n|(b?(1<<i):0);},0);
+   if(reverse[result.num]!==undefined)throw new Error('Duplicate original hexagram mapping');
+   reverse[result.num]=pattern;
+  }
+  if(Object.keys(reverse).length!==64)throw new Error('Incomplete original hexagram mapping');
+  return reverse;
+ }
+ function adapter(values,order){
+  if(order!=='bottom-to-top')throw new TypeError('Expected bottom-to-top order');
+  if(!Array.isArray(values)||values.length!==6||values.some(function(v){return v!==6&&v!==7&&v!==8&&v!==9;}))
+   throw new TypeError('Expected six traditional line values');
+  var reverse=mapping(),original=[],changed=[],positions=[];
+  for(var i=0;i<6;i++){
+   var v=values[i],yang=v===7||v===9;
+   original.push(yang);changed.push(v===6||v===9?!yang:yang);
+   if(v===6||v===9)positions.push(i+1);
+  }
+  var p=numFromYang(original).num,c=numFromYang(changed).num;
+  if(reverse[p]===undefined||reverse[c]===undefined)throw new Error('Legacy lookup failed');
+  return {primaryPattern:reverse[p],changedPattern:reverse[c],changingPositions:positions};
+ }
+ function audit(){
+  if(!global.SILegacyParityV10)throw new Error('V10 parity contract unavailable');
+  var report=global.SILegacyParityV10.auditWith(adapter);
+  return Object.freeze({version:'12.0.0',total:report.total,passed:report.passed,
+   mismatches:report.mismatches,errors:report.errors,
+   scope:'Legacy trigram mapping vs independent six-line binary pattern; not divination interpretation or UI',
+   note:'Read-only audit. Existing app engine and UI are unchanged.'});
+ }
+ global.SILegacyBridgeV12=Object.freeze({adapter:adapter,audit:audit});
+})(window);
+</script><script id="siching-runtime-audit-v13">
+/* Read-only runtime verification: no UI, storage, navigation, or engine mutation. */
+(function(global){'use strict';
+ if(global.SIRuntimeAuditV13)return;
+ function run(){
+  var checks=[],issues=[];
+  function check(name,fn){try{var result=fn();checks.push({name:name,passed:!!result,detail:result});if(!result)issues.push(name+' returned false');}
+   catch(e){checks.push({name:name,passed:false,error:String(e&&e.message||e)});issues.push(name+': '+String(e&&e.message||e));}}
+  check('single active screen',function(){return document.querySelectorAll('.screen.active').length===1;});
+  check('unique DOM ids',function(){var seen=Object.create(null);return Array.prototype.every.call(document.querySelectorAll('[id]'),function(el){if(seen[el.id])return false;seen[el.id]=true;return true;});});
+  check('legacy trigram API',function(){return typeof yangFromTri==='function'&&typeof numFromYang==='function';});
+  check('hexagram core tests',function(){return !!(global.SIHexagramCore&&global.SIHexagramCore.runTests().passed);});
+  check('fixture contract tests',function(){return !!(global.SIFixtureRegistry&&global.SIFixtureRegistry.audit().passed);});
+  check('compatibility tests',function(){return !!(global.SICompatibilityV8&&global.SICompatibilityV8.audit().passed);});
+  check('legacy mapping parity (4096 cases)',function(){return !!(global.SILegacyBridgeV12&&global.SILegacyBridgeV12.audit().passed);});
+  return Object.freeze({version:'13.0.0',passed:issues.length===0,checks:checks,issues:issues,
+   scope:'Read-only structural and numerical checks; does not validate all UI actions, historical text, or iPhone Safari.'});
+ }
+ global.SIRuntimeAuditV13=Object.freeze({run:run});
+})(window);
+</script><script id="siching-interaction-audit-v14">
+/* V14: passive navigation / control inventory, never clicks, mutates DOM or storage. */
+(function(global){
+ 'use strict';
+ if(global.SIInteractionAuditV14)return;
+ function inspect(){
+  var screens=Array.from(document.querySelectorAll('.screen'));
+  var active=screens.filter(function(x){return x.classList.contains('active')});
+  var buttons=Array.from(document.querySelectorAll('button'));
+  var inline=Array.from(document.querySelectorAll('[onclick]'));
+  var broken=[];
+  inline.forEach(function(el){var code=el.getAttribute('onclick')||'';var match=code.match(/^\s*([A-Za-z_$][\w$]*)\s*\(/);if(match && typeof global[match[1]]!=='function')broken.push({handler:match[1],element:el.id||el.tagName});});
+  return Object.freeze({version:'14.0.0',screenCount:screens.length,activeScreenIds:active.map(function(x){return x.id}),buttonCount:buttons.length,inlineHandlerCount:inline.length,unresolvedInlineHandlers:broken,readyState:document.readyState,passed:active.length===1&&broken.length===0});
+ }
+ global.SIInteractionAuditV14=Object.freeze({inspect:inspect});
+})(window);
 </script></body></html>
