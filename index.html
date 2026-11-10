@@ -437,7 +437,7 @@ nav.bottom{bottom:0!important}
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
-const APP_VERSION='S I CHING V26';
+const APP_VERSION='S I CHING V28';
 const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
@@ -524,6 +524,91 @@ function structuralReading(values){
     count+' hào động: '+d.moving.map(i=>i+1).join(', ')+'. Chưa áp dụng quy tắc chọn lời thuộc trường phái cụ thể.';
   return {count,focus,rows:values.map((value,i)=>({position:i+1,value,description:lineDescription(value),moving:value===6||value===9,originalYang:value%2===1,changedYang:(value===6||value===9)?value%2===0:value%2===1}))};
 }
+// V27: Text selection is separate from source text. No missing passage is synthesized.
+const TEXT_SOURCES=Object.freeze({
+  received:'https://ludobench.com/fortunes/iching/book',
+  zhuXi:'https://www2.kenyon.edu/Depts/Religion/Fac/Adler/Writings/Qimeng-3.pdf',
+  zhuXiRules:'https://uaya.org/learn/iching/using-the-oracle/recording-reading/decoding-the-structure/multiple-changing-lines/'
+});
+// Only independently cross-checked short excerpts are bundled. Empty fields are deliberately absent.
+// guaci = 卦辭 (hexagram statement); daxiang = 大象 (Great Image); yaoci = 爻辭 (line statement).
+const CLASSICAL_TEXT=Object.freeze({
+  1:Object.freeze({
+    guaci:'元亨利貞',
+    daxiang:'天行健，君子以自強不息。',
+    yaoci:Object.freeze(['潛龍勿用。','見龍在田，利見大人。','君子終日乾乾，夕惕若厲，無咎。','或躍在淵，無咎。','飛龍在天，利見大人。','亢龍有悔。']),
+    yongjiu:'見群龍無首，吉。',
+    source:TEXT_SOURCES.received
+  }),
+  2:Object.freeze({
+    guaci:'元亨，利牝馬之貞。',
+    daxiang:'地勢坤，君子以厚德載物。',
+    source:TEXT_SOURCES.received
+  })
+});
+const READING_SCHOOLS=Object.freeze({
+  zhu_xi:'Chu Hy · Dịch học khải mông (考變占)',
+  all_moving:'Đối chiếu toàn bộ hào động (quy ước đọc mở rộng)'
+});
+let readingSchool='zhu_xi';
+function selectClassicalPassages(values,school='zhu_xi'){
+  const d=deriveHexagram(values),m=d.moving.map(i=>i+1),stable=[1,2,3,4,5,6].filter(i=>!m.includes(i));
+  const primary=d.number,result=d.changedNumber;
+  const item=(hex,kind,line=null,principal=false)=>({hex,kind,line,principal});
+  if(school==='all_moving')return {school,items:m.length?m.map(i=>item(primary,'yaoci',i)): [item(primary,'guaci')],note:'Quy ước tham khảo: đọc tất cả hào động của quẻ chủ; không đồng nhất với quy tắc Chu Hy.'};
+  if(school!=='zhu_xi')throw Error('Trường phái chọn lời không được hỗ trợ');
+  let items=[];
+  switch(m.length){
+    case 0:items=[item(primary,'guaci',null,true)];break;
+    case 1:items=[item(primary,'yaoci',m[0],true)];break;
+    case 2:items=m.map(i=>item(primary,'yaoci',i,i===m[1]));break;
+    case 3:items=[item(primary,'guaci',null,true),item(result,'guaci',null,false)];break;
+    case 4:items=stable.map(i=>item(result,'yaoci',i,i===stable[0]));break;
+    case 5:items=[item(result,'yaoci',stable[0],true)];break;
+    case 6:items=primary===1?[item(1,'yongjiu',null,true)]:primary===2?[item(2,'yongliu',null,true)]:[item(result,'guaci',null,true)];break;
+  }
+  return {school,items,note:'Quy tắc chọn lời theo Chu Hy, Dịch học khải mông (考變占); là một truyền thống chú giải, không phải quy tắc duy nhất của mọi trường phái.'};
+}
+// V28: source coverage and selection invariants are computed without changing the cast.
+function classicalCoverage(){
+  let guaci=0,daxiang=0,yaoci=0,special=0;
+  for(let n=1;n<=64;n++){
+    const entry=CLASSICAL_TEXT[n];if(!entry)continue;
+    if(typeof entry.guaci==='string'&&entry.guaci.trim())guaci++;
+    if(typeof entry.daxiang==='string'&&entry.daxiang.trim())daxiang++;
+    if(Array.isArray(entry.yaoci))yaoci+=entry.yaoci.filter(x=>typeof x==='string'&&x.trim()).length;
+    if(entry.yongjiu)special++;if(entry.yongliu)special++;
+  }
+  return {guaci,daxiang,yaoci,special};
+}
+function validateSelectionPlan(values,school='zhu_xi'){
+  const d=deriveHexagram(values),plan=selectClassicalPassages(values,school);
+  if(!plan.items.length)return false;
+  if(plan.items.some(p=>!Number.isInteger(p.hex)||p.hex<1||p.hex>64||!['guaci','yaoci','yongjiu','yongliu'].includes(p.kind)||p.kind==='yaoci'&&(!Number.isInteger(p.line)||p.line<1||p.line>6)))return false;
+  if(school!=='zhu_xi')return true;
+  const n=d.moving.length,items=plan.items;
+  if(n===0)return items.length===1&&items[0].hex===d.number&&items[0].kind==='guaci';
+  if(n===1)return items.length===1&&items[0].hex===d.number&&items[0].line===d.moving[0]+1;
+  if(n===2)return items.length===2&&items.every(x=>x.hex===d.number&&x.kind==='yaoci')&&items.filter(x=>x.principal).length===1&&items[1].principal;
+  if(n===3)return items.length===2&&items[0].hex===d.number&&items[1].hex===d.changedNumber&&items[0].principal&&!items[1].principal;
+  if(n===4)return items.length===2&&items.every(x=>x.hex===d.changedNumber&&x.kind==='yaoci')&&items[0].principal;
+  if(n===5)return items.length===1&&items[0].hex===d.changedNumber&&items[0].kind==='yaoci';
+  return items.length===1&&(d.number===1?items[0].kind==='yongjiu':d.number===2?items[0].kind==='yongliu':items[0].kind==='guaci'&&items[0].hex===d.changedNumber);
+}
+function passageHTML(item){
+  const h=HEX[item.hex-1],entry=CLASSICAL_TEXT[item.hex];
+  const text=item.kind==='yaoci'?entry?.yaoci?.[item.line-1]:entry?.[item.kind];
+  const kindLabel={guaci:'Quái từ (卦辭)',yaoci:'Hào từ (爻辭)',yongjiu:'Dụng cửu (用九)',yongliu:'Dụng lục (用六)'}[item.kind];
+  const heading=`Quẻ ${h.n} · ${h.name} · ${kindLabel}${item.line?' · hào '+item.line:''}`;
+  return `<article class="interpret-line"><h4>${esc(heading)}${item.principal?' · trọng tâm':''}</h4>${text?`<p lang="zh-Hant" style="font-size:1.1em;color:#f6cb74">${esc(text)}</p><p class="sub">Nguyên văn chữ Hán; chưa có bản dịch tiếng Việt được thẩm định.</p><p class="sub"><a href="${entry.source}" target="_blank" rel="noopener noreferrer">Nguồn đối chiếu văn bản</a></p>`:'<p class="sub">Chưa có nguyên văn được đối chiếu trong kho dữ liệu cho vị trí này. Ứng dụng không tự tạo lời cổ hoặc kết luận cát hung.</p>'}</article>`;
+}
+function selectedReadingHTML(values){
+  const plan=selectClassicalPassages(values,readingSchool);
+  const d=deriveHexagram(values),entry=CLASSICAL_TEXT[d.number];
+  return `<section class="interpret-narrative"><h3>Lời quẻ và hào được chọn</h3><p class="sub">${esc(READING_SCHOOLS[readingSchool])}</p><p>${esc(plan.note)}</p>${plan.items.map(passageHTML).join('')}${entry?.daxiang?`<article class="interpret-line"><h4>Đại Tượng (大象) · quẻ chủ</h4><p lang="zh-Hant" style="color:#f6cb74">${esc(entry.daxiang)}</p><p class="sub">Đại Tượng là văn bản chú giải, không thay thế Quái từ hay Hào từ được chọn.</p><a href="${entry.source}" target="_blank" rel="noopener noreferrer">Nguồn đối chiếu</a></article>`:''}<p class="sub">Chưa đưa ra kết luận cát/hung cá nhân khi thiếu bản dịch, chú giải và ngữ cảnh đã được kiểm chứng.</p><p class="sub">Quy tắc: <a href="${TEXT_SOURCES.zhuXi}" target="_blank" rel="noopener noreferrer">Dịch học khải mông (bản dịch học thuật)</a> · <a href="${TEXT_SOURCES.zhuXiRules}" target="_blank" rel="noopener noreferrer">Bảng đối chiếu 0–6 hào động</a></p></section>`;
+}
+function readingSchoolControl(){return `<div class="panel" style="margin:12px 0"><label for="readingSchoolSelect" style="display:block;margin-bottom:8px">Phương pháp chọn lời</label><select id="readingSchoolSelect" style="width:100%;min-height:44px;background:#18140d;color:#f6cb74;border:1px solid #92703c;border-radius:10px;padding:8px"><option value="zhu_xi" ${readingSchool==='zhu_xi'?'selected':''}>Chu Hy · Dịch học khải mông</option><option value="all_moving" ${readingSchool==='all_moving'?'selected':''}>Đối chiếu mọi hào động (tham khảo)</option></select></div>`;}
+document.addEventListener('change',e=>{if(e.target?.id==='readingSchoolSelect'){readingSchool=e.target.value;safely(renderInterpret,'reading-school')}});
 function interpretationNarrative(values){
   const d=deriveHexagram(values), a=byBits[d.bits], b=byBits[d.changed];
   const positions=[
@@ -561,7 +646,7 @@ function appendCastDetails(){
   if(toss)toss.disabled=lines.length>=6;if(manual)manual.disabled=lines.length>=6;if(undo)undo.disabled=lines.length===0;const progress=document.getElementById('progress');if(progress)progress.setAttribute('aria-label',`Đã ghi ${lines.length} trong 6 hào, thứ tự từ dưới lên`);
 }
 function renderProgress(){appendCastDetails();const bits=lines.reduce((a,n,i)=>a|((n%2)<<i),0);$('#progress').textContent=`Đã gieo ${lines.length}/6 hào · ghi từ dưới lên`;$('#castPreview').innerHTML=lines.length?`<div class="hex">${[...lines].reverse().map(n=>lineHTML(n%2,n===6||n===9)).join('')}</div>`:'';if(lines.length===6)finish(bits);else requireElement('castResult').innerHTML=''}
-function finish(bits){const question=requireElement('question').value.trim();if(question.length>10000)throw new Error('Câu hỏi vượt giới hạn 10.000 ký tự');const computed=deriveHexagram(lines);if(computed.bits!==bits)throw new Error('Kết quả quẻ không nhất quán');const {moving,changed}=computed;const h=byBits[bits],b=byBits[changed];latest={schemaVersion:2,method:'three-coins',date:new Date().toISOString(),question,lines:[...lines],number:h.n,changed:b.n,moving};$('#castResult').innerHTML=`<div class="panel"><h2>Kết quả gieo quẻ</h2><div class="hexpair"><div><div class="resulttitle">Quẻ chủ ${h.n}</div>${figure(bits,moving)}<div class="resulttitle">${h.name}</div></div><div><div class="resulttitle">Quẻ biến ${b.n}</div>${figure(changed)}<div class="resulttitle">${b.name}</div></div></div><p class="sub">${moving.length?'Hào động (đếm từ dưới): '+moving.map(x=>x+1).join(', '):'Không có hào động.'}</p>${interpretationNarrative(lines)}<div class="btnrow"><button class="btn" id="saveResult">Lưu nhật ký</button><button class="btn secondary" data-go="interpret">Xem luận giải</button></div></div>`;}
+function finish(bits){const question=requireElement('question').value.trim();if(question.length>10000)throw new Error('Câu hỏi vượt giới hạn 10.000 ký tự');const computed=deriveHexagram(lines);if(computed.bits!==bits)throw new Error('Kết quả quẻ không nhất quán');const {moving,changed}=computed;const h=byBits[bits],b=byBits[changed];latest={schemaVersion:2,method:'three-coins',date:new Date().toISOString(),question,lines:[...lines],number:h.n,changed:b.n,moving};$('#castResult').innerHTML=`<div class="panel"><h2>Kết quả gieo quẻ</h2><div class="hexpair"><div><div class="resulttitle">Quẻ chủ ${h.n}</div>${figure(bits,moving)}<div class="resulttitle">${h.name}</div></div><div><div class="resulttitle">Quẻ biến ${b.n}</div>${figure(changed)}<div class="resulttitle">${b.name}</div></div></div><p class="sub">${moving.length?'Hào động (đếm từ dưới): '+moving.map(x=>x+1).join(', '):'Không có hào động.'}</p>${interpretationNarrative(lines)}${selectedReadingHTML(lines)}<div class="btnrow"><button class="btn" id="saveResult">Lưu nhật ký</button><button class="btn secondary" data-go="interpret">Xem luận giải</button></div></div>`;}
 bindClick('toss',()=>{if(lines.length>=6)return;const next=[...lines,castLine()];const previous=lines,previousLatest=latest;lines=next;latest=null;try{renderProgress()}catch(err){lines=previous;latest=previousLatest;renderProgress();throw err}});
 bindClick('auto',()=>{const next=Array.from({length:6},castLine);const previous=lines,previousLatest=latest;lines=next;latest=null;try{renderProgress()}catch(err){lines=previous;latest=previousLatest;renderProgress();throw err}});
 bindClick('reset',()=>{lines=[];latest=null;requireElement('castResult').innerHTML='';renderProgress()});
@@ -600,7 +685,7 @@ function store(){
 }
 function save(a){try{if(JOURNAL_READ_ONLY)throw new Error('Nhật ký bị khóa ghi vì dữ liệu gốc không hợp lệ. Hãy sao lưu và khôi phục dữ liệu trước.');if(!Array.isArray(a)||a.length>200||!a.every(x=>{try{return validRecord(x)}catch{return false}}))throw Error('Dữ liệu nhật ký không hợp lệ');localStorage.setItem('siching-journal',JSON.stringify(a));return true}catch(err){reportError(err,'journal-save');return false}}
 document.addEventListener('click',e=>{if(e.target instanceof Element&&e.target.id==='saveResult'&&latest&&lines.length===6){if(JSON.stringify(latest.lines)!==JSON.stringify(lines)){reportError(new Error('Quẻ hiện tại không khớp kết quả lưu'),'journal-consistency');return}const a=store();if(JOURNAL_READ_ONLY){alert('Nhật ký gốc không hợp lệ. Hãy sao lưu dữ liệu trước.');return}if(a.some(x=>x.date===latest.date&&JSON.stringify(x.lines)===JSON.stringify(latest.lines))){e.target.textContent='Đã có trong nhật ký ✓';e.target.disabled=true;return}a.unshift(latest);if(save(a.slice(0,200))){e.target.textContent='Đã lưu ✓';e.target.disabled=true}else alert('Không thể lưu trên thiết bị này')}});
-function renderInterpret(){if(!latest){$('#interpretBody').textContent='Hãy gieo quẻ để xem cấu trúc quẻ và hào động.';return}const h=HEX[latest.number-1],b=HEX[latest.changed-1];$('#interpretBody').innerHTML=`<b style="color:#f6cb74">Quẻ ${h.n} · ${h.name}</b>${figure(h.bits,latest.moving)}<p>Thượng quái: ${h.upper} · Hạ quái: ${h.lower}</p><p>Quẻ biến: ${b.n} · ${b.name}</p><p>${latest.moving.length?'Hào động: '+latest.moving.map(i=>i+1).join(', '):'Tĩnh quẻ (không có hào động).'}</p>${interpretationNarrative(latest.lines)}<details><summary>Nguyên tắc đọc kết quả</summary><p>Quẻ chủ biểu thị cấu trúc ban đầu; hào động đánh dấu các vị trí thay đổi; quẻ biến là hình quẻ sau khi đổi âm/dương ở các hào động. Các quy tắc chọn lời hào tùy truyền thống và chưa được gắn vào bản mẫu này.</p></details>`}
+function renderInterpret(){if(!latest){$('#interpretBody').textContent='Hãy gieo quẻ để xem cấu trúc quẻ và hào động.';return}const h=HEX[latest.number-1],b=HEX[latest.changed-1];$('#interpretBody').innerHTML=`<b style="color:#f6cb74">Quẻ ${h.n} · ${h.name}</b>${figure(h.bits,latest.moving)}<p>Thượng quái: ${h.upper} · Hạ quái: ${h.lower}</p><p>Quẻ biến: ${b.n} · ${b.name}</p><p>${latest.moving.length?'Hào động: '+latest.moving.map(i=>i+1).join(', '):'Tĩnh quẻ (không có hào động).'}</p>${readingSchoolControl()}${selectedReadingHTML(latest.lines)}<details><summary>Nguyên tắc đọc kết quả</summary><p>Quẻ chủ biểu thị cấu trúc ban đầu; hào động đánh dấu các vị trí thay đổi; quẻ biến là hình quẻ sau khi đổi âm/dương ở các hào động. Quy tắc chọn lời hiện được tách theo phương pháp đã chọn. Văn bản chưa có nguồn vẫn được để trống.</p></details>`}
 function renderList(q=''){const term=q.toLocaleLowerCase('vi').trim();$('#hexList').innerHTML=HEX.filter(h=>`${h.n} ${h.name} ${h.upper} ${h.lower}`.toLocaleLowerCase('vi').includes(term)).map(h=>`<button class="item" data-hex="${h.n}"><b>${String(h.n).padStart(2,'0')} · ${h.name}</b><small>Thượng ${h.upper} · Hạ ${h.lower}</small></button>`).join('')||'<p class="sub">Không tìm thấy quẻ.</p>'}renderList();$('#search').oninput=e=>renderList(e.target.value);
 document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('[data-hex]'):null;if(!b)return;const h=HEX[+b.dataset.hex-1];if(!h)return;$('#hexList').innerHTML=`<button class="btn secondary" id="returnList">← Trở về 64 quẻ</button><div class="panel"><h2>Quẻ ${h.n} · ${h.name}</h2>${figure(h.bits)}<p class="sub">Thượng quái ${h.upper} · Hạ quái ${h.lower}</p><div class="notice">Đã kiểm tra cấu trúc 6 hào theo bảng 64 quẻ. Văn bản Thoán, Tượng và Hào từ chưa được nạp, nên không tạo bản dịch hoặc luận giải không có nguồn.</div></div>`});document.addEventListener('click',e=>{if(e.target instanceof Element&&e.target.id==='returnList')renderList($('#search').value)});
 function renderJournal(){const a=store();$('#journal').innerHTML=JOURNAL_READ_ONLY?'<p class="notice">Nhật ký không đọc được. Dữ liệu gốc được giữ nguyên; hãy sao lưu trong Cài Đặt.</p>':a.length?a.map((x,i)=>`<button class="item" data-journal="${i}"><b>${esc(HEX[x.number-1]?.name||'Quẻ')} → ${esc(HEX[x.changed-1]?.name||'Quẻ')}</b><small>${esc(new Date(x.date).toLocaleString('vi-VN'))} · ${esc(x.question||'Không ghi câu hỏi')}</small></button>`).join(''):'<p class="sub">Chưa có lần gieo quẻ nào được lưu.</p>'}document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('[data-journal]'):null;if(!b)return;const records=store();if(JOURNAL_READ_ONLY)return;const record=records[+b.dataset.journal];if(record){latest=record;go('interpret')}});$('#clearJournal').onclick=()=>{if(confirm('Xóa toàn bộ nhật ký trên thiết bị?')){store();if(JOURNAL_READ_ONLY){alert('Nhật ký không hợp lệ hoặc bị chặn. Hãy sao lưu dữ liệu gốc trước khi xử lý.');return}if(save([]))renderJournal()}};$('#export').onclick=()=>{const records=store();if(JOURNAL_READ_ONLY){alert('Nhật ký gốc có lỗi. Hãy dùng nút Sao lưu nhật ký gốc trong Cài đặt.');return}const blob=new Blob([JSON.stringify(records,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='siching-journal.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
@@ -609,6 +694,13 @@ const GOLDEN_BITS=[63,0,17,34,23,58,2,16,55,59,7,56,61,47,4,8,25,38,3,48,41,37,3
 function runIntegrityTests(){
   const results=[];
   const test=(name,fn)=>{try{if(!fn())throw Error('Sai kết quả');results.push({name,ok:true})}catch(err){results.push({name,ok:false,error:String(err.message||err)})}};
+  test('V28 quy tắc chọn lời trên 4096 cấu hình',()=>{for(let n=0;n<4096;n++){let k=n;const v=Array.from({length:6},()=>{const x=6+k%4;k=Math.floor(k/4);return x});if(!validateSelectionPlan(v)||!validateSelectionPlan(v,'all_moving'))return false}return true});
+  test('V28 ba hào động ưu tiên quái từ quẻ chủ',()=>{const p=selectClassicalPassages([9,9,9,7,7,7]);return p.items.length===2&&p.items[0].principal&&!p.items[1].principal});
+  test('V28 kiểm đếm dữ liệu cổ văn hiện có',()=>{const c=classicalCoverage();return c.guaci===2&&c.daxiang===2&&c.yaoci===6&&c.special===1});
+  test('V27 chọn lời đủ 0–6 hào động',()=>[0,1,2,3,4,5,6].every(n=>{const v=Array.from({length:6},(_,i)=>i<n?9:7);return selectClassicalPassages(v).items.length>0}));
+  test('V27 bốn hào động chọn hai hào tĩnh của quẻ biến',()=>{const r=selectClassicalPassages([9,9,9,9,7,7]);return r.items.length===2&&r.items.every(x=>x.kind==='yaoci'&&x.hex===r.items[0].hex)&&r.items.map(x=>x.line).join(',')==='5,6'&&r.items[0].principal});
+  test('V27 sáu hào động Càn chọn dụng cửu',()=>selectClassicalPassages([9,9,9,9,9,9]).items[0].kind==='yongjiu');
+  test('V27 không tự tạo văn bản thiếu',()=>!CLASSICAL_TEXT[3]&&selectClassicalPassages([7,7,7,7,7,7]).items.length===1);
   test('V25 truy vết sáu hào không làm thay đổi dữ liệu',()=>{const v=[6,7,8,9,7,8],before=JSON.stringify(v),t=calculationTrace(v);return JSON.stringify(v)===before&&t.six.length===6&&t.moving.join(',')==='1,4'});
   test('V25 hào 6/9 đổi và 7/8 giữ nguyên',()=>{const t=calculationTrace([6,7,8,9,6,9]);return t.six.map(x=>x.after).join(',')==='Dương,Dương,Âm,Âm,Dương,Âm'});
   test('V25 quẻ chủ và biến truy vết nhất quán',()=>{for(let n=0;n<4096;n++){let k=n;const v=Array.from({length:6},()=>{const x=6+k%4;k=Math.floor(k/4);return x});const t=calculationTrace(v),d=deriveHexagram(v);if(t.source.n!==d.number||t.target.n!==d.changedNumber||t.moving.join(',')!==d.moving.map(i=>i+1).join(','))return false}return true});
@@ -656,7 +748,7 @@ function runIntegrityTests(){
 }
 const auditReport=runIntegrityTests();
 function downloadDiagnostics(){
-  const payload={version:APP_VERSION,checks:runIntegrityTests(),browser:browserSmokeTests(),journalReadOnly:JOURNAL_READ_ONLY,storage:probeStorage(),errors:ERROR_LOG.slice()};
+  const payload={version:APP_VERSION,classicalCoverage:classicalCoverage(),checks:runIntegrityTests(),browser:browserSmokeTests(),journalReadOnly:JOURNAL_READ_ONLY,storage:probeStorage(),errors:ERROR_LOG.slice()};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='siching-diagnostics-v15.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
