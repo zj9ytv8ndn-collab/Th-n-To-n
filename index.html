@@ -97,6 +97,9 @@ button[data-module="0"] > span:first-child{
 }
 nav.bottom button[data-go="cast"].on > span{color:var(--yin-gold-light)!important;-webkit-text-fill-color:var(--yin-gold-light)!important}
 </style><style>
+#home .v72-hotspot{-webkit-tap-highlight-color:rgba(255,204,95,.24)}
+#home .v72-hotspot:active{background:rgba(255,193,73,.13)!important}
+</style><style>
 /* Imperial dragon-and-phoenix home design */
 #home {padding:0!important;margin:0!important;background:#020b14!important;min-height:100vh;overflow:visible!important}
 #home .imperial-frame {position:relative;width:100%;max-width:760px;margin:0 auto;line-height:0;box-shadow:0 0 48px #dca44333}
@@ -485,7 +488,7 @@ nav.bottom button[data-go="cast"] .siching-gold-yinyang{width:27px!important;hei
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
-const APP_VERSION='S I CHING V80';
+const APP_VERSION='S I CHING V82';
 const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
@@ -543,52 +546,73 @@ function go(id){
   }
   if(id==='interpret')safely(renderInterpret,'interpret-render');
 }
-document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('[data-go]'):null;if(b)safely(()=>go(b.dataset.go),'navigation-click')});
-// V78: navigation for image-map buttons and bottom bar, independent of legacy bubbling handlers.
-function v78Navigate(event){
+// V81: one navigation dispatcher. Previous V78/V79 listeners competed for the same click.
+// Buttons remain real, accessible HTML elements over the image (not pixels alone).
+function v81RouteClick(event){
   const target=event.target;
   if(!(target instanceof Element))return;
-  const button=target.closest('.v72-hotspot[data-go], .v72-home-art [data-go], nav.bottom [data-go]');
+  const button=target.closest('[data-go]');
   if(!button)return;
-  event.preventDefault();event.stopImmediatePropagation();
   const destination=button.getAttribute('data-go');
-  safely(()=>go(destination),'v78-navigation:'+destination);
-  const screen=document.getElementById(destination==='journal'?'library':destination);
-  if(screen&&screen.classList.contains('screen')&&!screen.classList.contains('active')){
-    screen.classList.add('active');
-  }
+  if(!destination)return;
+  event.preventDefault();
+  // Never stop propagation: allow other app listeners that are not navigation to run.
+  safely(()=>go(destination),'v81-navigation:'+destination);
 }
-document.addEventListener('click',v78Navigate,true);
-
-// V79: Hit-test directly against artwork coordinates. The four painted cards
-// must work on Safari even when CSS layers change the event target.
-(function(){
-  const art=document.querySelector('#home .v72-home-art');
-  if(!art)return;
-  const regions=[
-    {id:'cast',x1:.04,x2:.48,y1:.355,y2:.505},
-    {id:'hexes',x1:.51,x2:.96,y1:.355,y2:.505},
-    {id:'interpret',x1:.04,x2:.26,y1:.512,y2:.632},
-    {id:'library',x1:.27,x2:.49,y1:.512,y2:.632},
-    {id:'journal',x1:.50,x2:.72,y1:.512,y2:.632},
-    {id:'settings',x1:.73,x2:.96,y1:.512,y2:.632},
-    {id:'home',x1:.01,x2:.20,y1:.876,y2:.956},
-    {id:'cast',x1:.20,x2:.39,y1:.876,y2:.956},
-    {id:'hexes',x1:.40,x2:.59,y1:.876,y2:.956},
-    {id:'interpret',x1:.60,x2:.79,y1:.876,y2:.956},
-    {id:'journal',x1:.80,x2:.99,y1:.876,y2:.956}
-  ];
-  art.addEventListener('click',function(event){
-    if(!document.getElementById('home')?.classList.contains('active'))return;
-    const r=art.getBoundingClientRect();
-    if(!r.width||!r.height)return;
-    const x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height;
-    const found=regions.find(a=>x>=a.x1&&x<=a.x2&&y>=a.y1&&y<=a.y2);
-    if(!found)return;
-    event.preventDefault();event.stopImmediatePropagation();
-    safely(()=>go(found.id),'v79-art-navigation:'+found.id);
-  },true);
-})();
+document.addEventListener('click',v81RouteClick,true);
+// Verify the destination is real; no fake screen activation or success state.
+function v81NavigationAudit(){
+  const home=document.getElementById('home');
+  const buttons=[...document.querySelectorAll('#home .v72-hotspot[data-go]')];
+  const valid=buttons.every(b=>{
+    const destination=b.getAttribute('data-go');
+    const screenId=destination==='journal'?'library':destination;
+    return Boolean(document.getElementById(screenId)?.classList.contains('screen'));
+  });
+  return Object.freeze({homeExists:!!home,buttons:buttons.length,validDestinations:valid,uniqueDestinations:[...new Set(buttons.map(b=>b.dataset.go))]});
+}
+globalThis.SICHING_NAVIGATION_AUDIT_V81=v81NavigationAudit;
+// V82: reversible navigation smoke test: exercise the same route used by taps.
+// The test never changes journal data, casting lines, or user preferences.
+function v82NavigationSmokeTest(){
+  const screenIds=['home','cast','hexes','interpret','library','settings','modules'];
+  const screens=[...document.querySelectorAll('.screen')];
+  const prior=screens.find(x=>x.classList.contains('active'))?.id||'home';
+  const priorScroll=window.scrollY||0;
+  const findings=[];
+  try{
+    for(const id of screenIds){
+      try{
+        go(id);
+        const active=screens.filter(x=>x.classList.contains('active'));
+        findings.push({route:id,ok:active.length===1&&active[0].id===id,active:active.map(x=>x.id)});
+      }catch(e){findings.push({route:id,ok:false,error:String(e?.message||e)});}
+    }
+    // Journal is a subsection of Library, not an independent screen.
+    try{go('journal');findings.push({route:'journal',ok:!!document.getElementById('library')?.classList.contains('active')&&!!document.getElementById('journal')});}
+    catch(e){findings.push({route:'journal',ok:false,error:String(e?.message||e)});}
+  }finally{
+    go(prior);
+    if(typeof window.scrollTo==='function')window.scrollTo(0,priorScroll);
+  }
+  return Object.freeze({version:'V82',passed:findings.filter(x=>x.ok).length,total:findings.length,findings});
+}
+function v82HitboxAudit(){
+  const buttons=[...document.querySelectorAll('#home .v72-hotspot[data-go]')];
+  const findings=buttons.map(b=>{
+    const r=b.getBoundingClientRect();
+    const style=getComputedStyle(b);
+    const centerX=r.left+r.width/2,centerY=r.top+r.height/2;
+    const onScreen=r.width>12&&r.height>12&&r.right>0&&r.left<innerWidth;
+    const topmost=onScreen&&centerY>=0&&centerY<innerHeight?document.elementFromPoint(centerX,centerY):null;
+    const clickable=!topmost||topmost===b||b.contains(topmost);
+    return {destination:b.dataset.go,visible:style.visibility!=='hidden'&&style.pointerEvents!=='none'&&onScreen,clickable,rect:[Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)]};
+  });
+  return Object.freeze({version:'V82',count:findings.length,findings});
+}
+globalThis.SICHING_NAVIGATION_SMOKE_V82=v82NavigationSmokeTest;
+globalThis.SICHING_HITBOX_AUDIT_V82=v82HitboxAudit;
+// For manual browser debugging, call the two exported functions in developer tools.
 
 
 function moduleButtons(target){const container=$(target);if(!container)return;container.innerHTML=modules.map((m,i)=>`<button class="module" data-module="${i}"><span>${m[0]}</span><b>${m[1]}</b><small>${m[2]}</small></button>`).join('')}
