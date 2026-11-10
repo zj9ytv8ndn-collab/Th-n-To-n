@@ -494,7 +494,7 @@ nav.bottom button[data-go="cast"] .siching-gold-yinyang{width:27px!important;hei
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
-const APP_VERSION='S I CHING V86';
+const APP_VERSION='S I CHING V96';
 const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
@@ -1570,33 +1570,33 @@ const VIETNAMESE_DRAFT=Object.freeze({
   9:Object.freeze({guaci:Object.freeze({translation:"Hanh thông; mây dày mà chưa mưa, tụ từ phía tây ngoại ô.",comment:"Tiểu Súc nói về sức tích lũy còn nhỏ: có tiến triển nhưng chưa đủ điều kiện tạo chuyển biến lớn."}),yaoci:Object.freeze([
       Object.freeze({translation:"Trở lại con đường của mình, có lỗi gì đâu; tốt.",comment:"Biết quay về đúng hướng ngay từ đầu là dấu hiệu thuận lợi."}),
       Object.freeze({translation:"Cùng được kéo trở về, tốt.",comment:"Sự hỗ trợ đúng đắn giúp tránh đi lệch hướng."}),
-      Object.freeze({translation:"Xe tuột nan hoa; vợ chồng bất hòa.",comment:"Nội bộ thiếu đồng thuận làm phương tiện tiến lên mất tác dụng."}),
+      Object.freeze({translation:"Xe bị tuột nan hoặc bộ phận bánh; vợ chồng trở mặt.",comment:"Hai hình tượng đặt cạnh nhau: phương tiện tiến hành trục trặc và quan hệ vợ chồng bất hòa. Hào không ghi chữ hung; không nên suy ra chắc chắn ly hôn hoặc thất bại."}),
       Object.freeze({translation:"Có lòng tin, máu tan và nỗi sợ qua đi; không lỗi.",comment:"Chân thành và thận trọng có thể giúp giảm xung đột nguy hiểm."}),
       Object.freeze({translation:"Có lòng tin gắn bó; giàu có cùng láng giềng.",comment:"Nguồn lực bền khi chia sẻ lợi ích và duy trì tín nhiệm."}),
-      Object.freeze({translation:"Mưa đã xuống, đã ngừng; đức được tích chứa. Người nữ giữ chính vẫn có nguy; trăng gần tròn, quân tử tiến thì xấu.",comment:"Khi tích lũy đã tới giới hạn, tiến thêm thiếu đúng thời có thể đảo chiều kết quả."})
+      Object.freeze({translation:"Mưa đã xuống, đã dừng; đức được chất chứa. Người vợ giữ chính vẫn nguy; trăng gần tròn, quân tử tiến đi thì hung.",comment:"Cảnh báo nằm ở thời điểm đã tới hạn: trăng gần tròn và hành động tiến thêm của quân tử được ghi rõ là hung. Không được chuyển chữ hung này thành kết luận xấu cho mọi hành động."})
     ])}),
   10:Object.freeze({guaci:Object.freeze({translation:"Giẫm lên đuôi hổ mà hổ không cắn người; hanh thông.",comment:"Quẻ Lý nhấn mạnh lễ độ, sự cẩn trọng khi ở gần quyền lực hoặc hiểm nguy."}),yaoci:Object.freeze([
       Object.freeze({translation:"Bước đi mộc mạc; tiến không lỗi.",comment:"Giữ lối hành xử giản dị, không phô trương."}),
       Object.freeze({translation:"Đường đi bằng phẳng; người ẩn dật giữ chính thì tốt.",comment:"Giữ tâm bình và nguyên tắc ngay cả khi không ai nhìn thấy."}),
-      Object.freeze({translation:"Mắt mờ vẫn cố nhìn, chân què vẫn cố bước; giẫm đuôi hổ bị cắn, xấu; võ nhân muốn làm vua lớn.",comment:"Đánh giá sai năng lực và vị trí dễ dẫn đến tai họa."}),
+      Object.freeze({translation:"Mắt chột vẫn muốn nhìn, chân què vẫn muốn đi; giẫm đuôi hổ, bị cắn, hung; võ nhân muốn làm vua lớn.",comment:"Lời hào ghi đích danh hung sau hình tượng bị hổ cắn: năng lực không tương xứng với việc làm. Hình tượng võ nhân muốn làm vua nêu sự vượt quá vị trí; không đồng nghĩa mọi người có khuyết tật đều gặp hung."}),
       Object.freeze({translation:"Giẫm đuôi hổ, dè dặt sợ hãi, cuối cùng tốt.",comment:"Cảnh giác và biết sợ điều đáng sợ giúp vượt hiểm."}),
-      Object.freeze({translation:"Bước đi quyết liệt; giữ chính vẫn nguy.",comment:"Quyết đoán không thay thế được việc cân nhắc rủi ro."}),
+      Object.freeze({translation:"Bước đi quả quyết; dù giữ chính vẫn có nguy.",comment:"Chữ 夬 gợi hành động dứt khoát, nhưng 貞厲 vẫn cảnh báo nguy hiểm ngay cả khi kiên trì điều đúng. Không nên diễn giải thành chắc chắn thành công nhờ quyết đoán."}),
       Object.freeze({translation:"Xem lại hành vi, xét điều tốt lành; quay về trọn vẹn thì rất tốt.",comment:"Kết quả cần được đánh giá qua cả quá trình và khả năng tự sửa."})
     ])}),
   11:Object.freeze({guaci:Object.freeze({translation:"Cái nhỏ đi, cái lớn đến; tốt và hanh thông.",comment:"Thái biểu thị khí vận giao hòa; thuận lợi vẫn cần được gìn giữ."}),yaoci:Object.freeze([
       Object.freeze({translation:"Nhổ cỏ tranh kéo theo cả rễ cùng loại; tiến thì tốt.",comment:"Khởi sự với người cùng chí hướng tạo sức mạnh tập thể."}),
       Object.freeze({translation:"Bao dung cả nơi hoang; dám vượt sông, không bỏ người xa; không thiên vị bè bạn; được trung đạo.",comment:"Lãnh đạo thời thuận cần rộng lượng và công bằng."}),
-      Object.freeze({translation:"Không có bằng phẳng mãi mà không nghiêng; không có đi mà không trở lại; giữ chính trong khó khăn thì không lỗi.",comment:"Ngay khi hanh thông vẫn phải dự phòng chu kỳ đổi thay."}),
+      Object.freeze({translation:"Không có bằng phẳng nào mãi không nghiêng, không có đi mà không trở lại; trong gian khó giữ chính thì không lỗi. Đừng lo về lòng tin; trong ăn uống có phúc.",comment:"Vế vô cữu có điều kiện 艱貞: ở lúc khó khăn vẫn giữ chính. Câu về phúc trong ăn uống không phải cam kết tài lộc vô hạn; trọng tâm là nhận biết chu kỳ đổi thay."}),
       Object.freeze({translation:"Nhẹ nhàng đi xuống, không dựa vào giàu có mà kết thân với láng giềng; có lòng tin không cần răn bảo.",comment:"Tin cậy chân thành giúp gắn kết vượt lợi ích vật chất."}),
       Object.freeze({translation:"Vua Đế Ất gả em gái; nhờ phúc mà rất tốt.",comment:"Liên kết đúng lễ và đúng thời được xem là điềm thuận trong lời hào."}),
-      Object.freeze({translation:"Thành đổ trở lại hào; chớ dùng quân, từ ấp ban lệnh; giữ chính vẫn đáng tiếc.",comment:"Khi trật tự suy, cưỡng ép dễ làm tình hình xấu hơn."})
+      Object.freeze({translation:"Thành đổ trở lại hào; không nên dùng quân; từ ấp mình ban mệnh lệnh, giữ chính vẫn có điều đáng tiếc.",comment:"Đây là lời cảnh báo cuối thời Thái: thành lũy trở lại hào, tránh dùng binh. Chữ 吝 là điều đáng tiếc, không phải chữ 凶; không được tự nâng mức phán đoán."})
     ])}),
   12:Object.freeze({guaci:Object.freeze({translation:"Bĩ tắc, không phải đạo người; không lợi cho sự chính bền của quân tử; cái lớn đi, cái nhỏ đến.",comment:"Bĩ biểu thị sự bế tắc và cách biệt; giữ phẩm chất quan trọng hơn cố tìm danh lợi."}),yaoci:Object.freeze([
       Object.freeze({translation:"Nhổ cỏ tranh kéo theo cả rễ cùng loại; giữ chính thì tốt, hanh thông.",comment:"Giữ liên kết với người ngay thẳng khi thời thế bắt đầu xấu."}),
-      Object.freeze({translation:"Bao bọc và thuận theo; tiểu nhân được lợi, đại nhân chịu bĩ nhưng vẫn hanh thông.",comment:"Người có nguyên tắc không nên đổi đạo để tìm thuận lợi nhất thời."}),
+      Object.freeze({translation:"Bao dung mà thuận theo: tiểu nhân được tốt; đại nhân chịu cảnh bế tắc nhưng vẫn có thể hanh thông.",comment:"Cần giữ phân biệt hai chủ thể trong nguyên văn: 小人吉 và 大人否亨. Không thể rút gọn thành cùng một điềm tốt cho mọi người, hay khuyên người có nguyên tắc phải thuận theo điều sai."}),
       Object.freeze({translation:"Ôm lấy điều hổ thẹn.",comment:"Che giấu sai trái chỉ làm tăng tổn thất đạo đức."}),
       Object.freeze({translation:"Có mệnh lệnh, không lỗi; người cùng nhóm được hưởng phúc.",comment:"Hành động đúng trách nhiệm có thể mở đường thoát bế tắc."}),
-      Object.freeze({translation:"Bĩ tắc tạm nghỉ; đại nhân tốt. Luôn nghĩ: mất rồi, mất rồi; buộc chặt vào gốc dâu.",comment:"Ngay khi tình thế khá hơn vẫn cần củng cố nền tảng."}),
+      Object.freeze({translation:"Tạm dừng thời Bĩ: bậc đại nhân được tốt; luôn tự nhắc “mất rồi, mất rồi”, như buộc chặt vào gốc dâu.",comment:"Câu 其亡其亡 là lời tự cảnh tỉnh khi bế tắc bắt đầu dịu; 繫于包桑 nhấn mạnh củng cố nền tảng. Chữ 吉 dành cho đại nhân, không bảo đảm vận may cho mọi trường hợp."}),
       Object.freeze({translation:"Bĩ tắc đổ xuống; trước bĩ sau vui.",comment:"Sự bế tắc có thể chấm dứt nhưng không nên xem kết quả là bảo đảm."})
     ])}),
   5:Object.freeze({
@@ -1604,10 +1604,10 @@ const VIETNAMESE_DRAFT=Object.freeze({
     yaoci:Object.freeze([
       Object.freeze({translation:"Chờ ở ngoại ô; lợi ở bền chí, không lỗi.",comment:"Ở xa nơi nguy hiểm, nên kiên nhẫn duy trì công việc nền tảng."}),
       Object.freeze({translation:"Chờ trên bãi cát; có lời bàn tán nhỏ, cuối cùng tốt.",comment:"Bất đồng có thể xuất hiện khi tiến gần khó khăn; đừng để tranh cãi nhỏ phá kế hoạch."}),
-      Object.freeze({translation:"Chờ trong bùn, khiến giặc kéo đến.",comment:"Vị trí dễ mắc kẹt có thể tự chuốc rủi ro; cần đánh giá lại mức độ phơi nhiễm."}),
+      Object.freeze({translation:"Chờ trong bùn, khiến giặc kéo đến.",comment:"Vị trí chờ đã lún vào bùn; chữ 致寇至 nói rằng chính hoàn cảnh ấy dẫn kẻ địch tới. Hào không có chữ “hung”, nên không được tự gán lời đoán hung tuyệt đối."}),
       Object.freeze({translation:"Chờ trong máu, ra khỏi hang.",comment:"Hình tượng hiểm nguy đã cận kề; tìm lối thoát thực tế thay vì cố thủ."}),
       Object.freeze({translation:"Chờ bên rượu và thức ăn; giữ chính thì tốt.",comment:"Khi điều kiện cho phép, bình tĩnh dưỡng sức và giữ kỷ luật."}),
-      Object.freeze({translation:"Vào hang, có ba khách không mời mà đến; kính trọng họ thì cuối cùng tốt.",comment:"Biến cố bất ngờ đòi hỏi ứng xử có lễ và linh hoạt; số ba là hình tượng trong lời hào."})
+      Object.freeze({translation:"Vào hang, có ba khách không mời mà đến; kính trọng họ thì cuối cùng tốt.",comment:"Ba người khách không hẹn là tình huống bất ngờ trong hình tượng cổ; điều kiện “kính trọng họ” gắn trực tiếp với kết luận “cuối cùng tốt”, không phải mọi khách lạ đều đem may mắn."})
     ])
   }),
   6:Object.freeze({
@@ -1617,7 +1617,7 @@ const VIETNAMESE_DRAFT=Object.freeze({
       Object.freeze({translation:"Không thắng kiện, lui về lánh; người trong ấp ba trăm hộ không gặp tai họa.",comment:"Khi thế bất lợi, rút lui đúng lúc để tránh liên lụy người khác."}),
       Object.freeze({translation:"Hưởng đức cũ; giữ chính dù nguy, cuối cùng tốt. Có thể theo việc vua nhưng không nhận công.",comment:"Giữ danh dự và trách nhiệm, không tranh đoạt thành tích."}),
       Object.freeze({translation:"Không thắng kiện; trở về theo mệnh, đổi ý; yên ở điều chính thì tốt.",comment:"Biết điều chỉnh lập trường khi sự thật hoặc hoàn cảnh thay đổi."}),
-      Object.freeze({translation:"Tranh tụng; rất tốt.",comment:"Ở vị trí có thể phân xử chính đáng, trọng tâm là công lý chứ không phải thắng bằng mọi giá."}),
+      Object.freeze({translation:"Tranh tụng; rất tốt.",comment:"Nguyên văn chỉ nói “Tụng, nguyên cát” (tranh tụng, rất tốt), không nêu rõ ai thắng hay chức quan xét xử. Có thể đọc như vị thế xử lý tranh tụng thuận, nhưng không được khẳng định chắc chắn sẽ thắng kiện."}),
       Object.freeze({translation:"Dẫu được ban đai lớn, chưa hết buổi sáng đã bị tước ba lần.",comment:"Thắng lợi nhờ tranh tụng có thể thiếu bền vững; đừng lấy danh lợi nhất thời làm chuẩn."})
     ])
   }),
@@ -1628,7 +1628,7 @@ const VIETNAMESE_DRAFT=Object.freeze({
       Object.freeze({translation:"Ở giữa quân đội thì tốt, không lỗi; vua ba lần ban mệnh.",comment:"Người chỉ huy giữ được lòng tin và vị trí trung tâm có thể gánh trách nhiệm lớn."}),
       Object.freeze({translation:"Quân có thể chở xác về, xấu.",comment:"Tượng cảnh báo tổn thất vì điều hành sai hoặc giao quyền không đúng người."}),
       Object.freeze({translation:"Quân lui đóng bên trái, không lỗi.",comment:"Rút lui có trật tự là lựa chọn hợp lý khi chưa đủ điều kiện tiến."}),
-      Object.freeze({translation:"Ruộng có thú, lợi bắt theo lời chính đáng, không lỗi; con trưởng chỉ huy, người trẻ chở xác, giữ chính cũng xấu.",comment:"Xử lý vấn đề phải giao cho người đủ năng lực; phân công sai gây hậu quả."}),
+      Object.freeze({translation:"Ruộng có thú, lợi bắt theo lời chính đáng, không lỗi; con trưởng chỉ huy, người trẻ chở xác, giữ chính cũng xấu.",comment:"Hào phân biệt hai điều: có thú trong ruộng thì hành động có lý do; nhưng nếu giao chỉ huy sai người, “chở xác” và “trinh hung” cảnh báo hậu quả nghiêm trọng. Không thể chỉ lấy vế “vô cữu” để luận toàn hào là tốt."}),
       Object.freeze({translation:"Vua lớn ban mệnh, mở nước lập nhà; chớ dùng tiểu nhân.",comment:"Sau thành công phải xây dựng thể chế và lựa chọn người có đức."})
     ])
   }),
@@ -1637,9 +1637,9 @@ const VIETNAMESE_DRAFT=Object.freeze({
     yaoci:Object.freeze([
       Object.freeze({translation:"Có lòng tin mà kết hợp thì không lỗi; lòng tin đầy như vò, cuối cùng có điều tốt khác đến.",comment:"Xây dựng tin cậy bằng hành động nhất quán, không chỉ lời hứa."}),
       Object.freeze({translation:"Kết hợp từ bên trong, giữ chính thì tốt.",comment:"Liên kết khởi từ sự đồng thuận chân thành có nền tảng bền hơn."}),
-      Object.freeze({translation:"Kết hợp với người không thích hợp.",comment:"Cần xem xét phẩm chất đối tác, không liên minh chỉ vì lợi trước mắt."}),
+      Object.freeze({translation:"Kết hợp với người không thích hợp.",comment:"“比之匪人” chỉ việc thân cận hoặc kết giao với người không xứng đáng; hào không ghi trực tiếp chữ hung. Kết luận phải giữ đúng mức cảnh báo về đối tượng kết giao, không tự thêm dự đoán tai họa chắc chắn."}),
       Object.freeze({translation:"Kết hợp với bên ngoài, giữ chính thì tốt.",comment:"Hợp tác rộng mở vẫn phải giữ chuẩn mực và ranh giới."}),
-      Object.freeze({translation:"Kết hợp công khai; vua dùng phép săn ba mặt, bỏ thú chạy phía trước; người trong ấp không bị cảnh báo, tốt.",comment:"Người đứng đầu nên minh bạch, không ép buộc mọi người phải theo."}),
+      Object.freeze({translation:"Kết hợp công khai; vua dùng phép săn ba mặt, bỏ thú chạy phía trước; người trong ấp không bị cảnh báo, tốt.",comment:"Hình tượng săn ba mặt có thể gợi cách liên kết không cưỡng ép; song “邑人不誡” có nhiều cách hiểu trong chú giải. Phải phân biệt lời hào gốc với suy luận quản trị hiện đại."}),
       Object.freeze({translation:"Kết hợp mà không có đầu mối, xấu.",comment:"Thiếu người dẫn dắt hoặc mục đích chung khiến liên kết tan rã."})
     ])
   }),
@@ -1648,7 +1648,7 @@ const VIETNAMESE_DRAFT=Object.freeze({
     yaoci:Object.freeze([
       ['Rồng còn ẩn, chưa nên dùng.','Thời cơ chưa chín; nên bồi dưỡng thực lực, không vội phô trương.'],
       ['Rồng hiện nơi ruộng, thuận lợi khi gặp bậc đại nhân.','Tài năng bắt đầu được nhận biết; nên tìm người có đức và kinh nghiệm để học hỏi, hợp tác.'],
-      ['Người quân tử suốt ngày nỗ lực, đến tối vẫn cảnh giác; dù nguy vẫn không lỗi.','Khi công việc tăng tốc, siêng năng cần đi cùng tự kiểm điểm và phòng ngừa sai sót.'],
+      ['Người quân tử suốt ngày chăm chỉ, đến tối vẫn cảnh giác như gặp nguy; không lỗi.','Hào Cửu Tam quẻ Càn đặt nỗ lực bên cạnh sự cảnh giác trước nguy cơ; “无咎” là không mắc lỗi trong điều kiện giữ được thái độ ấy, không phải bảo đảm mọi việc sẽ thuận lợi.'],
       ['Có lúc nhảy lên, có lúc còn ở vực; không lỗi.','Đang ở ngưỡng chuyển biến; cần cân nhắc thời thế trước khi tiến.'],
       ['Rồng bay trên trời, thuận lợi khi gặp bậc đại nhân.','Giai đoạn phát huy năng lực; càng ở vị trí cao càng cần trọng người hiền.'],
       ['Rồng lên quá cao sẽ có điều hối tiếc.','Cảnh báo sự quá mức: biết dừng và nhường khi đạt đỉnh.']
@@ -1658,9 +1658,9 @@ const VIETNAMESE_DRAFT=Object.freeze({
   3:Object.freeze({
     guaci:Object.freeze({translation:'Khởi đầu có thể hanh thông, lợi ở giữ chính; chưa nên vội tiến, thuận cho việc dựng lập người phụ trách.',comment:'Quẻ Truân nói về khó khăn lúc mới gây dựng. Chữ “kiến hầu” thuộc bối cảnh chính trị cổ đại; ứng dụng hiện đại chỉ có thể diễn giải theo nghĩa tổ chức lực lượng, không đồng nhất với việc phong hầu.'}),
     yaoci:Object.freeze([
-      ['Chần chừ chưa tiến; lợi ở giữ chính và dựng lập người giúp việc.','Khởi sự còn vướng mắc; nên ổn định nền tảng và tìm người có năng lực hỗ trợ trước khi mở rộng.'],
-      ['Khó tiến, ngựa quay vòng; không phải giặc mà là người cầu hôn. Người nữ giữ chí chưa nhận, mười năm mới nhận.','Lời hào dùng hình tượng hôn phối và sự chờ đợi lâu dài; không được diễn thành dự báo đúng mười năm cho người hỏi.'],
-      ['Đuổi hươu mà không có người dẫn đường, chỉ lạc vào rừng; người quân tử biết bỏ thì hơn, tiến sẽ hối.','Thiếu thông tin và chỉ dẫn đáng tin cậy thì nên dừng, không đánh cược chỉ vì đã bắt đầu.'],
+      ['Chữ 磐桓 chỉ sự quanh quẩn, chưa quyết tiến; 居貞 nhấn vào ở yên giữ chính, 建侯 là dựng người đứng đầu trong bối cảnh chính trị cổ. Không nên suy ra quẻ buộc người hỏi phải lập công ty hoặc tuyển nhân sự.','Khởi sự còn vướng mắc; nên ổn định nền tảng và tìm người có năng lực hỗ trợ trước khi mở rộng.'],
+      ['Khó tiến, ngựa quay vòng; không phải giặc mà là người cầu hôn. Người nữ giữ chí chưa nhận, mười năm mới nhận.','Hào Nhị Truân đặt hình ảnh ngựa quay vòng cạnh lời 匪寇婚媾 (không phải giặc, mà là người đến cầu hôn). 女子貞不字 nhấn sự giữ chí chưa nhận kết đôi; 十年乃字 là mốc tượng trưng trong lời hào, không phải lịch hẹn mười năm cho người hỏi.'],
+      ['Đuổi hươu mà không có người dẫn đường, chỉ lạc vào rừng; người quân tử biết bỏ thì hơn, tiến sẽ hối.','即鹿无虞 nói việc đuổi hươu mà không có 虞, người dẫn rừng; chỉ lao vào rừng sẽ mất phương hướng. 君子幾不如舍, 往吝 khuyên nhận biết dấu hiệu và dừng đúng lúc, không biến thành lời khẳng định mọi cuộc theo đuổi đều thất bại.'],
       ['Ngựa quanh quẩn; tìm mối hôn phối, tiến thì tốt, không gì bất lợi.','Khi có sự kết nối phù hợp và mục đích rõ ràng, hợp tác giúp vượt tình thế trì trệ.'],
       ['Ân trạch bị giữ lại; giữ chính ở việc nhỏ thì tốt, việc lớn thì xấu.','Nguồn lực chưa thông; nên làm việc vừa sức, tránh cam kết lớn vượt khả năng cung ứng.'],
       ['Ngựa quanh quẩn; khóc đến máu tuôn như dòng.','Hình tượng bế tắc đến cực điểm; cần nhìn nhận giới hạn và tìm trợ lực, không diễn thành tai họa thể chất chắc chắn.']
@@ -1669,19 +1669,19 @@ const VIETNAMESE_DRAFT=Object.freeze({
   4:Object.freeze({
     guaci:Object.freeze({translation:'Hanh thông. Không phải ta tìm trẻ thơ chưa hiểu, mà người chưa hiểu tìm đến ta. Hỏi lần đầu thì chỉ bảo; hỏi hai ba lần thành khinh nhờn, đã khinh nhờn thì không chỉ bảo. Lợi ở giữ chính.',comment:'“Mông” nói về tình trạng chưa khai sáng và đạo học hỏi; quy tắc hỏi quẻ không nên biến thành lệnh cấm tuyệt đối với mọi lần đặt câu hỏi trong đời sống.'}),
     yaoci:Object.freeze([
-      ['Khai mở điều ngu tối, dùng hình phạt để răn; tháo gông xiềng; cứ tiến theo cách ấy sẽ hối.','Nguyên văn phản ánh kỷ luật thời cổ. Khi vận dụng hiện đại, ưu tiên ranh giới và giáo dục, không cổ vũ trừng phạt thân thể.'],
+      ['Khai mở điều ngu tối, dùng hình phạt để răn; tháo gông xiềng; cứ tiến theo cách ấy sẽ hối.','發蒙 mở sự u tối; 刑人 và 桎梏 là hình ảnh hình phạt, xiềng gông của xã hội cổ. 用說桎梏 có thể hiểu là tháo gông cùm (說 thông 脫); 以往吝 cảnh báo tiếp tục áp dụng biện pháp ấy sẽ sinh hối tiếc. Không dùng lời hào để biện minh bạo lực giáo dục.'],
       ['Bao dung người chưa hiểu thì tốt; đón nhận người vợ thì tốt; con có thể gánh việc nhà.','Tượng về năng lực dung nạp, chăm lo và đảm trách; không suy ra phán đoán cố định về giới tính hay hôn nhân.'],
       ['Chớ cưới người nữ ấy: thấy người giàu có thì không giữ mình, không gì có lợi.','Lời cổ dùng quan hệ hôn nhân để cảnh báo sự đánh mất nguyên tắc vì lợi; cần tránh áp đặt thành đánh giá phụ nữ hiện đại.'],
       ['Bị vây trong sự ngu tối, đáng tiếc.','Cô lập khỏi người hướng dẫn và phản hồi làm việc học khó tiến; nên chủ động tìm tri thức đáng tin cậy.'],
       ['Sự chưa hiểu của trẻ thơ, tốt.','Biết mình chưa biết và sẵn sàng học hỏi là điều thuận lợi; tránh tự mãn.'],
-      ['Đánh vào sự ngu tối; không lợi khi làm kẻ cướp, lợi khi chống kẻ cướp.','Phân biệt ngăn ngừa hành vi gây hại với chính mình trở thành người gây hại; không phải lời cho phép bạo lực tùy tiện.']
+      ['Đánh vào sự ngu tối; không lợi khi làm kẻ cướp, lợi khi chống kẻ cướp.','擊蒙 nói sự đối trị tình trạng chưa hiểu; 不利為寇, 利禦寇 phân biệt làm kẻ xâm hại với chống đỡ sự xâm hại. Đây là hình tượng trong cổ văn, không phải giấy phép trừng phạt người học hoặc hành động bạo lực ngoài pháp luật.']
     ].map(x=>Object.freeze({translation:x[0],comment:x[1]})))
   }),
   2:Object.freeze({
     guaci:Object.freeze({translation:'Khởi nguyên, hanh thông; thuận như ngựa cái thì lợi. Người quân tử có chỗ đi: đi trước dễ lạc, theo sau sẽ tìm được chủ. Tây nam được bạn, đông bắc mất bạn; an ổn giữ chính thì tốt.',comment:'Bản diễn ý tóm sát các mệnh đề của quái từ Khôn; ý nghĩa phương hướng cần đặt trong hệ chú giải, không suy ra chỉ dẫn địa lý hiện đại.'}),
     yaoci:Object.freeze([
       ['Giẫm sương mỏng, biết băng dày sắp đến.','Từ dấu hiệu nhỏ nên phòng ngừa diễn biến lớn; không đợi hậu quả mới ứng phó.'],
-      ['Ngay thẳng, vuông vức, rộng lớn; không cần học tập thêm mà không gì bất lợi.','Giữ phẩm chất chân thành và ổn định trong hành động; câu chữ có nhiều lối chú giải.'],
+      ['Ngay thẳng, vuông vức, rộng lớn; không cần gượng ép tập thành mà không gì bất lợi.','Hào Lục Nhị quẻ Khôn dùng “不習无不利”. Chữ 習 có thể hiểu là tập quen hoặc tập luyện; không nên diễn thành lời khuyên bỏ học. Tượng nhấn vào đức ngay thẳng, vuông vức, rộng lớn được biểu hiện tự nhiên.'],
       ['Giữ vẻ đẹp bên trong, có thể bền chính; theo việc vua, không tranh thành tựu, cuối cùng có kết quả.','Làm việc có trách nhiệm mà không tranh công; nhấn mạnh sự kín đáo và bền bỉ.'],
       ['Buộc kín miệng túi, không lỗi cũng không tiếng khen.','Thời điểm cần thận trọng lời nói và hành động, tránh phô bày không cần thiết.'],
       ['Áo dưới màu vàng, rất tốt.','Tượng của trung chính, khiêm nhường; không nên hiểu đơn giản là màu sắc đem may mắn.'],
@@ -1939,16 +1939,44 @@ const TOPIC_GUIDES_V86=Object.freeze([
  Object.freeze({id:'di_chuyen',name:'Đi xa · chuyển chỗ',keys:['đi xa','du lịch','xuất ngoại','chuyển nhà','chuyển chỗ','định cư','đi lại'],focus:'Xem sự chuẩn bị, thích nghi, điều kiện an toàn và thời điểm chuyển đổi.',action:'Kiểm tra lịch trình, giấy tờ, chi phí và kế hoạch dự phòng trước khi di chuyển.'}),
  Object.freeze({id:'tranh_chap',name:'Tranh chấp · pháp lý',keys:['kiện','tranh chấp','pháp lý','hợp đồng','tòa','kiện tụng','bất đồng'],focus:'Xem giới hạn của đối đầu, giá trị của chứng cứ và khả năng thương lượng.',action:'Giữ tài liệu, xác minh quyền và nghĩa vụ; hỏi chuyên gia pháp lý khi cần.'})
 ]);
+// V87: exact-token matching avoids accidental classification (e.g. "yêu cầu" as romance).
+function detectTopicV87(question){
+ const raw=String(question||'').toLocaleLowerCase('vi').normalize('NFC');
+ const clean=raw.replace(/[.,!?;:()\[\]{}\n\r]/g,' ').replace(/\s+/g,' ').trim();
+ const padded=' '+clean+' ';
+ const matches=TOPIC_GUIDES_V86.map((topic,index)=>{
+   const hits=topic.keys.filter(k=>{
+     const token=' '+k.normalize('NFC')+' ';
+     return padded.includes(token);
+   });
+   return {topic,index,hits,score:hits.reduce((sum,k)=>sum+k.length,0)};
+ }).filter(x=>x.hits.length).sort((a,b)=>b.score-a.score||a.index-b.index);
+ return matches[0]?.topic||{id:'tong_quan',name:'Tổng quan · câu hỏi mở',focus:'Xem tình thế hiện tại, điểm biến chuyển và giới hạn của thông tin đang có.',action:'Đối chiếu hình tượng quẻ với hoàn cảnh thực tế, xác minh điều kiện trước khi hành động.'};
+}
+function textualOmenV87(text){
+ const source=String(text||'');
+ const markers=[['元吉','đại cát trong nguyên văn'],['凶','hung trong nguyên văn'],['无咎','không lỗi trong nguyên văn'],['無咎','không lỗi trong nguyên văn'],['悔亡','hối mất trong nguyên văn'],['悔','hối trong nguyên văn'],['吝','lận trong nguyên văn'],['吉','cát trong nguyên văn']];
+ return markers.filter(([token],i)=>source.includes(token)&&!markers.slice(0,i).some(([long])=>long.includes(token)&&source.includes(long))).map(([,label])=>label);
+}
+function selectedEvidenceV87(item){
+ const ancient=CLASSICAL_TEXT[item.hex];
+ if(!ancient)return {text:'',source:''};
+ const text=item.kind==='yaoci'?ancient.yaoci?.[item.line-1]:item.kind==='yongjiu'?ancient.yongjiu:item.kind==='yongliu'?ancient.yongliu:ancient.guaci;
+ return {text:String(text||''),source:typeof ancient.source==='string'&&ancient.source.startsWith('https://')?ancient.source:''};
+}
 function contextualReadingV86(values,question){
  const q=String(question||'').toLocaleLowerCase('vi').trim();
- const topic=TOPIC_GUIDES_V86.find(t=>t.keys.some(k=>q.includes(k)))||Object.freeze({id:'tong_quan',name:'Tổng quan · câu hỏi mở',focus:'Xem tình thế hiện tại, điểm biến chuyển và giới hạn của thông tin đang có.',action:'Đối chiếu hình tượng quẻ với hoàn cảnh thực tế, xác minh điều kiện trước khi hành động.'});
+ const topic=detectTopicV87(question);
  const d=deriveHexagram(values),plan=selectClassicalPassages(values,readingSchool);
  const principal=plan.items.filter(x=>x.principal),items=principal.length?principal:plan.items;
  const details=items.map(x=>{
    const draft=VIETNAMESE_DRAFT[x.hex];
    const v=x.kind==='yaoci'?draft?.yaoci?.[x.line-1]:x.kind==='guaci'?draft?.guaci:null;
    const label=`Quẻ ${x.hex}${x.line?' · hào '+x.line:''}`;
-   return `<article class="interpret-line"><h4>${esc(label)} · trọng điểm theo lời được chọn</h4>${v?.translation?`<p><strong>Diễn nghĩa biên tập:</strong> ${esc(v.translation)}</p>`:'<p class="sub">Chưa có diễn nghĩa đã biên tập cho loại lời này; xem nguyên văn phía trên.</p>'}${v?.comment?`<p><strong>Chú giải biên tập:</strong> ${esc(v.comment)}</p>`:''}</article>`;
+   const evidence=selectedEvidenceV87(x);
+   const omens=textualOmenV87(evidence.text);
+   const sourceHTML=evidence.source?`<a href="${esc(evidence.source)}" target="_blank" rel="noopener noreferrer">Nguồn văn bản tham khảo</a>`:'Nguồn trực tuyến chưa được xác nhận';
+   return `<article class="interpret-line"><h4>${esc(label)} · trọng điểm theo lời được chọn</h4><p><strong>Nguyên văn được chọn:</strong> ${evidence.text?esc(evidence.text):'Chưa có nguyên văn đối chiếu'}</p><p class="sub">${sourceHTML}${omens.length?' · Dấu hiệu từ ngữ: '+esc(omens.join(', ')):''}</p>${v?.translation?`<p><strong>Diễn nghĩa biên tập:</strong> ${esc(v.translation)}</p>`:'<p class="sub">Chưa có diễn nghĩa đã biên tập cho loại lời này; xem nguyên văn phía trên.</p>'}${v?.comment?`<p><strong>Chú giải biên tập:</strong> ${esc(v.comment)}</p>`:''}</article>`;
  }).join('');
  const stage=d.moving.length===0?'Tình thế đang xét không có hào động; đọc Quái từ quẻ chủ.':`Có ${d.moving.length} hào động; ưu tiên đúng các lời được quy tắc ${readingSchool==='zhu_xi'?'Chu Hy':'đã chọn'} chỉ định, không tự chọn hào theo chủ đề.`;
  return `<section class="interpret-narrative" aria-label="Luận giải theo câu hỏi"><h3>Luận sâu theo câu hỏi · ${esc(topic.name)}</h3>${q?`<p><strong>Câu hỏi:</strong> ${esc(String(question).slice(0,350))}</p>`:'<p class="sub">Chưa nhập câu hỏi cụ thể; hiển thị cách đọc tổng quan.</p>'}<p>${esc(stage)}</p>${details}<p><strong>Góc nhìn theo chủ đề:</strong> ${esc(topic.focus)}</p><p><strong>Gợi ý hành động:</strong> ${esc(topic.action)}</p><p class="sub">Phần theo chủ đề là phân tích biên tập hiện đại dựa trên lời quẻ được chọn, không phải cổ văn, không chứng minh một sự kiện tương lai chắc chắn. Các nguồn và nguyên văn nằm ở mục Lời quẻ và hào được chọn.</p></section>`;
@@ -1990,7 +2018,7 @@ function interpretationNarrative(values){
     'Có '+moving.length+' hào động, nên đọc mối liên hệ giữa các vị trí thay đổi và quẻ biến.';
   const linesHTML=moving.length?moving.map(i=>`<article class="interpret-line"><h4>Hào ${i+1} · ${esc(lineDescription(values[i]))}</h4><p>${esc(positions[i])}</p><p class="sub">${values[i]===6?'Âm chuyển thành dương.':'Dương chuyển thành âm.'} Đây là diễn giải vị trí và biến đổi, chưa phải Hào từ của quẻ ${a.n}.</p></article>`).join(''):
     '<p>Không có hào động; chưa có lời Hào từ nào được chọn.</p>';
-  return `<section class="interpret-narrative"><h3>Luận giải theo quẻ và hào</h3><p><strong>Quẻ chủ ${a.n} · ${esc(a.name)}</strong> — thượng ${esc(a.upper)}, hạ ${esc(a.lower)}.</p><p>${esc(intro)}</p><p><strong>Quẻ biến ${b.n} · ${esc(b.name)}</strong>.</p>${linesHTML}<p class="sub">Đây là phần giải thích cấu trúc theo vị trí hào, không phải lời đoán cát hung hay trích dẫn cổ văn. Kho cổ văn còn chưa đầy đủ; chỉ những đoạn hiện có mới được hiển thị trong phần chọn lời.</p></section>`;
+  return `<section class="interpret-narrative"><h3>Luận giải theo quẻ và hào</h3><p><strong>Quẻ chủ ${a.n} · ${esc(a.name)}</strong> — thượng ${esc(a.upper)}, hạ ${esc(a.lower)}.</p><p>${esc(intro)}</p><p><strong>Quẻ biến ${b.n} · ${esc(b.name)}</strong>.</p>${linesHTML}<p class="sub">Đây là phần giải thích cấu trúc theo vị trí hào, không phải lời đoán cát hung hay trích dẫn cổ văn. Những lời cổ văn có trong kho dữ liệu được trình bày riêng ở phần chọn lời; không tự tạo Thoán truyện hay Tiểu Tượng khi chưa có nguồn.</p></section>`;
 }
 function readingHTML(values){
   const r=structuralReading(values);
@@ -2069,7 +2097,23 @@ function save(a){try{if(JOURNAL_READ_ONLY)throw new Error('Nhật ký bị khóa
 document.addEventListener('click',e=>{if(e.target instanceof Element&&e.target.id==='saveResult'&&latest&&lines.length===6){if(JSON.stringify(latest.lines)!==JSON.stringify(lines)){reportError(new Error('Quẻ hiện tại không khớp kết quả lưu'),'journal-consistency');return}const a=store();if(JOURNAL_READ_ONLY){alert('Nhật ký gốc không hợp lệ. Hãy sao lưu dữ liệu trước.');return}if(a.some(x=>x.date===latest.date&&JSON.stringify(x.lines)===JSON.stringify(latest.lines))){e.target.textContent='Đã có trong nhật ký ✓';e.target.disabled=true;return}a.unshift(latest);if(save(a.slice(0,200))){e.target.textContent='Đã lưu ✓';e.target.disabled=true}else alert('Không thể lưu trên thiết bị này')}});
 function renderInterpret(){if(!latest){$('#interpretBody').textContent='Hãy gieo quẻ để xem cấu trúc quẻ và hào động.';return}const h=HEX[latest.number-1],b=HEX[latest.changed-1];$('#interpretBody').innerHTML=`<b style="color:#f6cb74">Quẻ ${h.n} · ${h.name}</b>${figure(h.bits,latest.moving)}<p>Thượng quái: ${h.upper} · Hạ quái: ${h.lower}</p><p>Quẻ biến: ${b.n} · ${b.name}</p><p>${latest.moving.length?'Hào động: '+latest.moving.map(i=>i+1).join(', '):'Tĩnh quẻ (không có hào động).'}</p>${readingSchoolControl()}${selectedReadingHTML(latest.lines)}<details><summary>Nguyên tắc đọc kết quả</summary><p>Quẻ chủ biểu thị cấu trúc ban đầu; hào động đánh dấu các vị trí thay đổi; quẻ biến là hình quẻ sau khi đổi âm/dương ở các hào động. Quy tắc chọn lời hiện được tách theo phương pháp đã chọn. Văn bản chưa có nguồn vẫn được để trống.</p></details>`}
 function renderList(q=''){const term=q.toLocaleLowerCase('vi').trim();$('#hexList').innerHTML=HEX.filter(h=>`${h.n} ${h.name} ${h.upper} ${h.lower}`.toLocaleLowerCase('vi').includes(term)).map(h=>`<button class="item" data-hex="${h.n}"><b>${String(h.n).padStart(2,'0')} · ${h.name}</b><small>Thượng ${h.upper} · Hạ ${h.lower}</small></button>`).join('')||'<p class="sub">Không tìm thấy quẻ.</p>'}renderList();$('#search').oninput=e=>renderList(e.target.value);
-document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('[data-hex]'):null;if(!b)return;const h=HEX[+b.dataset.hex-1];if(!h)return;$('#hexList').innerHTML=`<button class="btn secondary" id="returnList">← Trở về 64 quẻ</button><div class="panel"><h2>Quẻ ${h.n} · ${h.name}</h2>${figure(h.bits)}<p class="sub">Thượng quái ${h.upper} · Hạ quái ${h.lower}</p><div class="notice">Đã kiểm tra cấu trúc 6 hào theo bảng 64 quẻ. Văn bản Thoán, Tượng và Hào từ chưa được nạp, nên không tạo bản dịch hoặc luận giải không có nguồn.</div></div>`});document.addEventListener('click',e=>{if(e.target instanceof Element&&e.target.id==='returnList')renderList($('#search').value)});
+function libraryHexDetailV88(h){
+  const classical=CLASSICAL_TEXT[h.n],draft=VIETNAMESE_DRAFT[h.n];
+  const source=classical&&typeof classical.source==='string'&&/^https:\/\//.test(classical.source)?classical.source:'';
+  const sourceLink=source?`<p class="sub"><a href="${esc(source)}" target="_blank" rel="noopener noreferrer">Mở bản văn nguồn tham khảo (cần đối chiếu dị bản)</a></p>`:'<p class="sub">Chưa có liên kết nguồn được xác nhận trong dữ liệu.</p>';
+  const gua=classical?.guaci?`<p><strong>Quái từ (nguyên văn):</strong> ${esc(classical.guaci)}</p>`:'<p class="sub">Chưa có nguyên văn Quái từ.</p>';
+  const translation=draft?.guaci?`<p><strong>Diễn nghĩa biên tập:</strong> ${esc(draft.guaci.translation)}</p><p><strong>Chú giải biên tập:</strong> ${esc(draft.guaci.comment)}</p>`:'<p class="sub">Chưa có diễn nghĩa đã biên tập.</p>';
+  const daxiang=classical?.daxiang?`<p><strong>Đại Tượng (nguyên văn):</strong> ${esc(classical.daxiang)}</p>`:'<p class="sub">Đại Tượng: chưa có bản văn trong kho hiện tại.</p>';
+  const notes=(text)=>{const found=textualOmenV87(String(text||''));return found.length?`<p class="sub"><strong>Từ khóa cát hung trong nguyên văn:</strong> ${esc(found.join(' · '))}. Đây là dấu hiệu từ ngữ, không phải dự đoán chắc chắn.</p>`:''};
+  const lines=Array.from({length:6},(_,i)=>{
+    const raw=classical?.yaoci?.[i],v=draft?.yaoci?.[i];
+    return `<details class="interpret-line"><summary>Hào ${i+1} ${raw?'· '+esc(raw):'· chưa có nguyên văn'}</summary><p><strong>Hào từ (nguyên văn):</strong> ${raw?esc(raw):'Chưa có dữ liệu'}</p>${notes(raw)}${v?`<p><strong>Diễn nghĩa:</strong> ${esc(v.translation)}</p><p><strong>Chú giải biên tập:</strong> ${esc(v.comment)}</p>`:'<p class="sub">Chưa có diễn nghĩa hoặc chú giải.</p>'}<p class="sub">Hào ${i+1} tính từ dưới lên; lời chiêm sử dụng hào này tùy số hào động và trường phái.</p></details>`;
+  }).join('');
+  const special=[['Dụng Cửu',classical?.yongjiu],['Dụng Lục',classical?.yongliu]].filter(x=>x[1]).map(([label,value])=>`<p><strong>${label} (nguyên văn):</strong> ${esc(value)}</p>${notes(value)}`).join('');
+  return `<button class="btn secondary" id="returnList">← Trở về 64 quẻ</button><div class="panel"><h2>Quẻ ${h.n} · ${esc(h.name)}</h2>${figure(h.bits)}<p class="sub">Thượng quái ${esc(h.upper)} · Hạ quái ${esc(h.lower)}</p>${gua}${notes(classical?.guaci)}${translation}${daxiang}${special}<h3>Sáu Hào từ · từ dưới lên</h3>${lines}${sourceLink}<p class="sub">Nguyên văn, diễn nghĩa và chú giải được phân biệt. Thoán truyện và Tiểu Tượng chưa được xác nhận đầy đủ cho quẻ này nên không tự tạo nội dung. Liên kết nguồn không đồng nghĩa với việc đã thẩm định dị bản.</p></div>`;
+}
+document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('[data-hex]'):null;if(!b)return;const h=HEX[+b.dataset.hex-1];if(!h)return;$('#hexList').innerHTML=libraryHexDetailV88(h)});
+document.addEventListener('click',e=>{if(e.target instanceof Element&&e.target.id==='returnList')renderList($('#search').value)});
 function renderJournal(){const a=store();$('#journal').innerHTML=JOURNAL_READ_ONLY?'<p class="notice">Nhật ký không đọc được. Dữ liệu gốc được giữ nguyên; hãy sao lưu trong Cài Đặt.</p>':a.length?a.map((x,i)=>`<button class="item" data-journal="${i}"><b>${esc(HEX[x.number-1]?.name||'Quẻ')} → ${esc(HEX[x.changed-1]?.name||'Quẻ')}</b><small>${esc(new Date(x.date).toLocaleString('vi-VN'))} · ${esc(x.question||'Không ghi câu hỏi')}</small></button>`).join(''):'<p class="sub">Chưa có lần gieo quẻ nào được lưu.</p>'}document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('[data-journal]'):null;if(!b)return;const records=store();if(JOURNAL_READ_ONLY)return;const record=records[+b.dataset.journal];if(record){latest=record;go('interpret')}});$('#clearJournal').onclick=()=>{if(confirm('Xóa toàn bộ nhật ký trên thiết bị?')){store();if(JOURNAL_READ_ONLY){alert('Nhật ký không hợp lệ hoặc bị chặn. Hãy sao lưu dữ liệu gốc trước khi xử lý.');return}if(save([]))renderJournal()}};$('#export').onclick=()=>{const records=store();if(JOURNAL_READ_ONLY){alert('Nhật ký gốc có lỗi. Hãy dùng nút Sao lưu nhật ký gốc trong Cài đặt.');return}const blob=new Blob([JSON.stringify(records,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='siching-journal.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 // Integrity checks for the 64 distinct King Wen hexagrams.
 const GOLDEN_BITS=[63,0,17,34,23,58,2,16,55,59,7,56,61,47,4,8,25,38,3,48,41,37,32,1,57,39,33,30,18,45,28,14,60,15,40,5,53,43,20,10,35,49,31,62,24,6,26,22,29,46,9,36,52,11,13,44,54,27,50,19,51,12,21,42];
@@ -2109,9 +2153,215 @@ function auditCastingSelectionV85(){
 }
 globalThis.SICHING_CASTING_SELECTION_AUDIT_V85=auditCastingSelectionV85;
 
+
+// V90: Kiểm toán đầy đủ, chạy theo yêu cầu; không làm chậm màn hình chính.
+// Chỉ xác nhận cấu trúc và sự nhất quán của engine, không chứng nhận tính đúng đắn học thuật.
+function v90FullCastingAudit(){
+  const errors=[],byMoving=Array(7).fill(0);
+  let checked=0;
+  for(let code=0;code<4096;code++){
+    let k=code;
+    const values=Array.from({length:6},()=>{const v=6+(k%4);k=Math.floor(k/4);return v});
+    const moving=values.filter(v=>v===6||v===9).length;
+    byMoving[moving]++;
+    try{
+      const d=deriveHexagram(values);
+      const expectedMoving=values.flatMap((v,i)=>(v===6||v===9)?[i]:[]);
+      if(d.moving.join(',')!==expectedMoving.join(','))throw Error('Sai thứ tự hào động');
+      if(!validateSelectionPlan(values,'zhu_xi'))throw Error('Quy tắc chọn lời không nhất quán');
+      const plan=selectClassicalPassages(values,'zhu_xi');
+      for(const item of plan.items){
+        const entry=CLASSICAL_TEXT[item.hex];
+        const passage=item.kind==='yaoci'?entry?.yaoci?.[item.line-1]:entry?.[item.kind];
+        if(typeof passage!=='string'||!passage.trim())throw Error('Thiếu cổ văn: '+item.hex+'/'+item.kind+'/'+item.line);
+      }
+      checked++;
+    }catch(e){errors.push({values:values.join(','),reason:String(e.message||e)})}
+  }
+  return {version:'V90',total:4096,passed:checked,failed:errors.length,byMoving,errors:errors.slice(0,100),scope:'Kiểm toán tính toán và sự hiện diện văn bản; không phải thẩm định bản dịch'};
+}
+function v90EditorialCoverage(){
+  const missing=[],sourceIssues=[];
+  let guaci=0,lines=0,daxiang=0;
+  for(let n=1;n<=64;n++){
+    const c=CLASSICAL_TEXT[n],v=VIETNAMESE_DRAFT[n];
+    if(!c?.guaci||!v?.guaci?.translation||!v?.guaci?.comment)missing.push({hex:n,kind:'quai-tu'});else guaci++;
+    if(c?.daxiang)daxiang++;
+    if(!/^https:\/\//.test(c?.source||''))sourceIssues.push(n);
+    for(let i=0;i<6;i++){
+      if(!c?.yaoci?.[i]||!v?.yaoci?.[i]?.translation||!v?.yaoci?.[i]?.comment)missing.push({hex:n,line:i+1,kind:'hao-tu'});else lines++;
+    }
+  }
+  return {version:'V90',guaci,lines,daxiang,sourceIssues,missing,notes:'Độ bao phủ dữ liệu không đồng nghĩa với đối chiếu học thuật'};
+}
+globalThis.SICHING_V90_AUDIT=Object.freeze({casting:v90FullCastingAudit,editorial:v90EditorialCoverage});
+
+// V91: Hồ sơ nguồn có cấu trúc; không tự coi liên kết là bằng chứng đã đối chiếu.
+function v91SourceCoverage(){
+  const records=[];const summary={hexagrams:64,guaci:0,yaoci:0,daxiang:0,tuanzhuan:0,xiaoxiang:0,sourceLinks:0,missing:[]};
+  for(let n=1;n<=64;n++){
+    const c=CLASSICAL_TEXT[n]||{},v=VIETNAMESE_DRAFT[n]||{};
+    const item={hexagram:n,guaci:!!c.guaci,yaoci:Array.from({length:6},(_,i)=>!!c.yaoci?.[i]),daxiang:!!c.daxiang,tuanzhuan:!!c.tuanzhuan,xiaoxiang:Array.from({length:6},(_,i)=>!!c.xiaoxiang?.[i]),sourceLink:typeof c.source==='string'&&/^https:\/\//.test(c.source),vietnamese:!!v.guaci?.translation&&v.yaoci?.length===6};
+    if(item.guaci)summary.guaci++;
+    summary.yaoci+=item.yaoci.filter(Boolean).length;
+    if(item.daxiang)summary.daxiang++;
+    if(item.tuanzhuan)summary.tuanzhuan++;
+    summary.xiaoxiang+=item.xiaoxiang.filter(Boolean).length;
+    if(item.sourceLink)summary.sourceLinks++;
+    if(!item.guaci||item.yaoci.some(x=>!x)||!item.vietnamese)summary.missing.push(n);
+    records.push(item);
+  }
+  return {version:'V91',summary,records,disclaimer:'Kiểm tra sự hiện diện của trường dữ liệu; không chứng minh tính xác thực hoặc độ chính xác học thuật của văn bản.'};
+}
+function v91ShowSourceAudit(){
+  if(!new URLSearchParams(location.search).has('sourceaudit'))return;
+  const report=v91SourceCoverage();
+  const root=document.createElement('section');root.id='v91-source-audit';
+  root.style.cssText='position:fixed;inset:0;z-index:2147483000;overflow:auto;background:#10100f;color:#f4dfb2;padding:22px 16px;font:15px/1.6 system-ui,sans-serif;';
+  const h=document.createElement('h2');h.textContent='S I CHING · Hồ sơ nguồn V91';root.appendChild(h);
+  const intro=document.createElement('p');intro.textContent=report.disclaimer;root.appendChild(intro);
+  const sm=report.summary;
+  const info=document.createElement('p');info.textContent=`Quái từ ${sm.guaci}/64 · Hào từ ${sm.yaoci}/384 · Đại Tượng ${sm.daxiang}/64 · Thoán truyện ${sm.tuanzhuan}/64 · Tiểu Tượng ${sm.xiaoxiang}/384 · Liên kết HTTPS ${sm.sourceLinks}/64`;root.appendChild(info);
+  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:12px;flex-wrap:wrap;margin:20px 0';
+  const btn=(label,fn)=>{const b=document.createElement('button');b.textContent=label;b.style.cssText='padding:10px 16px;border:1px solid #b99550;border-radius:10px;background:#272017;color:#ffe4aa;';b.addEventListener('click',fn);actions.appendChild(b)};
+  btn('Đóng báo cáo',()=>root.remove());
+  btn('Xuất JSON',()=>{const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='S_I_CHING_V91_SOURCE_AUDIT.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+  root.appendChild(actions);
+  const table=document.createElement('div');
+  for(const r of report.records){const el=document.createElement('p');el.style.cssText='border-bottom:1px solid #5d4a2b;padding:8px 0;margin:0';el.textContent=`Quẻ ${r.hexagram}: Quái từ ${r.guaci?'✓':'—'} · Hào từ ${r.yaoci.filter(Boolean).length}/6 · Đại Tượng ${r.daxiang?'✓':'—'} · Thoán ${r.tuanzhuan?'✓':'—'} · Tiểu Tượng ${r.xiaoxiang.filter(Boolean).length}/6 · Nguồn ${r.sourceLink?'HTTPS':'chưa rõ'}`;table.appendChild(el)}
+  root.appendChild(table);document.body.appendChild(root);
+}
+
+// V93: documented editorial corrections tied to the existing received text.
+// These are interpretive revisions, not newly discovered canonical passages.
+const V93_EDITORIAL_REVISIONS=Object.freeze([
+ Object.freeze({hexagram:1,line:3,original:'君子終日乾乾，夕惕若厲，無咎。',issue:'若厲 is a simile of vigilance in danger; 无咎 is conditional, not a guaranteed outcome',status:'revised',sourceType:'received Hào từ'}),
+ Object.freeze({hexagram:2,line:2,original:'直方大，不習无不利。',issue:'不習 must not be presented as advice to stop studying; interpretive ambiguity remains',status:'revised',sourceType:'received Hào từ'})
+]);
+function v93EditorialRevisionCheck(){
+ return V93_EDITORIAL_REVISIONS.every(r=>{
+  const c=CLASSICAL_TEXT[r.hexagram],v=VIETNAMESE_DRAFT[r.hexagram];
+  return !!c?.yaoci?.[r.line-1] && !!v?.yaoci?.[r.line-1]?.translation &&
+   !!v?.yaoci?.[r.line-1]?.comment && r.sourceType==='received Hào từ';
+ });
+}
+window.SICHING_V93_EDITORIAL_REVISIONS=V93_EDITORIAL_REVISIONS;
+window.SICHING_V93_EDITORIAL_CHECK=v93EditorialRevisionCheck;
+// V94: focused editorial review of received lines, without fabricating new classical text.
+const V94_EDITORIAL_REVISIONS=Object.freeze([
+ {hexagram:3,line:1,source:'磐桓，利居貞，利建侯。',focus:'Distinguish ancient political 建侯 from modern staffing'},
+ {hexagram:3,line:2,source:'屯如邅如，乘馬班如。匪寇婚媾，女子貞不字，十年乃字。',focus:'Do not convert 十年 into a literal prediction'},
+ {hexagram:3,line:3,source:'即鹿无虞，惟入于林中。君子幾不如舍，往吝。',focus:'Preserve the role of 虞 and the warning 往吝'},
+ {hexagram:4,line:1,source:'發蒙，利用刑人，用說桎梏，以往吝。',focus:'Explain historical punishment imagery without endorsing violence'},
+ {hexagram:4,line:6,source:'擊蒙，不利為寇，利禦寇。',focus:'Distinguish aggression from defense'}
+].map(Object.freeze));
+function v94EditorialRevisionCheck(){
+ return V94_EDITORIAL_REVISIONS.every(r=>{
+  const original=CLASSICAL_TEXT[r.hexagram]?.yaoci?.[r.line-1];
+  const draft=VIETNAMESE_DRAFT[r.hexagram]?.yaoci?.[r.line-1];
+  return original===r.source && typeof draft?.translation==='string' && draft.translation.length>8 && typeof draft.comment==='string' && draft.comment.length>70;
+ });
+}
+window.SICHING_V94_EDITORIAL_REVISIONS=V94_EDITORIAL_REVISIONS;
+window.SICHING_V94_EDITORIAL_CHECK=v94EditorialRevisionCheck;
+try{if(!v94EditorialRevisionCheck())reportError(new Error('V94 editorial source mismatch'),'editorial-v94')}catch(err){reportError(err,'editorial-v94')}
+// V95: six additional line-specific editorial checks. Original text is unchanged.
+const V95_EDITORIAL_REVISIONS=Object.freeze([
+ {hexagram:5,line:3,anchor:'致寇至'},
+ {hexagram:5,line:6,anchor:'敬之終吉'},
+ {hexagram:6,line:5,anchor:'元吉'},
+ {hexagram:7,line:5,anchor:'弟子輿尸'},
+ {hexagram:8,line:3,anchor:'比之匪人'},
+ {hexagram:8,line:5,anchor:'王用三驅'}
+]);
+function v95EditorialRevisionCheck(){
+ return V95_EDITORIAL_REVISIONS.every(r=>{
+  const original=CLASSICAL_TEXT[r.hexagram]?.yaoci?.[r.line-1]||'';
+  const note=VIETNAMESE_DRAFT[r.hexagram]?.yaoci?.[r.line-1]?.comment||'';
+  return original.includes(r.anchor)&&note.length>90;
+ });
+}
+// V92: independent, non-invasive editorial queue. No invented canonical passages.
+function v92EditorialQueue(){
+ const rows=[];
+ for(let n=1;n<=64;n++){
+  const c=CLASSICAL_TEXT[n]||{},v=VIETNAMESE_DRAFT[n]||{};
+  const push=(part,index,issue,priority,original,translation)=>rows.push({hexagram:n,part,index,issue,priority,original:String(original||''),translation:String(translation||'')});
+  if(!c.guaci)push('Quái từ',0,'Thiếu nguyên văn',1,'',v.guaci?.translation);
+  if(!v.guaci?.translation)push('Quái từ',0,'Thiếu diễn nghĩa',1,c.guaci,'');
+  if(!c.tuanzhuan)push('Thoán truyện',0,'Chưa có văn bản trong kho',3,'','');
+  if(!c.daxiang)push('Đại Tượng',0,'Chưa có văn bản trong kho',3,'','');
+  for(let i=0;i<6;i++){
+   const original=c.yaoci?.[i]||'',translated=v.yaoci?.[i]?.translation||'',comment=v.yaoci?.[i]?.comment||'';
+   if(!original)push('Hào từ',i+1,'Thiếu nguyên văn',1,'',translated);
+   if(!translated)push('Hào từ',i+1,'Thiếu diễn nghĩa',1,original,'');
+   if(!comment)push('Chú giải',i+1,'Thiếu chú giải',2,original,translated);
+   if(!c.xiaoxiang?.[i])push('Tiểu Tượng',i+1,'Chưa có văn bản trong kho',3,'','');
+  }
+  if(!/^https:\/\//.test(c.source||''))push('Nguồn',0,'Chưa có liên kết HTTPS',2,'','');
+ }
+ rows.sort((a,b)=>a.priority-b.priority||a.hexagram-b.hexagram||a.index-b.index);
+ return {version:'V92',counts:{high:rows.filter(r=>r.priority===1).length,medium:rows.filter(r=>r.priority===2).length,sourceGaps:rows.filter(r=>r.priority===3).length},rows,disclaimer:'Các mục thiếu Thoán/Tượng là khoảng trống dữ liệu, không phải bằng chứng cổ văn không tồn tại. Không tự sinh văn bản cổ.'};
+}
+function v92ShowEditorialQueue(){
+ if(!new URLSearchParams(location.search).has('editorialaudit'))return;
+ const report=v92EditorialQueue(),root=document.createElement('section');root.id='v92-editorial-audit';
+ root.style.cssText='position:fixed;inset:0;z-index:2147483001;overflow:auto;background:#10100f;color:#f4dfb2;padding:20px 16px;font:15px/1.55 system-ui,sans-serif';
+ const heading=document.createElement('h2');heading.textContent='S I CHING · Hàng đợi đối chiếu V92';root.appendChild(heading);
+ const summary=document.createElement('p');summary.textContent=`Ưu tiên cao: ${report.counts.high} · Trung bình: ${report.counts.medium} · Thiếu văn bản truyện: ${report.counts.sourceGaps}. ${report.disclaimer}`;root.appendChild(summary);
+ const toolbar=document.createElement('div');toolbar.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin:12px 0';
+ const selector=document.createElement('select');selector.style.cssText='padding:9px;background:#262019;color:#f4dfb2;border:1px solid #b99550;border-radius:8px';
+ for(const [value,label] of [['all','Tất cả quẻ'],...Array.from({length:64},(_,i)=>[String(i+1),`Quẻ ${i+1}`])]){const o=document.createElement('option');o.value=value;o.textContent=label;selector.appendChild(o)}toolbar.appendChild(selector);
+ const button=(label,fn)=>{const b=document.createElement('button');b.textContent=label;b.style.cssText='padding:9px;border:1px solid #b99550;border-radius:8px;background:#262019;color:#f4dfb2';b.addEventListener('click',fn);toolbar.appendChild(b)};
+ button('Đóng',()=>root.remove());
+ button('Xuất CSV',()=>{const data=[['quẻ','mục','hào','mức','vấn đề','nguyên văn','diễn nghĩa'],...report.rows.map(r=>[r.hexagram,r.part,r.index,r.priority,r.issue,r.original,r.translation])];const csv='\ufeff'+data.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='S_I_CHING_V92_EDITORIAL_AUDIT.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+ root.appendChild(toolbar);const list=document.createElement('div');root.appendChild(list);
+ const render=()=>{list.replaceChildren();let shown=0;for(const r of report.rows){if(selector.value!=='all'&&Number(selector.value)!==r.hexagram)continue;const d=document.createElement('details');d.style.cssText='padding:10px 0;border-bottom:1px solid #51432e';const sm=document.createElement('summary');sm.textContent=`Quẻ ${r.hexagram} · ${r.part}${r.index?' hào '+r.index:''} · ${r.issue}`;d.appendChild(sm);if(r.original){const p=document.createElement('p');p.textContent='Cổ văn: '+r.original;d.appendChild(p)}if(r.translation){const p=document.createElement('p');p.textContent='Diễn nghĩa: '+r.translation;d.appendChild(p)}list.appendChild(d);if(++shown>=300)break}const foot=document.createElement('p');foot.textContent=`Hiển thị ${shown} mục đầu tiên; xuất CSV để xem toàn bộ.`;list.appendChild(foot)};
+ selector.addEventListener('change',render);render();document.body.appendChild(root);
+}
+globalThis.SICHING_V92_EDITORIAL_QUEUE=v92EditorialQueue;
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v92ShowEditorialQueue,{once:true});else v92ShowEditorialQueue();
+
+globalThis.SICHING_V91_SOURCE_AUDIT=v91SourceCoverage;
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v91ShowSourceAudit,{once:true});else v91ShowSourceAudit();
+
+
+// V96: targeted readings with source anchors, distinct from independent textual authentication.
+const V96_EDITORIAL_REVISIONS=Object.freeze([
+ {hexagram:9,line:3,anchor:'輿說輻'},
+ {hexagram:9,line:6,anchor:'婦貞厲'},
+ {hexagram:10,line:3,anchor:'咥人，凶'},
+ {hexagram:10,line:5,anchor:'貞厲'},
+ {hexagram:11,line:3,anchor:'艱貞无咎'},
+ {hexagram:11,line:6,anchor:'貞吝'},
+ {hexagram:12,line:2,anchor:'大人否'},
+ {hexagram:12,line:5,anchor:'繫于包桑'}
+]);
+function v96EditorialRevisionCheck(){
+ return V96_EDITORIAL_REVISIONS.every(r=>{
+  const original=CLASSICAL_TEXT[r.hexagram]?.yaoci?.[r.line-1]||'';
+  const draft=VIETNAMESE_DRAFT[r.hexagram]?.yaoci?.[r.line-1];
+  return original.includes(r.anchor)&&Boolean(draft?.translation?.length>25&&draft?.comment?.length>80);
+ });
+}
+window.SICHING_V96_EDITORIAL_REVISIONS=V96_EDITORIAL_REVISIONS;
+window.SICHING_V96_EDITORIAL_CHECK=v96EditorialRevisionCheck;
+try{if(!v96EditorialRevisionCheck())reportError(new Error('V96 editorial source mismatch'),'editorial-v96')}catch(err){reportError(err,'editorial-v96')}
 function runIntegrityTests(){
+  // V88: kiểm tra thư viện hiển thị cổ văn và diễn nghĩa thực tế.
+
   const results=[];
+  // V95 tests run alongside the existing integrity suite.
+
   const test=(name,fn)=>{try{if(!fn())throw Error('Sai kết quả');results.push({name,ok:true})}catch(err){results.push({name,ok:false,error:String(err.message||err)})}};
+  test('V95 sáu chú giải có căn cứ Hào từ',()=>v95EditorialRevisionCheck());
+  test('V91 hồ sơ nguồn kiểm tra đủ 64 quẻ',()=>{const r=v91SourceCoverage();return r.records.length===64&&r.summary.guaci===64&&r.summary.yaoci===384});
+  test('V90 dữ liệu diễn nghĩa đủ 64 quẻ và 384 hào',()=>{const c=v90EditorialCoverage();return c.guaci===64&&c.lines===384&&c.missing.length===0});
+  test('V89 thư viện phân biệt nguyên văn, dấu hiệu cát hung và chú giải',()=>{const html=libraryHexDetailV88(HEX[0]);return html.includes('Hào từ (nguyên văn)')&&html.includes('Từ khóa cát hung')&&html.includes('Chú giải biên tập')&&html.includes('Dụng Cửu')});
+  test('V88 thư viện quẻ hiển thị Quái từ, sáu Hào từ và diễn nghĩa',()=>{const html=libraryHexDetailV88(HEX[0]);return html.includes('Quái từ (nguyên văn)')&&html.includes('Hào 6')&&html.includes('Diễn nghĩa biên tập')&&!html.includes('Văn bản Thoán, Tượng và Hào từ chưa được nạp')});
+  test('V87 phân loại câu hỏi không nhầm yêu cầu thành tình duyên',()=>detectTopicV87('Tôi yêu cầu chuyển hợp đồng').id!=='tinh_duyen');
+  test('V87 câu hỏi tình duyên được nhận đúng',()=>detectTopicV87('Tôi muốn kết hôn').id==='tinh_duyen');
+  test('V87 dấu hiệu cát hung lấy từ nguyên văn',()=>textualOmenV87('貞吉，无咎。').length===2);
   test('V69 rà soát biên tập có dữ liệu đầy đủ',()=>{const a=scholarlyTriageV69();return a.totalHexagrams===64&&a.totalLines===384&&Array.isArray(a.findings)&&a.findings.every(f=>f.hexagram>=1&&f.hexagram<=64&&f.line>=0&&f.line<=6)});
   test('V68 báo cáo chất lượng quét đủ 384 hào',()=>{const a=scholarlyQualityV68();return a.totalLines===384&&Array.isArray(a.issues)&&Object.values(a.counts).every(Number.isInteger)});
   test('V67 đủ bản dịch và chú giải 64 quẻ / 384 hào',()=>verifyVietnameseDraftV51());
@@ -2300,6 +2550,7 @@ if(new URLSearchParams(location.search).get('selftest')==='1'){
   const pre=document.createElement('pre');pre.id='v13-regression-results';pre.textContent=JSON.stringify(outcome,null,2);pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;background:#111;color:#fff';document.body.appendChild(pre);
 }
 
+try{if(!v93EditorialRevisionCheck())reportError(new Error('V93 editorial data mismatch'),'editorial-revisions')}catch(err){reportError(err,'editorial-revisions')}
 try{renderProgress()}catch(err){reportError(err,'cast-initialization')}
 try{showScholarlyReviewV70()}catch(err){reportError(err,'editorial-audit')}
 </script></body></html>
