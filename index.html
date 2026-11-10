@@ -1258,32 +1258,44 @@ window.kdDownload95=function(name,mime,text){if(window.webkit&&window.webkit.mes
 if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.kdShare){
  exportHTML=function(title,body){
   var lang=window.S_ICHING_LANGUAGE==='vi'?'vi':'en';
-  var html='<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>'+E(title)+'</title></head><body><h1>'+E(title)+'</h1>'+String(body||'')+'<style id="fortune-focused-mode">
-/* Presentation-only layer: the original calculation engines remain unchanged. */
-body.fortune-mode [data-s="scr-list"],body.fortune-mode [data-s="scr-his"],body.fortune-mode [data-s="scr-library"],body.fortune-mode [data-s="scr-kd"],body.fortune-mode [data-s="scr-kh"],body.fortune-mode [data-s="scr-legal"]{display:none!important}
-body.fortune-mode .screen.fortune-has-result > :not([id$="Result"]):not(#result):not(#fortune-reset):not(#fortune-result-header){display:none!important}
-body.fortune-mode .screen.fortune-has-result > [id$="Result"],body.fortune-mode .screen.fortune-has-result > #result{display:block!important}
-#fortune-reset{display:none;margin:12px 0;padding:12px 22px;border:1px solid #d5a84b;border-radius:10px;background:transparent;color:inherit;cursor:pointer}
-.screen.fortune-has-result #fortune-reset{display:inline-block}
-#fortune-result-header{display:none;margin:12px 0;font-weight:700;font-size:1.2rem}
-.screen.fortune-has-result #fortune-result-header{display:block}
-#fortune-language{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9000;padding:8px 12px;background:#211b12;color:#f3d48b;border:1px solid #b79445;border-radius:9px;font:600 13px system-ui;cursor:pointer}
+  var html='<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>'+E(title)+'</title></head><body><h1>'+E(title)+'</h1>'+String(body||'')+'<style id="fortune-v2-style">
+body.fortune-v2 [data-s="scr-list"],body.fortune-v2 [data-s="scr-kd"],body.fortune-v2 [data-s="scr-kh"],body.fortune-v2 [data-s="scr-library"],body.fortune-v2 [data-s="scr-legal"]{display:none!important}
+#fortune-v2-lang{position:fixed;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:9999;border:1px solid #d5a84b;border-radius:12px;background:#241e16;color:#ffe5a5;padding:10px 15px;font:600 14px system-ui;box-shadow:0 4px 18px #0006}
+.fortune-v2-panel{margin:14px 0 20px;padding:18px;border:1px solid #b99a5b;border-radius:14px;background:rgba(22,22,22,.06);color:inherit}
+.fortune-v2-panel h2{margin:0 0 14px;font-size:1.35rem}
+.fortune-v2-panel button{border:1px solid #b99a5b;border-radius:10px;padding:10px 15px;margin:0 0 14px;background:transparent;color:inherit;font:600 14px system-ui}
+.fortune-v2-content{line-height:1.7;overflow-wrap:anywhere;max-height:75vh;overflow-y:auto}
+.fortune-v2-content :is(script,style,button,input,select,textarea,canvas,svg,iframe,table){display:none!important}
+.fortune-v2-content :is(h1,h2,h3,h4,p,li,blockquote){margin-block:.55em}
+.fortune-v2-reading>.fortune-v2-original{display:none!important}
+.fortune-v2-reading>.fortune-v2-panel{display:block}
+.fortune-v2-panel[hidden]{display:none!important}
 </style>
-<script id="fortune-focused-controller">(function(){'use strict';
-var map={'scr-cast':'result','scr-lucnham':'lnResult','scr-thaiat':'taResult','scr-battu':'btuResult','scr-tuvi':'tvResult','scr-tarot':'tarotResult'};
-var vi={title:'Luận giải chi tiết',again:'Lập quẻ / lá số mới',language:'English',empty:'Chưa có kết quả luận giải.'};
-var en={title:'Detailed interpretation',again:'New reading',language:'Tiếng Việt',empty:'No interpretation yet.'};
-function language(){return (window.S_ICHING_LANGUAGE==='en'||document.documentElement.lang==='en')?'en':'vi'}
-function refresh(){var d=language()==='en'?en:vi;document.querySelectorAll('#fortune-result-header').forEach(function(x){x.textContent=d.title});document.querySelectorAll('#fortune-reset').forEach(function(x){x.textContent=d.again});var b=document.getElementById('fortune-language');if(b)b.textContent=d.language;}
-function hasResult(el){if(!el)return false;var t=(el.innerText||el.textContent||'').trim();return t.length>35 && !!el.querySelector('*');}
-function update(screen,id){var result=document.getElementById(id);if(!result)return;var visible=hasResult(result);screen.classList.toggle('fortune-has-result',visible);}
-function install(){document.body.classList.add('fortune-mode');Object.keys(map).forEach(function(id){var screen=document.getElementById(id),result=document.getElementById(map[id]);if(!screen||!result)return;
-var title=document.createElement('div');title.id='fortune-result-header';title.setAttribute('role','heading');title.setAttribute('aria-level','2');screen.insertBefore(title,result);
-var reset=document.createElement('button');reset.type='button';reset.id='fortune-reset';screen.insertBefore(reset,result);
-reset.addEventListener('click',function(){screen.classList.remove('fortune-has-result');result.replaceChildren();var form=screen.querySelector('input,select,textarea,button');if(form)form.focus();});
-var queued=false;new MutationObserver(function(){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;update(screen,map[id]);});}).observe(result,{subtree:true,childList:true,characterData:true});update(screen,map[id]);});
-var btn=document.createElement('button');btn.id='fortune-language';btn.type='button';btn.setAttribute('aria-label','Switch language / Đổi ngôn ngữ');btn.addEventListener('click',function(){var next=language()==='vi'?'en':'vi';window.S_ICHING_LANGUAGE=next;document.documentElement.lang=next;try{localStorage.setItem('s-iching-language',next);sessionStorage.setItem('s-iching-language',next)}catch(e){}refresh();if(typeof window.setLanguage==='function')try{window.setLanguage(next)}catch(e){} });document.body.appendChild(btn);refresh();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+<script id="fortune-v2-controller">(function(){'use strict';
+/* The underlying divination engines and their original DOM remain intact. */
+var targets={'scr-cast':['result'],'scr-lucnham':['lnResult'],'scr-thaiat':['taResult'],'scr-battu':['btuResult','cxResult'],'scr-tuvi':['tvResult'],'scr-tarot':['tarotResult','astroResult']};
+var dictionary={vi:{heading:'Luận giải chi tiết',again:'Gieo quẻ / lập lá số mới',lang:'English',unavailable:'Chưa có phần luận giải. Hãy lập quẻ hoặc lá số trước.'},en:{heading:'Detailed interpretation',again:'New reading',lang:'Tiếng Việt',unavailable:'No interpretation yet. Please cast a reading first.'}};
+var lang='vi';try{lang=localStorage.getItem('s-iching-language')==='en'?'en':'vi'}catch(e){}
+var mounted=[];
+function t(k){return dictionary[lang][k]}
+function translate(){document.documentElement.lang=lang;document.querySelectorAll('[data-fortune-t]').forEach(function(el){el.textContent=t(el.dataset.fortuneT)});var btn=document.getElementById('fortune-v2-lang');if(btn)btn.textContent=t('lang');}
+function hasReading(el){if(!el)return false;var value=(el.innerText||el.textContent||'').trim();if(value.length<65)return false;if(el.hidden||getComputedStyle(el).display==='none')return false;return true}
+function extract(el){var clone=el.cloneNode(true);clone.querySelectorAll('script,style,button,input,select,textarea,iframe,canvas,svg,table,[hidden],.hidden,[aria-hidden="true"]').forEach(function(n){n.remove()});return clone;}
+function attach(screenId, ids){var screen=document.getElementById(screenId);if(!screen)return;
+ var panels=[];ids.forEach(function(id){var node=document.getElementById(id);if(!node||!screen.contains(node))return;
+ var parent=node.parentElement;if(!parent)return;
+ var panel=document.createElement('section');panel.className='fortune-v2-panel';panel.hidden=true;panel.setAttribute('aria-live','polite');
+ var title=document.createElement('h2');title.dataset.fortuneT='heading';panel.appendChild(title);
+ var again=document.createElement('button');again.type='button';again.dataset.fortuneT='again';panel.appendChild(again);
+ var content=document.createElement('div');content.className='fortune-v2-content';panel.appendChild(content);
+ parent.insertBefore(panel,node);panels.push({node:node,panel:panel,content:content});
+ again.addEventListener('click',function(){screen.classList.remove('fortune-v2-reading');panel.hidden=true;panels.forEach(function(x){x.node.classList.remove('fortune-v2-original');x.panel.hidden=true});var first=screen.querySelector('input:not([type="hidden"]),textarea,select');if(first)first.focus({preventScroll:true});});
+ var busy=false;new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;if(!hasReading(node))return;content.replaceChildren(extract(node));panel.hidden=false;node.classList.add('fortune-v2-original');screen.classList.add('fortune-v2-reading');translate();});}).observe(node,{subtree:true,childList:true,characterData:true});
+ });mounted.push({screen:screen,panels:panels});}
+function boot(){document.body.classList.add('fortune-v2');Object.keys(targets).forEach(function(id){attach(id,targets[id])});var btn=document.createElement('button');btn.type='button';btn.id='fortune-v2-lang';btn.setAttribute('aria-label','Chuyển ngôn ngữ / Switch language');btn.addEventListener('click',function(){lang=lang==='vi'?'en':'vi';try{localStorage.setItem('s-iching-language',lang);sessionStorage.setItem('s-iching-language',lang)}catch(e){}window.S_ICHING_LANGUAGE=lang;translate();if(typeof window.setLanguage==='function')try{window.setLanguage(lang)}catch(e){} });document.body.appendChild(btn);translate();
+ window.FORTUNE_V2={version:'2.0',mode:'interpretation-first',languages:['vi','en'],engine:'original preserved',covered:Object.keys(targets),getLanguage:function(){return lang}};
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();</script></body></html>';
   kdDownload95('S_I_CHING_result.html','text/html;charset=utf-8',html);
  };
