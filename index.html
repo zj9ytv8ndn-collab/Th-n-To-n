@@ -310,14 +310,17 @@ body{min-height:100svh;min-height:100dvh}
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
+const APP_VERSION='S I CHING V5';
+const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
-  ERROR_LOG.push(entry);if(ERROR_LOG.length>30)ERROR_LOG.shift();
+  ERROR_LOG.push(entry);if(ERROR_LOG.length>MAX_ERROR_LOG)ERROR_LOG.shift();
   console.error('[S I CHING]',context,err);
   const notice=document.getElementById('appError');
   if(notice){notice.hidden=false;notice.textContent='Lỗi '+context+': '+entry.message+' — Vui lòng thử lại.'}
 }
 function safely(fn,context){try{return fn()}catch(err){reportError(err,context);return null}}
+function clearError(){const notice=document.getElementById('appError');if(notice){notice.hidden=true;notice.textContent=''}}
 window.addEventListener('error',e=>{if(e.target&&e.target!==window)return;reportError(e.error||e.message,'window')});
 window.addEventListener('unhandledrejection',e=>reportError(e.reason,'promise'));
 
@@ -330,28 +333,38 @@ const HEX=pairs.map((p,i)=>({n:i+1,name:names[i],upper:p[0],lower:p[1],bits:tri[
 const byBits=Object.fromEntries(HEX.map(h=>[h.bits,h]));
 const modules=[['☯','Kinh Dịch','64 quẻ · gieo quẻ','cast'],['✿','Mai Hoa Dịch Số','Chưa có engine kiểm chứng'],['▥','Quỷ Cốc Tử','Chưa xác định dị bản'],['⊞','Kỳ Môn Độn Giáp','Chưa có engine kiểm chứng'],['✧','Đại Lục Nhâm','Chưa có engine kiểm chứng'],['✦','Tử Vi Đẩu Số','Chưa có engine kiểm chứng']];
 let lines=[],latest=null,selectedModule=0;const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function go(id){if(!document.getElementById(id)?.classList.contains('screen')){reportError(new Error('Màn hình không tồn tại: '+id),'navigation');return}document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('on',x.dataset.go===id));window.scrollTo(0,0);if(id==='library')renderJournal();if(id==='interpret')renderInterpret();}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
+function go(id){if(!document.getElementById(id)?.classList.contains('screen')){reportError(new Error('Màn hình không tồn tại: '+id),'navigation');return}document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('on',x.dataset.go===id));if(typeof window.scrollTo==='function')window.scrollTo(0,0);clearError();if(id==='library')safely(renderJournal,'journal-render');if(id==='interpret')safely(renderInterpret,'interpret-render');}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)safely(()=>go(b.dataset.go),'navigation-click')});
 function moduleButtons(target){const container=$(target);if(!container)return;container.innerHTML=modules.map((m,i)=>`<button class="module" data-module="${i}"><span>${m[0]}</span><b>${m[1]}</b><small>${m[2]}</small></button>`).join('')}
 ['#libraryModules','#allModules'].forEach(moduleButtons);
-document.addEventListener('click',e=>{const b=e.target.closest('[data-module]');if(!b)return;selectedModule=+b.dataset.module;if(!selectedModule){go('cast');return}go('modules');$('#moduleDetail').innerHTML=`<div class="panel"><h2>${modules[selectedModule][1]}</h2><p class="sub">Chưa kích hoạt lập quẻ/an lá số. Cần xác định trường phái, tài liệu nguồn, lịch pháp, ví dụ đối chiếu và kiểm thử trước khi cho phép tính kết quả.</p><div class="notice">Không sinh lá số hoặc luận giải ngẫu nhiên thay cho công thức cổ pháp.</div></div>`;});
+document.addEventListener('click',e=>safely(()=>{const b=e.target.closest('[data-module]');if(!b)return;selectedModule=+b.dataset.module;if(!selectedModule){go('cast');return}go('modules');$('#moduleDetail').innerHTML=`<div class="panel"><h2>${modules[selectedModule][1]}</h2><p class="sub">Chưa kích hoạt lập quẻ/an lá số. Cần xác định trường phái, tài liệu nguồn, lịch pháp, ví dụ đối chiếu và kiểm thử trước khi cho phép tính kết quả.</p><div class="notice">Không sinh lá số hoặc luận giải ngẫu nhiên thay cho công thức cổ pháp.</div></div>`;} ,'module-open'));
 function lineHTML(v,moving=false){return `<div class="line ${moving?'moving':''}" aria-label="${v?'Hào dương':'Hào âm'}">${v?'<i></i>':'<i></i><i></i>'}${moving?'<span class="mark">○</span>':''}</div>`}
 function figure(bits,moving=[]){return `<div class="hex">${Array.from({length:6},(_,i)=>lineHTML((bits>>(5-i))&1,moving.includes(5-i))).join('')}</div>`}
+function coinSumToLine(coins){
+  if(!Array.isArray(coins)||coins.length!==3||!coins.every(c=>c===2||c===3))throw new TypeError('Ba đồng xu phải có giá trị 2 hoặc 3');
+  return coins[0]+coins[1]+coins[2];
+}
+function deriveHexagram(values){
+  if(!Array.isArray(values)||values.length!==6||!values.every(v=>Number.isInteger(v)&&v>=6&&v<=9))throw new TypeError('Cần đúng sáu hào 6–9');
+  const bits=values.reduce((a,n,i)=>a|((n%2)<<i),0);
+  const moving=values.flatMap((n,i)=>n===6||n===9?[i]:[]);
+  const changed=bits^moving.reduce((a,i)=>a|(1<<i),0);
+  if(!byBits[bits]||!byBits[changed])throw new Error('Bảng 64 quẻ không đầy đủ');
+  return {bits,changed,moving,number:byBits[bits].n,changedNumber:byBits[changed].n};
+}
 function castLine(){
   if(!globalThis.crypto || typeof crypto.getRandomValues!=='function') throw new Error('Nguồn ngẫu nhiên bảo mật không khả dụng. Hãy mở app bằng HTTPS hoặc môi trường an toàn.');
   const bytes=new Uint32Array(3);crypto.getRandomValues(bytes);
   // Rejection sampling avoids modulo bias when converting Uint32 to coin tosses.
   const coins=Array.from(bytes,v=>v<2147483648?2:3);
-  return coins.reduce((sum,value)=>sum+value,0);
+  return coinSumToLine(coins);
 }
 function renderProgress(){const bits=lines.reduce((a,n,i)=>a|((n%2)<<i),0);$('#progress').textContent=`Đã gieo ${lines.length}/6 hào · ghi từ dưới lên`;$('#castPreview').innerHTML=lines.length?`<div class="hex">${[...lines].reverse().map(n=>lineHTML(n%2,n===6||n===9)).join('')}</div>`:'';if(lines.length===6)finish(bits)}
-function finish(bits){const moving=lines.map((n,i)=>n===6||n===9?i:-1).filter(x=>x>=0);const changed=bits^moving.reduce((a,i)=>a|(1<<i),0);const h=byBits[bits],b=byBits[changed];latest={schemaVersion:2,method:'three-coins',date:new Date().toISOString(),question:$('#question').value.trim(),lines:[...lines],number:h.n,changed:b.n,moving};$('#castResult').innerHTML=`<div class="panel"><h2>Kết quả gieo quẻ</h2><div class="hexpair"><div><div class="resulttitle">Quẻ chủ ${h.n}</div>${figure(bits,moving)}<div class="resulttitle">${h.name}</div></div><div><div class="resulttitle">Quẻ biến ${b.n}</div>${figure(changed)}<div class="resulttitle">${b.name}</div></div></div><p class="sub">${moving.length?'Hào động (đếm từ dưới): '+moving.map(x=>x+1).join(', '):'Không có hào động.'}</p><div class="btnrow"><button class="btn" id="saveResult">Lưu nhật ký</button><button class="btn secondary" data-go="interpret">Xem luận giải</button></div></div>`;}
+function finish(bits){const computed=deriveHexagram(lines);if(computed.bits!==bits)throw new Error('Kết quả quẻ không nhất quán');const {moving,changed}=computed;const h=byBits[bits],b=byBits[changed];latest={schemaVersion:2,method:'three-coins',date:new Date().toISOString(),question:$('#question').value.trim(),lines:[...lines],number:h.n,changed:b.n,moving};$('#castResult').innerHTML=`<div class="panel"><h2>Kết quả gieo quẻ</h2><div class="hexpair"><div><div class="resulttitle">Quẻ chủ ${h.n}</div>${figure(bits,moving)}<div class="resulttitle">${h.name}</div></div><div><div class="resulttitle">Quẻ biến ${b.n}</div>${figure(changed)}<div class="resulttitle">${b.name}</div></div></div><p class="sub">${moving.length?'Hào động (đếm từ dưới): '+moving.map(x=>x+1).join(', '):'Không có hào động.'}</p><div class="btnrow"><button class="btn" id="saveResult">Lưu nhật ký</button><button class="btn secondary" data-go="interpret">Xem luận giải</button></div></div>`;}
 $('#toss').onclick=()=>safely(()=>{if(lines.length<6){lines.push(castLine());renderProgress()}},'cast-one');$('#auto').onclick=()=>safely(()=>{const next=Array.from({length:6},castLine);lines=next;renderProgress()},'cast-six');$('#reset').onclick=()=>{lines=[];latest=null;$('#castResult').innerHTML='';renderProgress()};
 function validRecord(x){
   if(!x||typeof x!=='object'||!Array.isArray(x.lines)||x.lines.length!==6||!x.lines.every(v=>Number.isInteger(v)&&v>=6&&v<=9))return false;
-  const bits=x.lines.reduce((a,v,i)=>a|((v%2)<<i),0);
-  const moving=x.lines.flatMap((v,i)=>(v===6||v===9)?[i]:[]);
-  const changed=bits^moving.reduce((a,i)=>a|(1<<i),0);
+  const {bits,moving,changed}=deriveHexagram(x.lines);
   return x.number===byBits[bits]?.n&&x.changed===byBits[changed]?.n&&
     Array.isArray(x.moving)&&JSON.stringify(x.moving)===JSON.stringify(moving)&&
     typeof x.date==='string'&&!Number.isNaN(Date.parse(x.date))&&
@@ -378,17 +391,36 @@ function runIntegrityTests(){
   test('8 tổ hợp ba đồng xu: 6/7/8/9 với tần suất 1/3/3/1',()=>{const freq={6:0,7:0,8:0,9:0};for(let m=0;m<8;m++){const sum=Array.from({length:3},(_,i)=>2+((m>>i)&1)).reduce((a,b)=>a+b,0);freq[sum]++}return [1,3,3,1].every((n,i)=>freq[i+6]===n)});
   test('Biến hào 6/9, giữ hào 7/8: 4096 mẫu',()=>{for(let n=0;n<4096;n++){let x=n,lines=[];for(let i=0;i<6;i++){lines.push(6+x%4);x=Math.floor(x/4)}const a=lines.reduce((s,v,i)=>s|((v%2)<<i),0);const b=lines.reduce((s,v,i)=>s|(((v===6||v===9?1-v%2:v%2))<<i),0);const mask=lines.reduce((s,v,i)=>s|(((v===6||v===9)?1:0)<<i),0);if((a^mask)!==b||!byBits[a]||!byBits[b])return false}return true});
   test('4096 bản ghi hợp lệ có thể tái dựng',()=>{for(let n=0;n<4096;n++){let x=n;const l=Array.from({length:6},()=>{const v=6+x%4;x=Math.floor(x/4);return v});const bits=l.reduce((a,v,i)=>a|((v%2)<<i),0);const moving=l.flatMap((v,i)=>v===6||v===9?[i]:[]);const changed=bits^moving.reduce((a,i)=>a|(1<<i),0);if(!validRecord({lines:l,number:byBits[bits].n,changed:byBits[changed].n,moving,date:'2026-11-10T00:00:00Z',question:''}))return false}return true});
+  test('Mọi tổ hợp xu hợp lệ',()=>{for(let i=0;i<8;i++){const c=[0,1,2].map(j=>2+((i>>j)&1));if(coinSumToLine(c)!==c.reduce((a,b)=>a+b,0))return false}return true});
+  test('Dữ liệu xu không hợp lệ bị từ chối',()=>{try{coinSumToLine([2,2,4]);return false}catch(e){return e instanceof TypeError}});
+  test('Kết quả quẻ là hàm thuần',()=>{const a=deriveHexagram([6,7,8,9,6,7]);const b=deriveHexagram([6,7,8,9,6,7]);return JSON.stringify(a)===JSON.stringify(b)});
   test('Bản ghi sai bị từ chối',()=>!validRecord({lines:[7,7,7,7,7,7],number:2,changed:1,moving:[],date:'2026-11-10',question:''}));
-  const report={version:'SICHING-AUDIT-3',passed:results.filter(x=>x.ok).length,total:results.length,results};
+  const report={version:'SICHING-AUDIT-5',passed:results.filter(x=>x.ok).length,total:results.length,results};
   globalThis.SICHING_DIAGNOSTICS=Object.freeze(report);
   if(report.passed!==report.total)reportError(new Error('Kiểm thử dữ liệu không đạt: '+report.passed+'/'+report.total),'integrity');
   return report;
 }
 const auditReport=runIntegrityTests();
+function downloadDiagnostics(){
+  const payload={version:APP_VERSION,checks:auditReport,errors:ERROR_LOG.slice()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='siching-diagnostics-v5.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function diagnosticButton(){
+  const settings=document.getElementById('settings');if(!settings)return;
+  const section=document.createElement('section');section.className='panel';section.id='diagnosticsV5';
+  section.innerHTML='<h2>Chẩn đoán kỹ thuật · V5</h2><p class="sub" id="diagnosticsSummary"></p><div class="btnrow"><button class="btn secondary" id="runDiagnosticsV5" type="button">Kiểm tra lại</button><button class="btn secondary" id="downloadDiagnosticsV5" type="button">Xuất báo cáo</button><button class="btn secondary" id="dismissErrorV5" type="button">Ẩn thông báo lỗi</button></div>';
+  settings.appendChild(section);
+  const update=()=>{const r=runIntegrityTests();document.getElementById('diagnosticsSummary').textContent=r.passed+'/'+r.total+' phép kiểm tra đạt · '+ERROR_LOG.length+' lỗi đã ghi nhận trong phiên.'};
+  document.getElementById('runDiagnosticsV5').addEventListener('click',()=>safely(update,'diagnostics'));
+  document.getElementById('downloadDiagnosticsV5').addEventListener('click',()=>safely(downloadDiagnostics,'diagnostics-export'));
+  document.getElementById('dismissErrorV5').addEventListener('click',clearError);update();
+}
+diagnosticButton();
 function showAuditReport(){
   let panel=document.getElementById('auditPanel');
   if(!panel){panel=document.createElement('section');panel.id='auditPanel';panel.className='panel';panel.setAttribute('aria-live','polite');const screen=document.getElementById('modules')||document.querySelector('.screen.active');screen?.appendChild(panel)}
-  panel.innerHTML='<h2>Kiểm tra nội bộ · V3</h2><p class="sub">'+auditReport.passed+'/'+auditReport.total+' phép kiểm tra đạt. Kiểm tra logic, không thay thế kiểm chứng cổ thư hay thử nghiệm iPhone.</p>'+auditReport.results.map(r=>'<p class="sub">'+(r.ok?'✓':'✕')+' '+esc(r.name)+(r.error?' — '+esc(r.error):'')+'</p>').join('');
+  panel.innerHTML='<h2>Kiểm tra nội bộ · V5</h2><p class="sub">'+auditReport.passed+'/'+auditReport.total+' phép kiểm tra đạt. Kiểm tra logic, không thay thế kiểm chứng cổ thư hay thử nghiệm iPhone.</p>'+auditReport.results.map(r=>'<p class="sub">'+(r.ok?'✓':'✕')+' '+esc(r.name)+(r.error?' — '+esc(r.error):'')+'</p>').join('');
 }
 showAuditReport();
 
