@@ -437,7 +437,7 @@ nav.bottom{bottom:0!important}
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
-const APP_VERSION='S I CHING V49';
+const APP_VERSION='S I CHING V57';
 const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
@@ -1040,12 +1040,276 @@ globalThis.SICHING_CLASSICAL_ENGINE=Object.freeze({resolve:resolveClassicalReadi
 // V32: explicit source-backed fixture checks; not exposed in the reading UI.
 function verifyClassicalV32(){const c=classicalCoverage();return c.guaci===64&&c.daxiang===64&&c.yaoci===384&&c.special===2&&[3,4,5,6,7,8,9,10,11,12,13,14,15,16].every(n=>CLASSICAL_TEXT[n].yaoci.length===6&&CLASSICAL_TEXT[n].yaoci.every(Boolean)&&CLASSICAL_TEXT[n].source.startsWith('https://'));}
 globalThis.SICHING_CLASSICAL_V32_CHECK=verifyClassicalV32;
+// V51: Vietnamese interpretive drafts are kept distinct from the received Chinese text.
+// This is a editorial pilot (hexagrams 1–24), NOT a certified translation.
+const VIETNAMESE_DRAFT=Object.freeze({
+  25:Object.freeze({guaci:Object.freeze({translation:"Hết sức hanh thông, lợi giữ chính; nếu không chính thì có lỗi, không lợi tiến hành.",comment:"Vô Vọng nhấn mạnh sự chân thực, không hành động vì kỳ vọng sai lệch."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Không vọng động; tiến lên thì tốt.",comment:"Khởi sự với động cơ ngay thẳng là điểm thuận."}),
+    Object.freeze({translation:"Không cày mà được gặt, không khai hoang mà được ruộng đã canh; lợi có chỗ để đi.",comment:"Đừng cố cưỡng cầu thành quả; xét đúng hoàn cảnh và trách nhiệm."}),
+    Object.freeze({translation:"Tai họa vô cớ: bò bị buộc rồi người qua đường dắt đi, dân làng chịu họa.",comment:"Có rủi ro không xuất phát từ lỗi của bản thân; cần phân biệt trách nhiệm."}),
+    Object.freeze({translation:"Có thể giữ chính, không lỗi.",comment:"Giữ nguyên tắc thay vì phản ứng tùy tiện."}),
+    Object.freeze({translation:"Bệnh vô cớ, không dùng thuốc mà có niềm vui.",comment:"Hình tượng cổ khuyên tránh can thiệp hấp tấp; không phải lời khuyên bỏ điều trị y khoa."}),
+    Object.freeze({translation:"Vọng động mà đi thì gặp lỗi, không có gì lợi.",comment:"Đến lúc không nên tiến, cố tiến chỉ làm tăng bất lợi."})
+  ])}),
+  26:Object.freeze({guaci:Object.freeze({translation:"Lợi giữ chính; không ăn ở nhà thì tốt; lợi vượt sông lớn.",comment:"Đại Súc nói tích lũy đức và năng lực trước khi đảm đương việc lớn."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Có nguy, lợi ở dừng lại.",comment:"Nhận biết hiểm họa sớm là biểu hiện của sức mạnh có kiểm soát."}),
+    Object.freeze({translation:"Xe bị tháo trục.",comment:"Tiến trình tạm dừng; không nên cố chạy khi phương tiện chưa đủ."}),
+    Object.freeze({translation:"Ngựa tốt đuổi nhau; lợi giữ chính trong khó khăn; luyện xe và phòng vệ hằng ngày, lợi có chỗ để đi.",comment:"Năng lực được rèn có kỷ luật mới giúp tiến xa."}),
+    Object.freeze({translation:"Tấm chắn đặt lên sừng nghé non; rất tốt.",comment:"Ngăn mầm nguy từ đầu tốt hơn xử lý khi đã thành lớn."}),
+    Object.freeze({translation:"Răng của lợn đã thiến; tốt.",comment:"Điều phục căn nguyên sức mạnh nguy hiểm thay vì chỉ đối đầu bề ngoài."}),
+    Object.freeze({translation:"Con đường của trời thông suốt; hanh thông.",comment:"Tích lũy đúng mức mở ra thời điểm phát triển."})
+  ])}),
+  27:Object.freeze({guaci:Object.freeze({translation:"Giữ chính thì tốt; quan sát cách nuôi dưỡng và tự tìm nguồn nuôi miệng.",comment:"Di đề cập cả ăn uống, lời nói và việc nuôi dưỡng phẩm hạnh."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Bỏ con rùa thiêng của mình mà nhìn ta há miệng thèm muốn; xấu.",comment:"Đánh mất sự tự chủ vì ham muốn bên ngoài."}),
+    Object.freeze({translation:"Nuôi dưỡng trái đạo thường, tìm nuôi ở gò cao; đi tiếp thì xấu.",comment:"Phụ thuộc sai chỗ có thể làm đảo lộn trật tự trách nhiệm."}),
+    Object.freeze({translation:"Nuôi dưỡng trái đạo; giữ cách ấy thì xấu; mười năm không nên dùng, không gì lợi.",comment:"Sai lầm kéo dài cần được sửa từ gốc, không chỉ cố thêm."}),
+    Object.freeze({translation:"Nuôi dưỡng trái thường nhưng tốt; nhìn chằm chằm như hổ, ham muốn không dứt, không lỗi.",comment:"Ở vị trí cần nguồn lực, sự chú tâm có thể chính đáng nếu không tổn hại người khác."}),
+    Object.freeze({translation:"Trái với lối thường; ở yên giữ chính thì tốt, không nên vượt sông lớn.",comment:"Biết dựa vào người thích hợp và giới hạn khả năng."}),
+    Object.freeze({translation:"Nguồn nuôi dưỡng; nguy mà tốt, lợi vượt sông lớn.",comment:"Gánh trách nhiệm nuôi dưỡng lớn cần ý thức rõ hiểm nguy."})
+  ])}),
+  28:Object.freeze({guaci:Object.freeze({translation:"Xà nhà cong võng; lợi có chỗ để đi, hanh thông.",comment:"Đại Quá là tình thế gánh nặng vượt mức, cần giải pháp không thông thường."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Lót cỏ tranh trắng; không lỗi.",comment:"Chuẩn bị thận trọng cho việc lớn giúp giảm sai sót."}),
+    Object.freeze({translation:"Cây dương khô nảy chồi, ông già lấy vợ trẻ; không gì bất lợi.",comment:"Hình tượng phục hồi bất ngờ; không nên áp thành dự báo hôn nhân."}),
+    Object.freeze({translation:"Xà nhà cong võng; xấu.",comment:"Kết cấu đã quá tải thì không thể chỉ dùng ý chí để chống đỡ."}),
+    Object.freeze({translation:"Xà nhà được nâng cao; tốt; nếu có điều khác thì đáng tiếc.",comment:"Gia cố đúng điểm yếu đem lại lợi ích nhưng phải tránh động cơ lệch lạc."}),
+    Object.freeze({translation:"Cây dương khô ra hoa, bà già lấy chồng trẻ; không lỗi không khen.",comment:"Bề ngoài có dấu hiệu hồi sinh nhưng kết quả thực chất còn giới hạn."}),
+    Object.freeze({translation:"Lội nước quá đầu; xấu, nhưng không lỗi.",comment:"Dấn thân vượt giới hạn có thể gặp hậu quả nghiêm trọng dù động cơ không đáng trách."})
+  ])}),
+  21:Object.freeze({guaci:Object.freeze({translation:"Hanh thông; thuận lợi cho việc xét xử và áp dụng hình luật.",comment:"Phệ Hạp nói việc tháo gỡ vật cản bằng kỷ cương; không đồng nghĩa khuyến khích trừng phạt tùy tiện."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Mang gông làm mất ngón chân, không lỗi.",comment:"Hình phạt nhỏ trong ngữ cảnh cổ nhằm ngăn sai phạm lớn; cần phân biệt với pháp luật hiện đại."}),
+    Object.freeze({translation:"Cắn thịt mềm đến lấp mũi, không lỗi.",comment:"Xử lý vụ việc dễ nhưng có nguy cơ quá tay; giữ đúng giới hạn."}),
+    Object.freeze({translation:"Cắn thịt khô gặp độc; hơi đáng tiếc nhưng không lỗi.",comment:"Việc khó có phản ứng bất lợi; tránh tưởng mọi trở ngại đều dễ giải quyết."}),
+    Object.freeze({translation:"Cắn miếng thịt khô có xương, được mũi tên kim loại; lợi giữ chính trong khó khăn, tốt.",comment:"Gặp trở lực cứng phải kiên định và xét đúng chứng cứ."}),
+    Object.freeze({translation:"Cắn thịt khô, được vàng; giữ chính dù nguy thì không lỗi.",comment:"Ở vị trí quyết định, ngay cả khi thuận lợi vẫn phải thận trọng."}),
+    Object.freeze({translation:"Mang gông đến mất tai, xấu.",comment:"Lời cảnh báo về hậu quả của không nghe lời can gián; hình tượng hình phạt thuộc thời cổ."})
+  ])}),
+  22:Object.freeze({guaci:Object.freeze({translation:"Hanh thông; có lợi nhỏ khi tiến hành việc.",comment:"Bí nói vẻ đẹp và sự trang sức chỉ hỗ trợ, không thay thế nội dung thực chất."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Trang sức bàn chân, bỏ xe mà đi bộ.",comment:"Chọn cách giản dị, phù hợp vị trí thay vì phô trương phương tiện."}),
+    Object.freeze({translation:"Trang sức bộ râu.",comment:"Vẻ ngoài đi theo cái chính, không nên đảo lộn chính phụ."}),
+    Object.freeze({translation:"Trang sức rực rỡ, như được thấm nhuần; bền giữ chính thì tốt.",comment:"Giữ phẩm chất ổn định giữa hoàn cảnh hào nhoáng."}),
+    Object.freeze({translation:"Trang sức trắng tinh, ngựa trắng chạy nhanh; không phải giặc mà là người đến cầu hôn.",comment:"Đừng vội hiểu sai một cuộc tiếp xúc; cần xét mục đích thực."}),
+    Object.freeze({translation:"Trang sức nơi gò vườn, bó lụa nhỏ mọn; đáng tiếc nhưng cuối cùng tốt.",comment:"Lễ vật khiêm tốn vẫn có giá trị khi chân thành."}),
+    Object.freeze({translation:"Trang sức bằng màu trắng, không lỗi.",comment:"Đỉnh cao của sự trang sức là trở về giản dị."})
+  ])}),
+  23:Object.freeze({guaci:Object.freeze({translation:"Không lợi để tiến hành việc.",comment:"Bác là sự bóc mòn nền tảng; cần giữ sức và tránh mở rộng mạo hiểm."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Giường bị bóc từ chân, mất nền đỡ; cứ thế thì xấu.",comment:"Dấu hiệu suy yếu bắt đầu ở chân nền; phải xử lý sớm."}),
+    Object.freeze({translation:"Giường bị bóc đến khung, mất chỗ tựa; cứ thế thì xấu.",comment:"Sự suy giảm lan sâu hơn; không thể chỉ sửa bề ngoài."}),
+    Object.freeze({translation:"Bị bóc tách mà không lỗi.",comment:"Tách khỏi xu thế suy hoại có thể là lựa chọn đúng."}),
+    Object.freeze({translation:"Giường bị bóc đến da thịt, xấu.",comment:"Nguy cơ đã chạm đến bản thân, cần ưu tiên bảo toàn."}),
+    Object.freeze({translation:"Xâu cá nối nhau, được ân sủng như người trong cung; không gì bất lợi.",comment:"Tập hợp có trật tự và đúng vị trí giúp giảm tổn thất; đây là hình tượng cung đình cổ."}),
+    Object.freeze({translation:"Quả lớn chưa bị ăn; quân tử được xe, tiểu nhân mất mái nhà.",comment:"Mầm sống còn lại cho chu kỳ mới; cách ứng xử quyết định kết cục."})
+  ])}),
+  24:Object.freeze({guaci:Object.freeze({translation:"Hanh thông; ra vào không bệnh hại, bạn đến không lỗi; trở lại theo đạo, bảy ngày lại phục; lợi có chỗ để đi.",comment:"Phục biểu thị sự trở lại của sinh khí và chính đạo, không phải lời hứa mọi sự tự động tốt lên."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Trở lại chưa xa, không đến mức hối hận lớn; rất tốt.",comment:"Nhận ra sai lệch sớm và sửa ngay là thuận lợi nhất."}),
+    Object.freeze({translation:"Trở lại một cách tốt đẹp, tốt.",comment:"Biết trở về điều đúng với thái độ hòa nhã."}),
+    Object.freeze({translation:"Trở lại nhiều lần; nguy nhưng không lỗi.",comment:"Tái phạm và sửa sai lặp lại vẫn có rủi ro; cần củng cố thói quen."}),
+    Object.freeze({translation:"Đi giữa hàng mà một mình trở lại.",comment:"Giữ quyết định đúng dù xung quanh chưa cùng thay đổi."}),
+    Object.freeze({translation:"Thành thực trở lại, không hối hận.",comment:"Sửa mình sâu sắc và bền bỉ, không chỉ làm cho có."}),
+    Object.freeze({translation:"Mê lạc không trở lại, xấu, có tai họa; đem quân đi sẽ đại bại, đến mười năm không thể chinh phạt.",comment:"Cảnh báo nghiêm trọng về cố chấp sai đường; lời về chiến tranh là bối cảnh cổ, không phải dự báo sự kiện thực tế."})
+  ])}),
+  17:Object.freeze({guaci:Object.freeze({translation:"Rất hanh thông; giữ chính thì không lỗi.",comment:"Tùy là thuận theo điều đúng, không phải phụ thuộc vô điều kiện."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Chức phận có thay đổi; giữ chính thì tốt. Ra cửa giao tiếp sẽ có công.",comment:"Thay đổi vai trò cần giữ nguyên tắc và mở rộng hợp tác."}),
+    Object.freeze({translation:"Ràng buộc với người nhỏ thì mất người trưởng thành.",comment:"Chọn đối tượng đi theo sẽ quyết định điều mình đánh mất."}),
+    Object.freeze({translation:"Gắn với người trưởng thành, rời người nhỏ; theo đuổi sẽ có được, lợi ở giữ chính.",comment:"Ưu tiên sự dẫn dắt đáng tin, không chạy theo lợi ngắn hạn."}),
+    Object.freeze({translation:"Theo mà có thu hoạch, cố chấp vẫn có nguy; có lòng tin trên đường sáng thì sao có lỗi?",comment:"Có kết quả chưa đủ: cần minh bạch động cơ và tránh cố chấp."}),
+    Object.freeze({translation:"Tin theo điều tốt đẹp, tốt.",comment:"Sự đồng thuận xuất phát từ điều thiện và lòng tin."}),
+    Object.freeze({translation:"Trói buộc rồi lại níu giữ; vua dùng lễ tế ở Tây Sơn.",comment:"Hình tượng gắn bó mạnh cần được hiểu trong nghi lễ cổ, không cổ vũ cưỡng ép."})
+  ])}),
+  18:Object.freeze({guaci:Object.freeze({translation:"Rất hanh thông, lợi vượt sông lớn; ba ngày trước và ba ngày sau ngày Giáp.",comment:"Cổ nói việc sửa trị điều hư hỏng phải chuẩn bị trước và theo dõi sau."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Sửa lỗi do cha để lại; có con gánh vác, cha không lỗi; nguy nhưng cuối cùng tốt.",comment:"Nhận trách nhiệm khắc phục di sản sai sót, thận trọng trong hành động."}),
+    Object.freeze({translation:"Sửa lỗi do mẹ để lại; không nên quá cứng nhắc.",comment:"Điều chỉnh bằng sự mềm dẻo khi quan hệ gần gũi và nhạy cảm."}),
+    Object.freeze({translation:"Sửa lỗi của cha; hơi hối tiếc nhưng không có lỗi lớn.",comment:"Cải cách có thể gây va chạm nhỏ nhưng vẫn cần sửa điều sai."}),
+    Object.freeze({translation:"Dung túng điều hỏng do cha để lại; tiến lên sẽ gặp điều đáng tiếc.",comment:"Trì hoãn sửa lỗi khiến hậu quả kéo dài."}),
+    Object.freeze({translation:"Sửa lỗi của cha, được tiếng khen.",comment:"Gánh vác việc khó bằng trách nhiệm sẽ tạo uy tín."}),
+    Object.freeze({translation:"Không phụng sự vua chúa, giữ việc mình cao quý.",comment:"Có thể chọn không theo quyền lực khi cần bảo toàn nguyên tắc."})
+  ])}),
+  19:Object.freeze({guaci:Object.freeze({translation:"Rất hanh thông, lợi giữ chính; đến tháng tám có điều hung.",comment:"Lâm là tiếp cận và chăm lo; thời thuận lợi vẫn có chu kỳ suy đổi."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Cùng cảm ứng mà đến gần; giữ chính thì tốt.",comment:"Tiếp cận bằng sự đồng lòng nhưng vẫn phải có nguyên tắc."}),
+    Object.freeze({translation:"Cùng cảm ứng mà đến gần, tốt, không gì bất lợi.",comment:"Sự gần gũi có thiện chí tạo thuận lợi cho phối hợp."}),
+    Object.freeze({translation:"Dùng lời ngọt để tiếp cận, không có lợi; biết lo sửa thì không lỗi.",comment:"Tránh lấy lòng bề ngoài; nhận ra sai lệch rồi điều chỉnh."}),
+    Object.freeze({translation:"Đến gần một cách chân thành, không lỗi.",comment:"Hiện diện đúng lúc, không phô trương."}),
+    Object.freeze({translation:"Dùng trí tuệ để tiếp cận; hợp với bậc lãnh đạo lớn, tốt.",comment:"Lãnh đạo cần biết người và giao trách nhiệm đúng chỗ."}),
+    Object.freeze({translation:"Đến gần với lòng dày dặn, tốt, không lỗi.",comment:"Sự khoan hậu giúp duy trì quan hệ bền lâu."})
+  ])}),
+  20:Object.freeze({guaci:Object.freeze({translation:"Rửa tay mà chưa dâng lễ; lòng thành khiến người nhìn lên kính cẩn.",comment:"Quán nhấn mạnh quan sát, tự xét và sức ảnh hưởng của gương mẫu."}),yaoci:Object.freeze([
+    Object.freeze({translation:"Nhìn như trẻ nhỏ; người thường không lỗi, người quân tử thì đáng tiếc.",comment:"Tầm nhìn hẹp không đủ cho người giữ trách nhiệm lớn."}),
+    Object.freeze({translation:"Nhìn qua khe hẹp; lợi cho sự giữ chính của người nữ theo ngữ cảnh cổ.",comment:"Hình tượng nói cái nhìn bị giới hạn; tránh áp dụng chuẩn mực giới cổ như phán quyết hiện đại."}),
+    Object.freeze({translation:"Xem đời mình để quyết tiến hay lui.",comment:"Đánh giá thực lực và hoàn cảnh trước khi chọn hướng."}),
+    Object.freeze({translation:"Xem ánh sáng của đất nước; lợi làm khách của vua.",comment:"Quan sát chuẩn mực tổ chức trước khi nhận vai trò công."}),
+    Object.freeze({translation:"Xét lại đời mình; người quân tử không lỗi.",comment:"Tự kiểm điểm trước khi đánh giá người khác."}),
+    Object.freeze({translation:"Quan sát đời sống và ảnh hưởng của mình; người quân tử không lỗi.",comment:"Tự xét tác động lâu dài của hành động và trách nhiệm."})
+  ])}),
+  13:Object.freeze({guaci:Object.freeze({translation:"Hợp người nơi đồng rộng, hanh thông; lợi vượt sông lớn, lợi cho người quân tử giữ chính.",comment:"Đồng Nhân nhấn mạnh sự đồng lòng vượt khỏi phe nhóm riêng, nhưng phải dựa trên chính đạo."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Hợp người ngay cửa, không lỗi.",comment:"Bắt đầu hợp tác cởi mở, không tự khép mình trong một nhóm nhỏ."}),
+      Object.freeze({translation:"Chỉ hợp người trong họ tộc, đáng tiếc.",comment:"Lệ thuộc quan hệ thân quen làm hẹp sự công bằng và tầm nhìn."}),
+      Object.freeze({translation:"Giấu binh trong bụi, lên gò cao; ba năm không dấy lên.",comment:"Nghi kỵ khiến đối đầu bị kéo dài; không nên vội biến bất đồng thành xung đột."}),
+      Object.freeze({translation:"Leo lên tường thành nhưng không thể đánh, tốt.",comment:"Biết dừng trước ranh giới xung đột có thể tránh tổn hại."}),
+      Object.freeze({translation:"Người đồng lòng trước khóc than, sau cười; đại quân thắng rồi gặp nhau.",comment:"Sự hòa hợp có thể đến sau thử thách lớn, không phải lúc nào cũng dễ dàng."}),
+      Object.freeze({translation:"Hợp người nơi ngoại ô, không hối tiếc.",comment:"Có thiện chí nhưng sự hòa hợp vẫn chưa tới mức rộng khắp; tránh tự mãn."})
+  ])}),
+  14:Object.freeze({guaci:Object.freeze({translation:"Rất hanh thông.",comment:"Đại Hữu chỉ sự sung túc và năng lực lớn; phải đi cùng đạo đức, trách nhiệm."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Không giao tiếp gây hại, không phải lỗi; biết khó thì không lỗi.",comment:"Lúc mới có của hoặc quyền, tránh quan hệ làm phát sinh tổn hại."}),
+      Object.freeze({translation:"Xe lớn chở được, có chỗ để đi, không lỗi.",comment:"Năng lực và nguồn lực đủ để gánh việc lớn khi được tổ chức tốt."}),
+      Object.freeze({translation:"Bậc công hầu dâng lễ lên thiên tử; kẻ tiểu nhân không làm nổi.",comment:"Tài sản và địa vị cần gắn với bổn phận, không chỉ lợi ích riêng."}),
+      Object.freeze({translation:"Không phô trương sự lớn mạnh, không lỗi.",comment:"Biết tiết chế khi đang thịnh giúp tránh kiêu căng và ganh ghét."}),
+      Object.freeze({translation:"Lòng tin giao cảm, có uy nghi, tốt.",comment:"Kết hợp sự thành tín với uy nghiêm để giữ trật tự và sự tôn trọng."}),
+      Object.freeze({translation:"Được trời giúp, tốt, không gì bất lợi.",comment:"Lời cát ở vị trí cuối quẻ gắn với sự thuận đạo; không phải bảo đảm mọi việc luôn thành."})
+  ])}),
+  15:Object.freeze({guaci:Object.freeze({translation:"Hanh thông; người quân tử có kết cuộc tốt.",comment:"Khiêm đề cao sự cân bằng, nhường bớt chỗ dư để bù chỗ thiếu."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Người quân tử hết sức khiêm nhường; dùng để vượt sông lớn, tốt.",comment:"Khiêm nhường thực chất giúp bắt đầu việc khó mà không kiêu ngạo."}),
+      Object.freeze({translation:"Đức khiêm được biết đến, giữ chính thì tốt.",comment:"Danh tiếng tốt phải đi cùng sự bền bỉ và chân thành."}),
+      Object.freeze({translation:"Người quân tử có công mà vẫn khiêm, cuối cùng tốt.",comment:"Có thành tựu vẫn không tự cao là nền tảng giữ kết quả lâu dài."}),
+      Object.freeze({translation:"Không gì bất lợi khi phát huy sự khiêm nhường.",comment:"Hành động đúng mực, không phô trương công lao."}),
+      Object.freeze({translation:"Không lấy giàu có làm chỗ dựa với láng giềng; lợi khi tiến đánh để chỉnh đốn, không gì bất lợi.",comment:"Hào có ngôn ngữ chinh phạt trong bối cảnh cổ; không nên chuyển thành lời khuyên dùng bạo lực ngày nay."}),
+      Object.freeze({translation:"Khiêm nhường được biết đến; lợi dùng quân để chinh phạt ấp nước.",comment:"Sửa trị việc trong phạm vi trách nhiệm; hình tượng quân sự là ngữ cảnh cổ, không phải chỉ dẫn hiện đại."})
+  ])}),
+  16:Object.freeze({guaci:Object.freeze({translation:"Lợi cho việc lập chư hầu và xuất quân.",comment:"Dự nói về sự hứng khởi, chuẩn bị và huy động tập thể; hứng khởi cần có giới hạn."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Phô trương sự vui thích, xấu.",comment:"Vui mừng quá sớm dễ dẫn đến chủ quan."}),
+      Object.freeze({translation:"Vững như đá, không đợi hết ngày; giữ chính thì tốt.",comment:"Nhận ra dấu hiệu sớm, quyết định kịp lúc mà vẫn giữ nguyên tắc."}),
+      Object.freeze({translation:"Ngước nhìn mà vui, có hối; chậm trễ cũng có hối.",comment:"Phụ thuộc người khác hoặc chần chừ đều có thể khiến mất chủ động."}),
+      Object.freeze({translation:"Từ đó sinh niềm vui, được nhiều; đừng nghi, bạn bè tụ lại như trâm cài tóc.",comment:"Người dẫn dắt có tín nhiệm sẽ tập hợp được đồng đội; tránh nghi kỵ vô cớ."}),
+      Object.freeze({translation:"Giữ chính trong bệnh, lâu dài mà không chết.",comment:"Ở tình thế bất ổn vẫn duy trì được, nhưng không nên nhầm sự tồn tại với khỏe mạnh."}),
+      Object.freeze({translation:"Mê muội trong vui; khi việc thành mà biết đổi thì không lỗi.",comment:"Khi hưng phấn đi quá mức, khả năng tỉnh ngộ và sửa đổi mới là điều then chốt."})
+  ])}),
+  9:Object.freeze({guaci:Object.freeze({translation:"Hanh thông; mây dày mà chưa mưa, tụ từ phía tây ngoại ô.",comment:"Tiểu Súc nói về sức tích lũy còn nhỏ: có tiến triển nhưng chưa đủ điều kiện tạo chuyển biến lớn."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Trở lại con đường của mình, có lỗi gì đâu; tốt.",comment:"Biết quay về đúng hướng ngay từ đầu là dấu hiệu thuận lợi."}),
+      Object.freeze({translation:"Cùng được kéo trở về, tốt.",comment:"Sự hỗ trợ đúng đắn giúp tránh đi lệch hướng."}),
+      Object.freeze({translation:"Xe tuột nan hoa; vợ chồng bất hòa.",comment:"Nội bộ thiếu đồng thuận làm phương tiện tiến lên mất tác dụng."}),
+      Object.freeze({translation:"Có lòng tin, máu tan và nỗi sợ qua đi; không lỗi.",comment:"Chân thành và thận trọng có thể giúp giảm xung đột nguy hiểm."}),
+      Object.freeze({translation:"Có lòng tin gắn bó; giàu có cùng láng giềng.",comment:"Nguồn lực bền khi chia sẻ lợi ích và duy trì tín nhiệm."}),
+      Object.freeze({translation:"Mưa đã xuống, đã ngừng; đức được tích chứa. Người nữ giữ chính vẫn có nguy; trăng gần tròn, quân tử tiến thì xấu.",comment:"Khi tích lũy đã tới giới hạn, tiến thêm thiếu đúng thời có thể đảo chiều kết quả."})
+    ])}),
+  10:Object.freeze({guaci:Object.freeze({translation:"Giẫm lên đuôi hổ mà hổ không cắn người; hanh thông.",comment:"Quẻ Lý nhấn mạnh lễ độ, sự cẩn trọng khi ở gần quyền lực hoặc hiểm nguy."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Bước đi mộc mạc; tiến không lỗi.",comment:"Giữ lối hành xử giản dị, không phô trương."}),
+      Object.freeze({translation:"Đường đi bằng phẳng; người ẩn dật giữ chính thì tốt.",comment:"Giữ tâm bình và nguyên tắc ngay cả khi không ai nhìn thấy."}),
+      Object.freeze({translation:"Mắt mờ vẫn cố nhìn, chân què vẫn cố bước; giẫm đuôi hổ bị cắn, xấu; võ nhân muốn làm vua lớn.",comment:"Đánh giá sai năng lực và vị trí dễ dẫn đến tai họa."}),
+      Object.freeze({translation:"Giẫm đuôi hổ, dè dặt sợ hãi, cuối cùng tốt.",comment:"Cảnh giác và biết sợ điều đáng sợ giúp vượt hiểm."}),
+      Object.freeze({translation:"Bước đi quyết liệt; giữ chính vẫn nguy.",comment:"Quyết đoán không thay thế được việc cân nhắc rủi ro."}),
+      Object.freeze({translation:"Xem lại hành vi, xét điều tốt lành; quay về trọn vẹn thì rất tốt.",comment:"Kết quả cần được đánh giá qua cả quá trình và khả năng tự sửa."})
+    ])}),
+  11:Object.freeze({guaci:Object.freeze({translation:"Cái nhỏ đi, cái lớn đến; tốt và hanh thông.",comment:"Thái biểu thị khí vận giao hòa; thuận lợi vẫn cần được gìn giữ."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Nhổ cỏ tranh kéo theo cả rễ cùng loại; tiến thì tốt.",comment:"Khởi sự với người cùng chí hướng tạo sức mạnh tập thể."}),
+      Object.freeze({translation:"Bao dung cả nơi hoang; dám vượt sông, không bỏ người xa; không thiên vị bè bạn; được trung đạo.",comment:"Lãnh đạo thời thuận cần rộng lượng và công bằng."}),
+      Object.freeze({translation:"Không có bằng phẳng mãi mà không nghiêng; không có đi mà không trở lại; giữ chính trong khó khăn thì không lỗi.",comment:"Ngay khi hanh thông vẫn phải dự phòng chu kỳ đổi thay."}),
+      Object.freeze({translation:"Nhẹ nhàng đi xuống, không dựa vào giàu có mà kết thân với láng giềng; có lòng tin không cần răn bảo.",comment:"Tin cậy chân thành giúp gắn kết vượt lợi ích vật chất."}),
+      Object.freeze({translation:"Vua Đế Ất gả em gái; nhờ phúc mà rất tốt.",comment:"Liên kết đúng lễ và đúng thời được xem là điềm thuận trong lời hào."}),
+      Object.freeze({translation:"Thành đổ trở lại hào; chớ dùng quân, từ ấp ban lệnh; giữ chính vẫn đáng tiếc.",comment:"Khi trật tự suy, cưỡng ép dễ làm tình hình xấu hơn."})
+    ])}),
+  12:Object.freeze({guaci:Object.freeze({translation:"Bĩ tắc, không phải đạo người; không lợi cho sự chính bền của quân tử; cái lớn đi, cái nhỏ đến.",comment:"Bĩ biểu thị sự bế tắc và cách biệt; giữ phẩm chất quan trọng hơn cố tìm danh lợi."}),yaoci:Object.freeze([
+      Object.freeze({translation:"Nhổ cỏ tranh kéo theo cả rễ cùng loại; giữ chính thì tốt, hanh thông.",comment:"Giữ liên kết với người ngay thẳng khi thời thế bắt đầu xấu."}),
+      Object.freeze({translation:"Bao bọc và thuận theo; tiểu nhân được lợi, đại nhân chịu bĩ nhưng vẫn hanh thông.",comment:"Người có nguyên tắc không nên đổi đạo để tìm thuận lợi nhất thời."}),
+      Object.freeze({translation:"Ôm lấy điều hổ thẹn.",comment:"Che giấu sai trái chỉ làm tăng tổn thất đạo đức."}),
+      Object.freeze({translation:"Có mệnh lệnh, không lỗi; người cùng nhóm được hưởng phúc.",comment:"Hành động đúng trách nhiệm có thể mở đường thoát bế tắc."}),
+      Object.freeze({translation:"Bĩ tắc tạm nghỉ; đại nhân tốt. Luôn nghĩ: mất rồi, mất rồi; buộc chặt vào gốc dâu.",comment:"Ngay khi tình thế khá hơn vẫn cần củng cố nền tảng."}),
+      Object.freeze({translation:"Bĩ tắc đổ xuống; trước bĩ sau vui.",comment:"Sự bế tắc có thể chấm dứt nhưng không nên xem kết quả là bảo đảm."})
+    ])}),
+  5:Object.freeze({
+    guaci:Object.freeze({translation:"Có lòng tin, sáng sủa hanh thông; giữ chính thì tốt, lợi vượt sông lớn.",comment:"Quẻ Nhu (chờ đợi) đặt trọng tâm vào chuẩn bị và giữ niềm tin, không đồng nghĩa ngồi yên vô hạn."}),
+    yaoci:Object.freeze([
+      Object.freeze({translation:"Chờ ở ngoại ô; lợi ở bền chí, không lỗi.",comment:"Ở xa nơi nguy hiểm, nên kiên nhẫn duy trì công việc nền tảng."}),
+      Object.freeze({translation:"Chờ trên bãi cát; có lời bàn tán nhỏ, cuối cùng tốt.",comment:"Bất đồng có thể xuất hiện khi tiến gần khó khăn; đừng để tranh cãi nhỏ phá kế hoạch."}),
+      Object.freeze({translation:"Chờ trong bùn, khiến giặc kéo đến.",comment:"Vị trí dễ mắc kẹt có thể tự chuốc rủi ro; cần đánh giá lại mức độ phơi nhiễm."}),
+      Object.freeze({translation:"Chờ trong máu, ra khỏi hang.",comment:"Hình tượng hiểm nguy đã cận kề; tìm lối thoát thực tế thay vì cố thủ."}),
+      Object.freeze({translation:"Chờ bên rượu và thức ăn; giữ chính thì tốt.",comment:"Khi điều kiện cho phép, bình tĩnh dưỡng sức và giữ kỷ luật."}),
+      Object.freeze({translation:"Vào hang, có ba khách không mời mà đến; kính trọng họ thì cuối cùng tốt.",comment:"Biến cố bất ngờ đòi hỏi ứng xử có lễ và linh hoạt; số ba là hình tượng trong lời hào."})
+    ])
+  }),
+  6:Object.freeze({
+    guaci:Object.freeze({translation:"Có lòng tin nhưng bị ngăn trở; lo sợ, ở giữa thì tốt, đi đến cùng thì xấu. Lợi gặp người lớn, không lợi vượt sông lớn.",comment:"Quẻ Tụng cảnh báo việc đẩy tranh chấp đến cực điểm; ưu tiên phân xử công bằng và chuẩn bị từ đầu."}),
+    yaoci:Object.freeze([
+      Object.freeze({translation:"Không kéo dài vụ việc; có chút lời qua tiếng lại, cuối cùng tốt.",comment:"Dừng tranh chấp sớm giúp giảm thiệt hại dù vẫn có bất đồng."}),
+      Object.freeze({translation:"Không thắng kiện, lui về lánh; người trong ấp ba trăm hộ không gặp tai họa.",comment:"Khi thế bất lợi, rút lui đúng lúc để tránh liên lụy người khác."}),
+      Object.freeze({translation:"Hưởng đức cũ; giữ chính dù nguy, cuối cùng tốt. Có thể theo việc vua nhưng không nhận công.",comment:"Giữ danh dự và trách nhiệm, không tranh đoạt thành tích."}),
+      Object.freeze({translation:"Không thắng kiện; trở về theo mệnh, đổi ý; yên ở điều chính thì tốt.",comment:"Biết điều chỉnh lập trường khi sự thật hoặc hoàn cảnh thay đổi."}),
+      Object.freeze({translation:"Tranh tụng; rất tốt.",comment:"Ở vị trí có thể phân xử chính đáng, trọng tâm là công lý chứ không phải thắng bằng mọi giá."}),
+      Object.freeze({translation:"Dẫu được ban đai lớn, chưa hết buổi sáng đã bị tước ba lần.",comment:"Thắng lợi nhờ tranh tụng có thể thiếu bền vững; đừng lấy danh lợi nhất thời làm chuẩn."})
+    ])
+  }),
+  7:Object.freeze({
+    guaci:Object.freeze({translation:"Giữ chính, có bậc trưởng thành dẫn dắt thì tốt, không lỗi.",comment:"Quẻ Sư nói về tổ chức lực lượng và kỷ luật; khi áp dụng hiện đại cần tránh suy diễn thành cổ vũ bạo lực."}),
+    yaoci:Object.freeze([
+      Object.freeze({translation:"Đưa quân ra phải có kỷ luật; kỷ luật không tốt thì xấu.",comment:"Không có quy tắc rõ ràng, tập thể dễ thất bại ngay từ đầu."}),
+      Object.freeze({translation:"Ở giữa quân đội thì tốt, không lỗi; vua ba lần ban mệnh.",comment:"Người chỉ huy giữ được lòng tin và vị trí trung tâm có thể gánh trách nhiệm lớn."}),
+      Object.freeze({translation:"Quân có thể chở xác về, xấu.",comment:"Tượng cảnh báo tổn thất vì điều hành sai hoặc giao quyền không đúng người."}),
+      Object.freeze({translation:"Quân lui đóng bên trái, không lỗi.",comment:"Rút lui có trật tự là lựa chọn hợp lý khi chưa đủ điều kiện tiến."}),
+      Object.freeze({translation:"Ruộng có thú, lợi bắt theo lời chính đáng, không lỗi; con trưởng chỉ huy, người trẻ chở xác, giữ chính cũng xấu.",comment:"Xử lý vấn đề phải giao cho người đủ năng lực; phân công sai gây hậu quả."}),
+      Object.freeze({translation:"Vua lớn ban mệnh, mở nước lập nhà; chớ dùng tiểu nhân.",comment:"Sau thành công phải xây dựng thể chế và lựa chọn người có đức."})
+    ])
+  }),
+  8:Object.freeze({
+    guaci:Object.freeze({translation:"Tốt. Xem lại từ gốc: khởi đầu, bền lâu, giữ chính thì không lỗi. Người bất an kéo đến; kẻ đến sau thì xấu.",comment:"Quẻ Tỷ nói về kết hợp và tin cậy; quan hệ bền vững đòi hỏi nguyên tắc chung."}),
+    yaoci:Object.freeze([
+      Object.freeze({translation:"Có lòng tin mà kết hợp thì không lỗi; lòng tin đầy như vò, cuối cùng có điều tốt khác đến.",comment:"Xây dựng tin cậy bằng hành động nhất quán, không chỉ lời hứa."}),
+      Object.freeze({translation:"Kết hợp từ bên trong, giữ chính thì tốt.",comment:"Liên kết khởi từ sự đồng thuận chân thành có nền tảng bền hơn."}),
+      Object.freeze({translation:"Kết hợp với người không thích hợp.",comment:"Cần xem xét phẩm chất đối tác, không liên minh chỉ vì lợi trước mắt."}),
+      Object.freeze({translation:"Kết hợp với bên ngoài, giữ chính thì tốt.",comment:"Hợp tác rộng mở vẫn phải giữ chuẩn mực và ranh giới."}),
+      Object.freeze({translation:"Kết hợp công khai; vua dùng phép săn ba mặt, bỏ thú chạy phía trước; người trong ấp không bị cảnh báo, tốt.",comment:"Người đứng đầu nên minh bạch, không ép buộc mọi người phải theo."}),
+      Object.freeze({translation:"Kết hợp mà không có đầu mối, xấu.",comment:"Thiếu người dẫn dắt hoặc mục đích chung khiến liên kết tan rã."})
+    ])
+  }),
+  1:Object.freeze({
+    guaci:Object.freeze({translation:'Khởi nguyên, hanh thông; thuận lợi khi giữ điều chính đáng.',comment:'Bốn chữ Nguyên, Hanh, Lợi, Trinh có nhiều cách giải thích trong lịch sử chú Dịch. Đây là một cách diễn ý, không phải bản dịch duy nhất.'}),
+    yaoci:Object.freeze([
+      ['Rồng còn ẩn, chưa nên dùng.','Thời cơ chưa chín; nên bồi dưỡng thực lực, không vội phô trương.'],
+      ['Rồng hiện nơi ruộng, thuận lợi khi gặp bậc đại nhân.','Tài năng bắt đầu được nhận biết; nên tìm người có đức và kinh nghiệm để học hỏi, hợp tác.'],
+      ['Người quân tử suốt ngày nỗ lực, đến tối vẫn cảnh giác; dù nguy vẫn không lỗi.','Khi công việc tăng tốc, siêng năng cần đi cùng tự kiểm điểm và phòng ngừa sai sót.'],
+      ['Có lúc nhảy lên, có lúc còn ở vực; không lỗi.','Đang ở ngưỡng chuyển biến; cần cân nhắc thời thế trước khi tiến.'],
+      ['Rồng bay trên trời, thuận lợi khi gặp bậc đại nhân.','Giai đoạn phát huy năng lực; càng ở vị trí cao càng cần trọng người hiền.'],
+      ['Rồng lên quá cao sẽ có điều hối tiếc.','Cảnh báo sự quá mức: biết dừng và nhường khi đạt đỉnh.']
+    ].map(x=>Object.freeze({translation:x[0],comment:x[1]}))),
+    yongjiu:Object.freeze({translation:'Thấy bầy rồng mà không có con nào đứng đầu, tốt.','comment':'Cách hiểu truyền thống nhấn mạnh đức cương kiện mà không tranh ngôi đầu; cần xét theo phương pháp chọn lời.'})
+  }),
+  3:Object.freeze({
+    guaci:Object.freeze({translation:'Khởi đầu có thể hanh thông, lợi ở giữ chính; chưa nên vội tiến, thuận cho việc dựng lập người phụ trách.',comment:'Quẻ Truân nói về khó khăn lúc mới gây dựng. Chữ “kiến hầu” thuộc bối cảnh chính trị cổ đại; ứng dụng hiện đại chỉ có thể diễn giải theo nghĩa tổ chức lực lượng, không đồng nhất với việc phong hầu.'}),
+    yaoci:Object.freeze([
+      ['Chần chừ chưa tiến; lợi ở giữ chính và dựng lập người giúp việc.','Khởi sự còn vướng mắc; nên ổn định nền tảng và tìm người có năng lực hỗ trợ trước khi mở rộng.'],
+      ['Khó tiến, ngựa quay vòng; không phải giặc mà là người cầu hôn. Người nữ giữ chí chưa nhận, mười năm mới nhận.','Lời hào dùng hình tượng hôn phối và sự chờ đợi lâu dài; không được diễn thành dự báo đúng mười năm cho người hỏi.'],
+      ['Đuổi hươu mà không có người dẫn đường, chỉ lạc vào rừng; người quân tử biết bỏ thì hơn, tiến sẽ hối.','Thiếu thông tin và chỉ dẫn đáng tin cậy thì nên dừng, không đánh cược chỉ vì đã bắt đầu.'],
+      ['Ngựa quanh quẩn; tìm mối hôn phối, tiến thì tốt, không gì bất lợi.','Khi có sự kết nối phù hợp và mục đích rõ ràng, hợp tác giúp vượt tình thế trì trệ.'],
+      ['Ân trạch bị giữ lại; giữ chính ở việc nhỏ thì tốt, việc lớn thì xấu.','Nguồn lực chưa thông; nên làm việc vừa sức, tránh cam kết lớn vượt khả năng cung ứng.'],
+      ['Ngựa quanh quẩn; khóc đến máu tuôn như dòng.','Hình tượng bế tắc đến cực điểm; cần nhìn nhận giới hạn và tìm trợ lực, không diễn thành tai họa thể chất chắc chắn.']
+    ].map(x=>Object.freeze({translation:x[0],comment:x[1]})))
+  }),
+  4:Object.freeze({
+    guaci:Object.freeze({translation:'Hanh thông. Không phải ta tìm trẻ thơ chưa hiểu, mà người chưa hiểu tìm đến ta. Hỏi lần đầu thì chỉ bảo; hỏi hai ba lần thành khinh nhờn, đã khinh nhờn thì không chỉ bảo. Lợi ở giữ chính.',comment:'“Mông” nói về tình trạng chưa khai sáng và đạo học hỏi; quy tắc hỏi quẻ không nên biến thành lệnh cấm tuyệt đối với mọi lần đặt câu hỏi trong đời sống.'}),
+    yaoci:Object.freeze([
+      ['Khai mở điều ngu tối, dùng hình phạt để răn; tháo gông xiềng; cứ tiến theo cách ấy sẽ hối.','Nguyên văn phản ánh kỷ luật thời cổ. Khi vận dụng hiện đại, ưu tiên ranh giới và giáo dục, không cổ vũ trừng phạt thân thể.'],
+      ['Bao dung người chưa hiểu thì tốt; đón nhận người vợ thì tốt; con có thể gánh việc nhà.','Tượng về năng lực dung nạp, chăm lo và đảm trách; không suy ra phán đoán cố định về giới tính hay hôn nhân.'],
+      ['Chớ cưới người nữ ấy: thấy người giàu có thì không giữ mình, không gì có lợi.','Lời cổ dùng quan hệ hôn nhân để cảnh báo sự đánh mất nguyên tắc vì lợi; cần tránh áp đặt thành đánh giá phụ nữ hiện đại.'],
+      ['Bị vây trong sự ngu tối, đáng tiếc.','Cô lập khỏi người hướng dẫn và phản hồi làm việc học khó tiến; nên chủ động tìm tri thức đáng tin cậy.'],
+      ['Sự chưa hiểu của trẻ thơ, tốt.','Biết mình chưa biết và sẵn sàng học hỏi là điều thuận lợi; tránh tự mãn.'],
+      ['Đánh vào sự ngu tối; không lợi khi làm kẻ cướp, lợi khi chống kẻ cướp.','Phân biệt ngăn ngừa hành vi gây hại với chính mình trở thành người gây hại; không phải lời cho phép bạo lực tùy tiện.']
+    ].map(x=>Object.freeze({translation:x[0],comment:x[1]})))
+  }),
+  2:Object.freeze({
+    guaci:Object.freeze({translation:'Khởi nguyên, hanh thông; thuận như ngựa cái thì lợi. Người quân tử có chỗ đi: đi trước dễ lạc, theo sau sẽ tìm được chủ. Tây nam được bạn, đông bắc mất bạn; an ổn giữ chính thì tốt.',comment:'Bản diễn ý tóm sát các mệnh đề của quái từ Khôn; ý nghĩa phương hướng cần đặt trong hệ chú giải, không suy ra chỉ dẫn địa lý hiện đại.'}),
+    yaoci:Object.freeze([
+      ['Giẫm sương mỏng, biết băng dày sắp đến.','Từ dấu hiệu nhỏ nên phòng ngừa diễn biến lớn; không đợi hậu quả mới ứng phó.'],
+      ['Ngay thẳng, vuông vức, rộng lớn; không cần học tập thêm mà không gì bất lợi.','Giữ phẩm chất chân thành và ổn định trong hành động; câu chữ có nhiều lối chú giải.'],
+      ['Giữ vẻ đẹp bên trong, có thể bền chính; theo việc vua, không tranh thành tựu, cuối cùng có kết quả.','Làm việc có trách nhiệm mà không tranh công; nhấn mạnh sự kín đáo và bền bỉ.'],
+      ['Buộc kín miệng túi, không lỗi cũng không tiếng khen.','Thời điểm cần thận trọng lời nói và hành động, tránh phô bày không cần thiết.'],
+      ['Áo dưới màu vàng, rất tốt.','Tượng của trung chính, khiêm nhường; không nên hiểu đơn giản là màu sắc đem may mắn.'],
+      ['Rồng giao chiến nơi đồng nội, máu huyền vàng.','Cảnh báo xung đột khi âm dương tranh cực; không phải lời tiên đoán bạo lực cụ thể.']
+    ].map(x=>Object.freeze({translation:x[0],comment:x[1]}))),
+    yongliu:Object.freeze({translation:'Lợi ở sự chính bền lâu.',comment:'Lời Dụng lục cần đọc trong trường hợp sáu hào âm đều động theo quy tắc đã chọn.'})
+  })
+});
+function vietnameseDraftCoverage(){return Object.freeze({hexagrams:Object.keys(VIETNAMESE_DRAFT).length,lines:Object.values(VIETNAMESE_DRAFT).reduce((n,e)=>n+e.yaoci.length,0)});}
+globalThis.SICHING_VIETNAMESE_DRAFT_COVERAGE=vietnameseDraftCoverage;
+function verifyVietnameseDraftV51(){const c=vietnameseDraftCoverage();return c.hexagrams===28&&c.lines===168&&[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28].every(n=>VIETNAMESE_DRAFT[n]?.yaoci?.length===6&&VIETNAMESE_DRAFT[n]?.guaci?.translation);}
+globalThis.SICHING_VIETNAMESE_DRAFT_V57_CHECK=verifyVietnameseDraftV51;
+function vietnameseDraftHTML(item){
+  const entry=VIETNAMESE_DRAFT[item.hex];
+  const draft=item.kind==='yaoci'?entry?.yaoci?.[item.line-1]:entry?.[item.kind];
+  if(!draft)return '<p class="sub">Chưa có bản diễn nghĩa tiếng Việt riêng được biên tập cho đoạn này; không tự sinh lời giải.</p>';
+  return `<div class="vi-draft"><p><strong>Diễn nghĩa tiếng Việt (bản biên tập thử):</strong> ${esc(draft.translation)}</p><p class="sub"><strong>Chú giải theo ngữ cảnh:</strong> ${esc(draft.comment)}</p><p class="sub">Đây là diễn giải biên tập, chưa được thẩm định học thuật độc lập; không phải nguyên văn cổ.</p></div>`;
+}
 function passageHTML(item){
   const h=HEX[item.hex-1],entry=CLASSICAL_TEXT[item.hex];
   const text=item.kind==='yaoci'?entry?.yaoci?.[item.line-1]:entry?.[item.kind];
   const kindLabel={guaci:'Quái từ (卦辭)',yaoci:'Hào từ (爻辭)',yongjiu:'Dụng cửu (用九)',yongliu:'Dụng lục (用六)'}[item.kind];
   const heading=`Quẻ ${h.n} · ${h.name} · ${kindLabel}${item.line?' · hào '+item.line:''}`;
-  return `<article class="interpret-line"><h4>${esc(heading)}${item.principal?' · trọng tâm':''}</h4>${text?`<p lang="zh-Hant" style="font-size:1.1em;color:#f6cb74">${esc(text)}</p><p class="sub">Nguyên văn chữ Hán; chưa có bản dịch tiếng Việt được thẩm định.</p><p class="sub"><a href="${entry.source}" target="_blank" rel="noopener noreferrer">Nguồn văn bản tham khảo</a></p>`:'<p class="sub">Chưa có nguyên văn được đối chiếu trong kho dữ liệu cho vị trí này. Ứng dụng không tự tạo lời cổ hoặc kết luận cát hung.</p>'}</article>`;
+  return `<article class="interpret-line"><h4>${esc(heading)}${item.principal?' · trọng tâm':''}</h4>${text?`<p lang="zh-Hant" style="font-size:1.1em;color:#f6cb74">${esc(text)}</p>${vietnameseDraftHTML(item)}<p class="sub"><a href="${entry.source}" target="_blank" rel="noopener noreferrer">Nguồn văn bản tham khảo</a></p>`:'<p class="sub">Chưa có nguyên văn được đối chiếu trong kho dữ liệu cho vị trí này. Ứng dụng không tự tạo lời cổ hoặc kết luận cát hung.</p>'}</article>`;
 }
 function selectedReadingHTML(values){
   const resolved=resolveClassicalReading(values,readingSchool);
@@ -1175,7 +1439,7 @@ function runIntegrityTests(){
   test('V40 cổ văn quẻ 33–36 đủ sáu hào và nguồn',()=>[33,34,35,36].every(n=>{const e=CLASSICAL_TEXT[n];return !!e.guaci&&!!e.daxiang&&e.yaoci.length===6&&e.yaoci.every(Boolean)&&e.source.startsWith('https://')}));
   test('V39 cổ văn quẻ 29–32 đủ sáu hào và nguồn',()=>[29,30,31,32].every(n=>{const e=CLASSICAL_TEXT[n];return !!e.guaci&&!!e.daxiang&&e.yaoci.length===6&&e.yaoci.every(Boolean)&&e.source.startsWith('https://')}));
   test('V38 cổ văn quẻ 25–28 đủ sáu hào và nguồn',()=>[25,26,27,28].every(n=>{const e=CLASSICAL_TEXT[n];return !!e.guaci&&!!e.daxiang&&e.yaoci.length===6&&e.yaoci.every(Boolean)&&e.source.startsWith('https://')}));
-  test('V37 cổ văn quẻ 21–24 đủ sáu hào và nguồn',()=>[21,22,23,24].every(n=>{const e=CLASSICAL_TEXT[n];return !!e.guaci&&!!e.daxiang&&e.yaoci.length===6&&e.yaoci.every(Boolean)&&e.source.startsWith('https://')}));
+  test('V37 cổ văn quẻ 21–24 đủ sáu hào và nguồn',()=>[21,22,23,24,25,26,27,28].every(n=>{const e=CLASSICAL_TEXT[n];return !!e.guaci&&!!e.daxiang&&e.yaoci.length===6&&e.yaoci.every(Boolean)&&e.source.startsWith('https://')}));
   test('V37 hào cuối quẻ Phục ghi rõ hung',()=>CLASSICAL_TEXT[24].yaoci[5].includes('凶'));
   test('V36 cổ văn quẻ 17–20 đủ 6 hào và nguồn',()=>[17,18,19,20].every(n=>{const e=CLASSICAL_TEXT[n];return !!e.guaci&&!!e.daxiang&&e.yaoci.length===6&&e.yaoci.every(Boolean)&&e.source.startsWith('https://')}));
   test('V36 chọn đúng hào 5 quẻ 17',()=>{const v=[7,8,8,7,9,8];const r=resolveClassicalReading(v);return r.primary===17&&r.passages.length===1&&r.passages[0].line===5&&r.passages[0].text.includes('孚于嘉')});
