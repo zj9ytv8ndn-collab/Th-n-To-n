@@ -12641,3 +12641,57 @@ window.KD_V179_NATIVE_AUDIT=function(){
 };
 window.KD_V179_RUN_AND_SHOW=function(){var r=window.KD_V179_NATIVE_AUDIT();var el=document.getElementById('kd-v179-results');if(!el){el=document.createElement('pre');el.id='kd-v179-results';el.style.cssText='white-space:pre-wrap;max-height:280px;overflow:auto;padding:12px;background:#111;color:#ddd';document.body.appendChild(el);}el.textContent=JSON.stringify(r,null,2);return r;};
 })();</script>
+
+<script id="kd-v207-release-diagnostics">
+(function(){'use strict';
+// Opt-in diagnostic: add #kd-audit to app URL. Does not run benchmarks during normal use.
+if(location.hash!=='#kd-audit')return;
+var errors=[],longTasks=[],opened=Date.now(),report={schema:'siching.release.audit.v207',app:'S I CHING V197 + verified reload diagnostics',created:new Date().toISOString(),userAgent:navigator.userAgent,origin:location.origin,protocol:location.protocol,viewport:{width:innerWidth,height:innerHeight},checks:{},errors:errors,longTasks:longTasks};
+addEventListener('error',function(e){errors.push({message:String(e.message||e.error||'unknown').slice(0,300),filename:String(e.filename||'').slice(0,140),line:e.lineno||0});});
+addEventListener('unhandledrejection',function(e){errors.push({message:'unhandledrejection: '+String(e.reason||'unknown').slice(0,300)});});
+try{new PerformanceObserver(function(list){list.getEntries().forEach(function(e){longTasks.push(Math.round(e.duration));if(longTasks.length>200)longTasks.shift();});}).observe({entryTypes:['longtask']});}catch(_e){}
+var id='kd-release-audit-panel';if(document.getElementById(id))return;
+var style=document.createElement('style');style.textContent='#'+id+'{position:fixed;inset:auto 10px 10px 10px;max-height:62vh;overflow:auto;z-index:2147483647;background:#111b25;color:#fff;border:2px solid #d8a44e;border-radius:12px;padding:12px;font:13px/1.45 system-ui,sans-serif;box-shadow:0 5px 35px #0009}#'+id+' button{font:inherit;padding:8px;margin:4px;background:#cf9f44;color:#101010;border:0;border-radius:7px}#'+id+' pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}';document.head.appendChild(style);
+var panel=document.createElement('section');panel.id=id;panel.setAttribute('role','region');panel.setAttribute('aria-label','Kiểm thử phát hành');panel.innerHTML='<b>Kiểm thử phát hành V207 — chỉ kích hoạt bằng #kd-audit</b><div><button type="button" data-act="basic">Kiểm tra</button><button type="button" data-act="stress">Thử menu</button><button type="button" data-act="reload">Lưu mốc và tải lại</button><button type="button" data-act="export">Xuất báo cáo JSON</button><button type="button" data-act="close">Ẩn</button></div><pre id="kd-v206-out">Chạy “Kiểm tra” để thu thập trạng thái. Kiểm tra thông thường chỉ xác nhận đọc/ghi. Kết quả reloadVerified chỉ đạt sau thao tác Lưu mốc và tải lại. Đóng/mở iPhone phải kiểm tra thủ công. Báo cáo không xuất nội dung Nhật ký hoặc câu hỏi.</pre>';
+(document.body||document.documentElement).appendChild(panel);var output=panel.querySelector('pre');
+function storage(){
+  // Separate storage write/read from evidence of a real navigation. Repeated clicks
+  // on 'Kiểm tra' alone must not be reported as cross-reload persistence.
+  var key='__kd_v207_persistence_probe__';
+  var nav=(performance.getEntriesByType('navigation')||[])[0];
+  var s={accessible:false,previous:'not_set',navigationType:nav&&nav.type||'unknown',
+         reloadVerified:false,sessionMarkerPresent:false};
+  try{
+    var old=localStorage.getItem(key),prior=null;
+    if(old){try{prior=JSON.parse(old);}catch(_e){s.previous='invalid';}}
+    if(prior&&prior.version==='V207'&&typeof prior.token==='string')s.previous='existing';
+    else if(old&&s.previous!=='invalid')s.previous='other';
+    var session=null;
+    try{session=sessionStorage.getItem('__kd_v207_reload_session__');}catch(_e){}
+    s.sessionMarkerPresent=!!session;
+    if(prior&&session&&prior.token===session&&s.navigationType==='reload'){
+      s.reloadVerified=true;
+    }
+    var token=prior&&prior.token||('v207-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+    localStorage.setItem(key,JSON.stringify({version:'V207',token:token,createdAt:prior&&prior.createdAt||new Date().toISOString()}));
+    s.accessible=true;s.readback=!!JSON.parse(localStorage.getItem(key)).token;
+    s.persistenceAcrossRestart='not_tested'; // Requires manual browser restart/device verification.
+  }catch(e){s.error=String(e);}
+  return s;
+}
+function markReload(){
+  var key='__kd_v207_persistence_probe__';
+  try{
+    storage();
+    var prior=JSON.parse(localStorage.getItem(key));
+    if(prior&&prior.token)sessionStorage.setItem('__kd_v207_reload_session__',prior.token);
+    location.reload();
+  }catch(e){errors.push({message:'reload preparation failed: '+String(e).slice(0,180)});collect();}
+}
+function collect(){var json=[].slice.call(document.querySelectorAll('script[type="application/json"]'));report.checkedAt=new Date().toISOString();report.profile=window.KD_V181_PROFILE&&KD_V181_PROFILE.get?KD_V181_PROFILE.get():'unknown';report.checks={storage:storage(),dom:{screens:document.querySelectorAll('.screen').length,active:document.querySelector('.screen.active')?.id||null,jsScripts:document.querySelectorAll('script').length,jsonBlocks:json.length},classicalAudit:{semanticVerified:(function(){try{return JSON.parse(document.getElementById('kd-classical-review-v63').textContent).verified_semantic_records}catch(e){return null}})(),scope:'No independent academic certification'},runtime:{packedFailure:window.__KD_PACKAGE_FAILURE||null,lazy:window.KD_LAZY494&&typeof KD_LAZY494.report==='function'?KD_LAZY494.report():null},performance:{uptimeMs:Date.now()-opened,longTaskCount:longTasks.length,longestLongTaskMs:Math.max(0,...longTasks),navigation:performance.getEntriesByType('navigation').map(function(p){return {domContentLoadedMs:Math.round(p.domContentLoadedEventEnd),loadMs:Math.round(p.loadEventEnd)}})}};output.textContent=JSON.stringify({checks:report.checks,errors:errors.slice(-7)},null,2);return report;}
+function stress(){var ids=[...new Set([].slice.call(document.querySelectorAll('#tabs [data-s]')).map(function(el){return el.getAttribute('data-s');}).filter(Boolean))],res=[];var next=0;function go(){if(next>=ids.length){report.menuStress={tests:res.length,success:res.filter(function(x){return x.pass;}).length,results:res};collect();output.textContent=JSON.stringify(report.menuStress,null,2);return;}var target=ids[next++],el=document.querySelector('#tabs [data-s="'+target+'"]'),start=performance.now();try{el.click();setTimeout(function(){var current=document.querySelector('.screen.active')?.id||null;res.push({target:target,active:current,pass:current===target,elapsedMs:Math.round(performance.now()-start)});setTimeout(go,50);},150);}catch(e){res.push({target:target,pass:false,error:String(e)});setTimeout(go,10);}}go();}
+function download(){collect();var blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='S_I_CHING_V207_IPHONE_AUDIT.json';a.click();setTimeout(function(){URL.revokeObjectURL(url);},5000);}
+panel.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;switch(b.dataset.act){case 'basic':collect();break;case 'stress':stress();break;case 'reload':markReload();break;case 'export':download();break;case 'close':panel.remove();break;}});
+window.KD_V206_DIAGNOSTICS={collect:collect,report:report};
+})();
+</script>
