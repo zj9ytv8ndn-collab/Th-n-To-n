@@ -69,7 +69,44 @@ html,body{background:#070d1b!important}body{color:#f3dfb3!important}
 body.focus-work #focusHero{display:none}body.focus-work #app{padding-top:84px!important}
 #scr-cast .card,#scr-list .card{border-color:#ad863c77!important}
 @media(min-width:800px){#focusHero .quick{grid-template-columns:repeat(3,1fr)}}
-</style></head><body><div id="focusedTop"><button aria-label="Mở danh mục" id="focusMenuBtn">☰</button><div class="brand">KINH DỊCH CHUYÊN SÂU</div><button aria-label="Trang chủ" id="focusHome">⌂</button></div><div id="focusShade"></div><aside aria-label="Danh mục" id="focusDrawer"><h2>✧ KINH DỊCH CHUYÊN SÂU ✧</h2><button class="focusLink" data-focus="hex"><span class="icon">☰</span>64 Quẻ Kinh Dịch</button><button class="focusLink" data-focus="maihoa"><span class="icon">✿</span>Mai Hoa Dịch Số</button><button class="focusLink" data-focus="quycoc"><span class="icon">☯</span>Quỷ Cốc Tử</button></aside><div id="focusHero"><div class="flower">✿ ❀ ✿</div><div class="symbol">☯</div><h1>64 QUẺ KINH DỊCH</h1><p>Thiên địa vận hành · Âm dương biến hóa · Chiêm nghiệm cổ học</p><div class="quick"><button data-focus="hex">☰ 64 Quẻ Kinh Dịch</button><button data-focus="maihoa">✿ Mai Hoa Dịch Số</button><button data-focus="quycoc">☯ Quỷ Cốc Tử</button></div></div><svg aria-hidden="true" height="0" style="position:absolute" width="0"><defs>
+</style><style id="responsive-fix-v2">
+*,*::before,*::after{box-sizing:border-box!important}
+html,body{width:100%;max-width:100%;overflow-x:hidden!important;margin:0}
+body{min-width:0!important}
+#focusedTop{width:100%!important;max-width:100vw!important;left:0!important;right:0!important;display:flex!important;gap:9px!important;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px!important;min-height:66px!important;height:auto!important;align-items:center!important}
+#focusedTop .brand{flex:1;min-width:0;white-space:normal!important;overflow-wrap:anywhere;text-align:center;font-size:clamp(12px,3.7vw,18px)!important;letter-spacing:.06em!important;line-height:1.25!important}
+#focusMenuBtn,#focusHome{flex:0 0 46px!important;width:46px!important;height:46px!important;min-width:46px!important;touch-action:manipulation}
+#focusDrawer{width:min(86vw,350px)!important;max-width:calc(100vw - 24px)!important;overflow-y:auto!important;overflow-x:hidden!important;padding:calc(env(safe-area-inset-top,0px) + 85px) 14px 25px!important;border-radius:0 20px 20px 0!important}
+#focusDrawer h2{font-size:clamp(13px,4vw,18px)!important;letter-spacing:.06em!important;line-height:1.5!important;overflow-wrap:anywhere}
+.focusLink{min-height:64px!important;width:100%!important;max-width:100%!important;font-size:clamp(16px,4.6vw,21px)!important;padding:14px 12px!important;gap:10px!important;white-space:normal!important;touch-action:manipulation}
+.focusLink .icon{flex:0 0 28px;min-width:28px!important;font-size:23px!important}
+#focusHero{width:calc(100% - 24px)!important;max-width:650px!important;margin:calc(env(safe-area-inset-top,0px) + 83px) auto 20px!important;padding:26px 16px!important;overflow:hidden!important}
+#focusHero[hidden]{display:none!important}
+#focusHero .symbol{font-size:clamp(58px,20vw,92px)!important}
+#focusHero h1{font-size:clamp(22px,6vw,34px)!important;overflow-wrap:anywhere}
+#focusHero .quick{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:13px!important}
+#focusHero .quick button{width:100%!important;max-width:100%!important;min-height:64px!important;padding:14px 12px!important;font-size:clamp(16px,4.5vw,20px)!important;line-height:1.4!important;white-space:normal!important;touch-action:manipulation}
+body.focus-work #app{padding-top:calc(env(safe-area-inset-top,0px) + 80px)!important}
+#app,.screen,#scr-cast,#scr-list,#scr-cast .card,#scr-list .card{max-width:100%!important;min-width:0!important}
+#app{width:100%!important;padding-left:12px!important;padding-right:12px!important}
+.screen{overflow-wrap:anywhere}
+.screen input,.screen select,.screen textarea{max-width:100%!important;min-width:0!important}
+.screen button{min-height:44px;touch-action:manipulation}
+#scr-cast .card,#scr-list .card{overflow-x:auto}
+@media(max-width:390px){#focusedTop .brand{font-size:12px!important}#focusHero{padding:20px 12px!important}}
+</style><style id="focus-v3-responsive">
+html{box-sizing:border-box;overflow-x:clip;-webkit-text-size-adjust:100%}*,*:before,*:after{box-sizing:inherit}body{max-width:100%;overflow-x:clip}button,input,select,textarea{max-width:100%;font:inherit}button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible,.sopt:focus-visible,.pill:focus-visible{outline:3px solid #ffd878;outline-offset:3px}
+#focusDrawer{width:min(86vw,360px);max-width:calc(100vw - 36px);padding:calc(76px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;border-radius:0 22px 22px 0}
+#focusDrawer h2{font-size:clamp(14px,4vw,19px);letter-spacing:.08em;line-height:1.5;overflow-wrap:anywhere;margin-bottom:14px}
+#focusDrawer .focusLink{min-height:62px;width:100%;padding:12px;gap:12px;margin:8px 0;font-size:clamp(16px,4.4vw,20px);white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+#focusDrawer .focusLink .icon{flex:0 0 32px}
+#focusHero{width:min(100%,760px);padding:clamp(14px,4vw,26px);margin:12px auto 18px;overflow:hidden}#focusHero h1{font-size:clamp(24px,7vw,38px);overflow-wrap:anywhere;line-height:1.3}#focusHero p{overflow-wrap:anywhere}#focusHero .symbol{font-size:clamp(56px,17vw,88px)}
+#focusHero .quick{display:grid!important;grid-template-columns:minmax(0,1fr);gap:12px;width:100%}#focusHero .quick button{width:100%;min-height:58px;padding:12px 14px;white-space:normal!important;overflow-wrap:anywhere;line-height:1.4;font-size:clamp(15px,4vw,19px)}
+#scr-cast,#scr-list{width:100%;max-width:100%;min-width:0}#scr-cast .card,#scr-list .card{max-width:100%;min-width:0;overflow-wrap:anywhere}#scr-cast .seg#methodSeg{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;min-width:0}#methodSeg .sopt{display:flex;align-items:center;justify-content:center;min-width:0;min-height:54px;padding:9px 6px;white-space:normal!important;text-align:center;overflow-wrap:anywhere;line-height:1.35;cursor:pointer}
+#scr-cast .pills{display:flex;flex-wrap:wrap;gap:8px}#scr-cast .pill{min-height:46px;white-space:normal!important;overflow-wrap:anywhere}#scr-cast input,#scr-cast select,#scr-cast textarea,#scr-list input{width:100%;min-width:0;max-width:100%;font-size:16px}#scr-cast .btn,#scr-list .btn{min-height:46px;white-space:normal!important;overflow-wrap:anywhere}#scr-cast table,#scr-list table{display:block;max-width:100%;overflow-x:auto}
+@media(max-width:390px){#focusDrawer{width:min(88vw,330px)}#focusHero .flower{letter-spacing:5px}#scr-cast .card,#scr-list .card{padding-left:12px!important;padding-right:12px!important}}
+@media(prefers-reduced-motion:reduce){#focusDrawer{transition:none!important}}
+</style></head><body><div id="focusedTop"><button aria-label="Mở danh mục" id="focusMenuBtn">☰</button><div class="brand">KINH DỊCH CHUYÊN SÂU</div><button aria-label="Trang chủ" id="focusHome">⌂</button></div><div id="focusShade"></div><aside aria-label="Danh mục" id="focusDrawer"><h2>✧ KINH DỊCH CHUYÊN SÂU ✧</h2><button class="focusLink" data-focus="hex"><span class="icon">☰</span>64 Quẻ Kinh Dịch</button><button class="focusLink" data-focus="cast"><span class="icon">✿</span>Gieo Quẻ</button></aside><div id="focusHero"><div class="flower">✿ ❀ ✿</div><div class="symbol">☯</div><h1>64 QUẺ KINH DỊCH</h1><p>Thiên địa vận hành · Âm dương biến hóa · Chiêm nghiệm cổ học</p><div class="quick"><button data-focus="hex">☰ 64 Quẻ Kinh Dịch</button><button data-focus="cast">✿ Gieo Quẻ · Mai Hoa & Quỷ Cốc Tử</button></div></div><svg aria-hidden="true" height="0" style="position:absolute" width="0"><defs>
 <radialgradient cx="50%" cy="50%" id="bqGlow" r="50%"><stop offset="0%" stop-color="#ffe9a8" stop-opacity=".9"></stop><stop offset="35%" stop-color="#c9a227" stop-opacity=".32"></stop><stop offset="68%" stop-color="#7b4bd6" stop-opacity=".16"></stop><stop offset="100%" stop-color="#0a0e1a" stop-opacity="0"></stop></radialgradient>
 <lineargradient id="bqAur" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#7fe8da"></stop><stop offset="30%" stop-color="#6fb7ff"></stop><stop offset="62%" stop-color="#b79ae8"></stop><stop offset="100%" stop-color="#f2a2c0"></stop></lineargradient>
 <lineargradient id="bqGold" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#f6e39a"></stop><stop offset="50%" stop-color="#c9a227"></stop><stop offset="100%" stop-color="#8a6a3a"></stop></lineargradient>
@@ -9124,15 +9161,15 @@ document.getElementById('restoreFile').addEventListener('change',function(){
 /* ===== PATCH v1.0.1 — bảo đảm 4 handler inline luôn thuộc window (chống vỡ nếu đóng gói module/SW) ===== */
 try{window.toggleSnd=toggleSnd;window.toggleFavOnly=toggleFavOnly;window.kdSub=kdSub;window.ddjOpenAll=ddjOpenAll;}catch(e){}
 </script><script id="focused-controller">(function(){'use strict';
-const drawer=document.getElementById('focusDrawer'),shade=document.getElementById('focusShade'),hero=document.getElementById('focusHero');
-function toggle(v){drawer.classList.toggle('open',v);shade.classList.toggle('open',v)}
-function home(){document.body.classList.remove('focus-work');document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));hero.style.display='';toggle(false);window.scrollTo(0,0)}
-function route(which){toggle(false);document.body.classList.add('focus-work');hero.style.display='none';const screen=which==='hex'?'scr-list':'scr-cast';const original=document.querySelector('#tabs .tab[data-s="'+screen+'"]');if(original)original.click();else {document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===screen))}
-if(which!=='hex'){const opt=document.querySelector('#methodSeg .sopt[data-m="'+which+'"]');if(opt)opt.click()}
-document.querySelectorAll('.focusLink').forEach(b=>b.classList.toggle('active',b.dataset.focus===which));window.scrollTo(0,0)}
-document.getElementById('focusMenuBtn').addEventListener('click',()=>toggle(!drawer.classList.contains('open')));shade.addEventListener('click',()=>toggle(false));document.getElementById('focusHome').addEventListener('click',home);
+const drawer=document.getElementById('focusDrawer'),shade=document.getElementById('focusShade'),hero=document.getElementById('focusHero'),menu=document.getElementById('focusMenuBtn');
+if(!drawer||!shade||!hero||!menu)return;
+function toggle(open){drawer.classList.toggle('open',open);shade.classList.toggle('open',open);document.body.classList.toggle('drawer-open',open);menu.setAttribute('aria-expanded',String(open));drawer.setAttribute('aria-hidden',String(!open));if(open){const b=drawer.querySelector('button');if(b)b.focus()}}
+function home(){document.body.classList.remove('focus-work');document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));hero.hidden=false;toggle(false);document.querySelectorAll('.focusLink').forEach(b=>b.classList.remove('active'));window.scrollTo(0,0)}
+function route(which){const id=which==='hex'?'scr-list':'scr-cast';const tab=document.querySelector('#tabs .tab[data-s="'+id+'"]');toggle(false);document.body.classList.add('focus-work');hero.hidden=true;if(tab)tab.click();else document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.focusLink').forEach(b=>b.classList.toggle('active',b.dataset.focus===which));window.scrollTo(0,0)}
+menu.setAttribute('aria-controls','focusDrawer');menu.addEventListener('click',()=>toggle(!drawer.classList.contains('open')));shade.addEventListener('click',()=>toggle(false));document.getElementById('focusHome')?.addEventListener('click',home);
 document.querySelectorAll('[data-focus]').forEach(b=>b.addEventListener('click',()=>route(b.dataset.focus)));
-// Prevent accidental navigation into retained but disabled legacy modules.
 document.querySelectorAll('#tabs .tab').forEach(b=>{if(!['scr-cast','scr-list'].includes(b.dataset.s))b.disabled=true});
-window.addEventListener('load',()=>{setTimeout(home,200)});
+const methods=document.querySelectorAll('#methodSeg .sopt');methods.forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click()}})});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer.classList.contains('open')){toggle(false);menu.focus()}});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',home,{once:true});else home();
 })();</script></body></html>
