@@ -96,6 +96,11 @@ button[data-module="0"] > span:first-child{
   filter:drop-shadow(0 0 4px rgba(244,176,53,.38));
 }
 nav.bottom button[data-go="cast"].on > span{color:var(--yin-gold-light)!important;-webkit-text-fill-color:var(--yin-gold-light)!important}
+
+.v192-reading .v192-original{font-size:1.12em;color:#f6cb74;line-height:1.65}
+.v192-reading .v192-evidence{margin-block:12px;padding-block:10px}
+.v192-reading .v192-application{margin-top:18px}
+.v192-reading .v192-method{margin-top:12px}
 </style><style>
 #home .v72-hotspot{-webkit-tap-highlight-color:rgba(255,204,95,.24)}
 #home .v72-hotspot:active{background:rgba(255,193,73,.13)!important}
@@ -494,7 +499,7 @@ nav.bottom button[data-go="cast"] .siching-gold-yinyang{width:27px!important;hei
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
-const APP_VERSION='S I CHING V191';
+const APP_VERSION='S I CHING V192';
 const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
@@ -2857,12 +2862,34 @@ function contextualReadingV86(values,question){
  return `<section class="interpret-narrative interpret-brief" aria-label="Luận giải theo câu hỏi"><h3>Luận sâu theo câu hỏi · ${esc(topic.name)}</h3><p><strong>Câu hỏi:</strong> ${esc(q.slice(0,350))}</p><p>${esc(stage)}</p><p><strong>Trọng tâm cần xét:</strong> ${esc(topic.focus)}</p><p><strong>Hướng hành động:</strong> ${esc(topic.action)}</p><p class="sub">Các căn cứ cổ văn, bản dịch và chú giải được trình bày một lần ở mục Lời quẻ và hào được chọn phía trên.</p></section>`;
 }
 
+// V192: one-pass result composer. Older V110–V155 panels remain available for
+// internal audits, but are deliberately NOT appended to the user-facing result.
 function selectedReadingHTML(values){
-  const resolved=resolveClassicalReading(values,readingSchool);
   const plan=selectClassicalPassages(values,readingSchool);
-  const d=deriveHexagram(values),entry=CLASSICAL_TEXT[d.number];
-  return `<section class="interpret-narrative"><h3>Lời quẻ và hào được chọn</h3><p class="sub">${esc(READING_SCHOOLS[readingSchool])}</p><p>${esc(plan.note)}</p>${resolved.passages.map(passageHTML).join('')}${contextualReadingV86(values,latest?.question||'')}${topicEvidenceSynthesisV110(values,latest?.question||'')}${conditionalConclusionV111(values,latest?.question||'')}${entry?.daxiang?`<article class="interpret-line"><h4>Đại Tượng (大象) · quẻ chủ</h4><p lang="zh-Hant" style="color:#f6cb74">${esc(entry.daxiang)}</p><p class="sub">Đại Tượng là văn bản chú giải, không thay thế Quái từ hay Hào từ được chọn.</p><a href="${entry.source}" target="_blank" rel="noopener noreferrer">Nguồn văn bản tham khảo</a></article>`:''}<p class="sub">${resolved.complete?'Đã có nguyên văn trong dữ liệu ứng dụng cho các vị trí được chọn; cần tiếp tục thẩm định bản dịch và chú giải.':'Một hoặc nhiều lời được chọn chưa có nguyên văn trong dữ liệu ứng dụng; không suy diễn để thay thế.'}</p><p class="sub">Chưa đưa ra kết luận cát/hung cá nhân khi thiếu bản dịch, chú giải và ngữ cảnh đã được kiểm chứng.</p><p class="sub">Quy tắc: <a href="${TEXT_SOURCES.zhuXi}" target="_blank" rel="noopener noreferrer">Dịch học khải mông (bản dịch học thuật)</a> · <a href="${TEXT_SOURCES.zhuXiRules}" target="_blank" rel="noopener noreferrer">Bảng đối chiếu 0–6 hào động</a></p></section>`;
+  const d=deriveHexagram(values);
+  const question=String(latest?.question||'').trim();
+  const topic=detectTopicV87(question);
+  const chosen=plan.items||[];
+  const titles={guaci:'Quái từ',yaoci:'Hào từ',yongjiu:'Dụng Cửu',yongliu:'Dụng Lục'};
+  const rows=chosen.map((item,index)=>{
+    const entry=CLASSICAL_TEXT[item.hex];
+    const raw=String(item.kind==='yaoci'?entry?.yaoci?.[item.line-1]:entry?.[item.kind]||'').trim();
+    const draft=item.kind==='yaoci'?VIETNAMESE_DRAFT[item.hex]?.yaoci?.[item.line-1]:VIETNAMESE_DRAFT[item.hex]?.[item.kind];
+    const translation=String(draft?.translation||'').trim();
+    const comment=String(draft?.comment||'').trim();
+    const marks=raw?omenDetailV116(raw):[];
+    const conditions=[...new Set(marks.map(x=>x.label))];
+    const label=`Quẻ ${item.hex} · ${titles[item.kind]||item.kind}${item.line?' · hào '+item.line:''}`;
+    const link=entry?.source&&/^https:\/\//.test(entry.source)?`<a href="${esc(entry.source)}" target="_blank" rel="noopener noreferrer">Đối chiếu nguồn cổ văn</a>`:'';
+    return `<article class="interpret-line v192-evidence" data-evidence="${index}"><h4>${esc(label)}${item.principal?' · trọng tâm':''}</h4>${raw?`<p lang="zh-Hant" class="v192-original">${esc(raw)}</p>`:'<p>Chưa có nguyên văn; không suy diễn thay thế.</p>'}${translation?`<p><strong>Diễn nghĩa:</strong> ${esc(translation)}</p>`:''}${comment?`<p><strong>Luận giải riêng:</strong> ${esc(comment)}</p>`:''}${conditions.length?`<p class="sub"><strong>Dấu hiệu trong lời:</strong> ${esc(conditions.join(' · '))}. Cần đọc cùng toàn câu, không tự suy thành kết quả chắc chắn.</p>`:''}${link?`<p class="sub">${link}</p>`:''}</article>`;
+  }).join('');
+  const labels=chosen.map(x=>`quẻ ${x.hex}${x.line?' hào '+x.line:''}`);
+  const context=d.moving.length===0?'Tĩnh quẻ: lấy Quái từ quẻ chủ làm căn cứ theo phương pháp đang chọn.':`Có ${d.moving.length} hào động (vị trí ${d.moving.map(i=>i+1).join(', ')}); lời được chọn tùy quy tắc của trường phái.`;
+  const advice=question?`<section class="interpret-line v192-application"><h4>Liên hệ câu hỏi · ${esc(topic.name)}</h4><p><strong>Câu hỏi:</strong> ${esc(question.slice(0,350))}</p><p><strong>Điều cần đối chiếu:</strong> ${esc(topic.focus)}</p><p><strong>Hành động thực tế:</strong> ${esc(topic.action)}</p><p class="sub">Liên hệ chủ đề là biên tập hiện đại, không phải nguyên văn hoặc dự đoán chắc chắn.</p></section>`:'';
+  const completeness=chosen.length===0?'Chưa xác định được lời cần đọc.':chosen.some(x=>!selectedEvidenceV87(x).text.trim())?'Có lời được chọn thiếu nguyên văn; không kết luận cát–hung cho phần thiếu.':'';
+  return `<section class="interpret-narrative v192-reading" aria-label="Kết quả luận giải không trùng lặp"><h3>Luận giải theo lời được chọn</h3><p class="sub">${esc(context)}</p>${rows}${advice}${completeness?`<p class="sub">${esc(completeness)}</p>`:''}<details class="v192-method"><summary>Quy tắc chọn lời và giới hạn</summary><p>${esc(plan.note||'')}</p><p>${esc(READING_SCHOOLS[readingSchool])}</p><p>Đã chọn: ${esc(labels.join('; ')||'chưa có')}.</p><p>Chú giải tiếng Việt là nội dung biên tập, chưa được thẩm định độc lập.</p></details></section>`;
 }
+
 function readingSchoolControl(context='interpret'){const selectId=context==='cast'?'castReadingSchoolSelect':'readingSchoolSelect';return `<div class="panel" style="margin:12px 0"><label for="${selectId}" style="display:block;margin-bottom:8px">Phương pháp chọn lời</label><select id="${selectId}" style="width:100%;min-height:44px;background:#18140d;color:#f6cb74;border:1px solid #92703c;border-radius:10px;padding:8px"><option value="zhu_xi" ${readingSchool==='zhu_xi'?'selected':''}>Chu Hy · Dịch học khải mông</option><option value="all_moving" ${readingSchool==='all_moving'?'selected':''}>Đối chiếu mọi hào động (tham khảo)</option></select></div>`;}
 document.addEventListener('change',e=>{
   if(e.target?.id!=='readingSchoolSelect'&&e.target?.id!=='castReadingSchoolSelect')return;
@@ -2918,7 +2945,7 @@ function appendCastDetails(){
   if(toss)toss.disabled=lines.length>=6;const auto=document.getElementById('auto');if(auto)auto.disabled=lines.length>=6;if(manual)manual.disabled=lines.length>=6;if(undo)undo.disabled=lines.length===0;const progress=document.getElementById('progress');if(progress)progress.setAttribute('aria-label',`Đã ghi ${lines.length} trong 6 hào, thứ tự từ dưới lên`);
 }
 function renderProgress(){appendCastDetails();const bits=lines.reduce((a,n,i)=>a|((n%2)<<i),0);$('#progress').textContent=`Đã gieo ${lines.length}/6 hào · ghi từ dưới lên`;$('#castPreview').innerHTML=lines.length?`<div class="hex">${[...lines].reverse().map(n=>lineHTML(n%2,n===6||n===9)).join('')}</div>`:'';if(lines.length===6)finish(bits);else requireElement('castResult').innerHTML=''}
-function finish(bits){const question=requireElement('question').value.trim();if(question.length>10000)throw new Error('Câu hỏi vượt giới hạn 10.000 ký tự');const computed=deriveHexagram(lines);if(computed.bits!==bits)throw new Error('Kết quả quẻ không nhất quán');const {moving,changed}=computed;const h=byBits[bits],b=byBits[changed];latest={schemaVersion:2,method:'three-coins',date:new Date().toISOString(),question,lines:[...lines],number:h.n,changed:b.n,moving};$('#castResult').innerHTML=`<div class="panel"><h2>Kết quả gieo quẻ</h2><div class="hexpair"><div><div class="resulttitle">Quẻ chủ ${h.n}</div>${figure(bits,moving)}<div class="resulttitle">${h.name}</div></div><div><div class="resulttitle">Quẻ biến ${b.n}</div>${figure(changed)}<div class="resulttitle">${b.name}</div></div></div><p class="sub">${moving.length?'Hào động (đếm từ dưới): '+moving.map(x=>x+1).join(', '):'Không có hào động.'}</p>${interpretationNarrative(lines)}${readingSchoolControl('cast') }<div id="castSelectedReading">${selectedReadingHTML(lines)}</div><div class="btnrow"><button class="btn" id="saveResult">Lưu nhật ký</button><button class="btn secondary" data-go="interpret">Xem luận giải</button></div></div>`;}
+function finish(bits){const question=requireElement('question').value.trim();if(question.length>10000)throw new Error('Câu hỏi vượt giới hạn 10.000 ký tự');const computed=deriveHexagram(lines);if(computed.bits!==bits)throw new Error('Kết quả quẻ không nhất quán');const {moving,changed}=computed;const h=byBits[bits],b=byBits[changed];latest={schemaVersion:2,method:'three-coins',date:new Date().toISOString(),question,lines:[...lines],number:h.n,changed:b.n,moving};$('#castResult').innerHTML=`<div class="panel"><h2>Kết quả gieo quẻ</h2><div class="hexpair"><div><div class="resulttitle">Quẻ chủ ${h.n}</div>${figure(bits,moving)}<div class="resulttitle">${h.name}</div></div><div><div class="resulttitle">Quẻ biến ${b.n}</div>${figure(changed)}<div class="resulttitle">${b.name}</div></div></div><p class="sub">${moving.length?'Hào động (đếm từ dưới): '+moving.map(x=>x+1).join(', '):'Không có hào động.'}</p>${readingSchoolControl('cast') }<div id="castSelectedReading">${selectedReadingHTML(lines)}</div><div class="btnrow"><button class="btn" id="saveResult">Lưu nhật ký</button><button class="btn secondary" data-go="interpret">Xem luận giải</button></div></div>`;}
 bindClick('toss',()=>{
   if(lines.length>=6)return;
   const roll=castLine();
@@ -3440,9 +3467,23 @@ function verifyV188EditorialLines(){
  const comments=Object.entries(selected).flatMap(([h,ls])=>ls.map(l=>VIETNAMESE_DRAFT[h]?.yaoci?.[l-1]?.comment||''));
  return comments.length===14&&comments.every(t=>t.length>260)&&new Set(comments).size===14&&Object.entries(selected).every(([h,ls])=>ls.every(l=>Boolean(CLASSICAL_TEXT[h]?.yaoci?.[l-1])));
 }
+function verifyV192NoRepeatedPanels(){
+ const old=latest;
+ try{
+  latest={question:'Tôi có nên chuyển việc?',lines:[7,8,7,8,7,8]};
+  const out=selectedReadingHTML(latest.lines);
+  const count=(out.match(/class="v192-original"/g)||[]).length;
+  return count===selectClassicalPassages(latest.lines,readingSchool).items.length&&
+    (out.match(/Luận giải theo lời được chọn/g)||[]).length===1&&
+    (out.match(/Liên hệ câu hỏi/g)||[]).length===1&&
+    !out.includes('V142')&&!out.includes('V153')&&!out.includes('Bảng đối chiếu điều kiện theo từng lời')&&
+    !out.includes('Tổng luận đầy đủ các lời được chọn');
+ }finally{latest=old}
+}
 function runIntegrityTests(){
  const results=[];
  const test=(name,fn)=>{try{if(!fn())throw Error('Sai kết quả');results.push({name,ok:true})}catch(err){results.push({name,ok:false,error:String(err.message||err)})}};
+ test('V192 kết quả không lặp chuỗi 12 bảng luận giải',()=>verifyV192NoRepeatedPanels());
  test('V189: 64 quẻ có đủ 384 hào cổ văn và bản dịch',()=>{
   for(let h=1;h<=64;h++){
    const c=CLASSICAL_TEXT[h],v=VIETNAMESE_DRAFT[h];
