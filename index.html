@@ -494,7 +494,7 @@ nav.bottom button[data-go="cast"] .siching-gold-yinyang{width:27px!important;hei
 
 // Centralized error boundary: no external telemetry, only local diagnostics.
 const ERROR_LOG=[];
-const APP_VERSION='S I CHING V111';
+const APP_VERSION='S I CHING V125';
 const MAX_ERROR_LOG=30;
 function reportError(err,context='runtime'){
   const entry={at:new Date().toISOString(),context,message:String(err?.message||err).slice(0,400)};
@@ -1953,11 +1953,50 @@ function detectTopicV87(question){
  }).filter(x=>x.hits.length).sort((a,b)=>b.score-a.score||a.index-b.index);
  return matches[0]?.topic||{id:'tong_quan',name:'Tổng quan · câu hỏi mở',focus:'Xem tình thế hiện tại, điểm biến chuyển và giới hạn của thông tin đang có.',action:'Đối chiếu hình tượng quẻ với hoàn cảnh thực tế, xác minh điều kiện trước khi hành động.'};
 }
-function textualOmenV87(text){
- const source=String(text||'');
- const markers=[['元吉','đại cát trong nguyên văn'],['凶','hung trong nguyên văn'],['无咎','không lỗi trong nguyên văn'],['無咎','không lỗi trong nguyên văn'],['悔亡','hối mất trong nguyên văn'],['悔','hối trong nguyên văn'],['吝','lận trong nguyên văn'],['吉','cát trong nguyên văn']];
- return markers.filter(([token],i)=>source.includes(token)&&!markers.slice(0,i).some(([long])=>long.includes(token)&&source.includes(long))).map(([,label])=>label);
+// V116: giữ các điều kiện trong nguyên văn; vô cữu không đồng nghĩa cát.
+function omenDetailV116(text){
+ const raw=String(text||'');
+ // Longest phrases first: preserve the action or condition attached to an omen.
+ // These are lexical indicators, not a complete grammatical reading of the Zhouyi.
+ const patterns=[
+  // V118: Compound omens take precedence over their constituent single characters.
+  ['先吉後凶','trước cát, sau hung','warning'],['先吉后凶','trước cát, sau hung','warning'],
+  ['初吉終亂','ban đầu cát, cuối cùng rối loạn','warning'],['初吉终乱','ban đầu cát, cuối cùng rối loạn','warning'],
+  ['先號咷而後笑','trước khóc than, sau cười (hình tượng; không tự gán cát)','neutral'],
+  ['不利貞','không lợi khi giữ chính','warning'],['不利贞','không lợi khi giữ chính','warning'],
+  ['不可貞','không thể giữ chính theo lời này','warning'],['不可贞','không thể giữ chính theo lời này','warning'],
+  ['不利有攸往','không lợi khi có chỗ tiến đi','warning'],
+  ['利有攸往','có lợi khi có chỗ tiến đi','favorable'],
+  ['利涉大川','có lợi khi vượt sông lớn','favorable'],
+  ['不利涉大川','không lợi khi vượt sông lớn','warning'],
+  ['无攸利','không có gì lợi','warning'],['無攸利','không có gì lợi','warning'],
+  ['不利','không lợi (cần đọc điều kiện đi kèm)','warning'],
+  ['无不利','không gì là không lợi','favorable'],['無不利','không gì là không lợi','favorable'],
+  ['貞凶','giữ chính gặp hung','warning'],['贞凶','giữ chính gặp hung','warning'],
+  ['征凶','đi chinh gặp hung','warning'],['往凶','tiến đi gặp hung','warning'],
+  ['貞吉','giữ chính được cát','favorable'],['贞吉','giữ chính được cát','favorable'],
+  ['終吉','cuối cùng được cát','favorable'],['终吉','cuối cùng được cát','favorable'],
+  ['元吉','đại cát','favorable'],['利貞','lợi khi giữ chính','favorable'],['利贞','lợi khi giữ chính','favorable'],
+  ['悔亡','hối tiếc tiêu tan','neutral'],['悔无','hối tiếc không còn (cần đọc đủ câu)','neutral'],
+  ['无悔','không hối tiếc','neutral'],['無悔','không hối tiếc','neutral'],
+  ['无咎','không lỗi','neutral'],['無咎','không lỗi','neutral'],
+  ['勿用','chớ dùng / chớ hành động theo lời này','warning'],
+  ['凶','hung','warning'],['吝','lận','warning'],['悔','hối','warning'],
+  ['厲','nguy','warning'],['厉','nguy','warning'],['吉','cát','favorable'],['亨','hanh thông (không đồng nhất với cát)','neutral']
+ ];
+ const occupied=new Set(),found=[];
+ const ordered=patterns.map((p,i)=>({p,i})).sort((a,b)=>b.p[0].length-a.p[0].length||a.i-b.i);
+ for(const {p:[token,label,tone]} of ordered){
+  let start=0,index;
+  while((index=raw.indexOf(token,start))!==-1){
+   const positions=Array.from({length:token.length},(_,i)=>index+i);
+   if(positions.every(p=>!occupied.has(p))){positions.forEach(p=>occupied.add(p));found.push({token,label,tone,index});}
+   start=index+token.length;
+  }
+ }
+ return found.sort((x,y)=>x.index-y.index);
 }
+function textualOmenV87(text){return omenDetailV116(text).map(x=>x.label+' trong nguyên văn');}
 function selectedEvidenceV87(item){
  const ancient=CLASSICAL_TEXT[item.hex];
  if(!ancient)return {text:'',source:''};
@@ -1989,8 +2028,147 @@ function topicEvidenceSynthesisV110(values,question){
 }
 // V111: Kết luận có điều kiện, truy vết đúng từng lời được chọn.
 // Không biến từ khóa đơn lẻ thành dự đoán chắc chắn hoặc khuyến nghị y tế/tài chính/pháp lý.
+// V114: tổng hợp tất cả lời chính, không suy kết luận từ riêng lời đầu.
+// V115: kiểm tra mâu thuẫn dấu hiệu ngay trong từng Hào từ; không cộng điểm cát hung.
+function evidenceConflictV115(evidence){
+ const rows=evidence.map(x=>{
+  const detail=omenDetailV116(x.raw);
+  return {label:x.label,good:detail.some(m=>m.tone==='favorable'),bad:detail.some(m=>m.tone==='warning'),neutral:detail.some(m=>m.tone==='neutral'),raw:x.raw};
+ });
+ const mixed=rows.filter(x=>x.good&&x.bad);
+ const opposing=rows.some(x=>x.good)&&rows.some(x=>x.bad);
+ return {mixed,opposing,missing:rows.filter(x=>!x.raw)};
+}
+
+// V119: preserve the action/condition for each selected passage, without claiming a prediction.
+function conditionalEvidenceV119(raw){
+ const marks=omenDetailV116(raw);
+ const categories={
+  '不利有攸往':'Tiến hành hoặc đi tới mục tiêu đang bị cảnh báo là không lợi.',
+  '利有攸往':'Lời văn nêu lợi khi tiến tới mục tiêu; cần xem điều kiện trong toàn câu.',
+  '不利涉大川':'Hình tượng vượt sông lớn bị nêu là không lợi; không tự suy thành cấm đi lại.',
+  '利涉大川':'Hình tượng vượt sông lớn được nêu là có lợi; không tự suy thành bảo đảm thành công.',
+  '征凶':'Cảnh báo gắn với việc chinh phạt hoặc chủ động tiến đánh.',
+  '往凶':'Cảnh báo gắn với hành động tiến đi.',
+  '貞吉':'Dấu hiệu cát gắn với việc giữ chính.',
+  '贞吉':'Dấu hiệu cát gắn với việc giữ chính.',
+  '貞凶':'Dấu hiệu hung gắn với việc giữ chính trong hoàn cảnh lời hào.',
+  '贞凶':'Dấu hiệu hung gắn với việc giữ chính trong hoàn cảnh lời hào.',
+  '利貞':'Nêu lợi của việc giữ chính.',
+  '利贞':'Nêu lợi của việc giữ chính.',
+  '不利貞':'Nêu không lợi khi giữ chính trong hoàn cảnh lời hào.',
+  '不利贞':'Nêu không lợi khi giữ chính trong hoàn cảnh lời hào.',
+  '先吉後凶':'Diễn tiến trong câu: trước cát, sau hung; không được chỉ lấy nửa đầu.',
+  '先吉后凶':'Diễn tiến trong câu: trước cát, sau hung; không được chỉ lấy nửa đầu.',
+  '初吉終亂':'Diễn tiến trong câu: đầu cát, cuối rối loạn.',
+  '初吉终乱':'Diễn tiến trong câu: đầu cát, cuối rối loạn.',
+  '無咎':'Vô cữu chỉ là không lỗi, không đồng nghĩa đại cát.',
+  '无咎':'Vô cữu chỉ là không lỗi, không đồng nghĩa đại cát.',
+  '悔亡':'Hối tiếc tiêu tan không đồng nghĩa một lời hứa thành công.',
+  '勿用':'Lời văn khuyên chớ dùng hoặc chớ hành động trong ngữ cảnh cụ thể.'
+ };
+ return marks.map(m=>({token:m.token,tone:m.tone,detail:categories[m.token]||m.label}));
+}
+// V120: chuyển điều kiện từ ngữ sang câu hỏi cụ thể; không suy đoán sự kiện.
+const TOPIC_ACTIONS_V120=Object.freeze({
+ tinh_duyen:{advance:'Có thể mở đối thoại hoặc tiến tới cam kết khi hai bên đã xác nhận sự đồng thuận và kỳ vọng.',caution:'Chưa nên ép buộc lời hứa hoặc đẩy nhanh cam kết; xem lại tín nhiệm và ranh giới.',neutral:'Chưa có căn cứ từ khóa để khẳng định quan hệ tốt hay xấu; quan sát hành vi và sự đồng thuận.'},
+ cong_viec:{advance:'Có thể triển khai bước công việc có mục tiêu và người chịu trách nhiệm rõ ràng.',caution:'Cần kiểm tra quyền hạn, nguồn lực và thời điểm trước khi nhận việc hoặc đổi hướng.',neutral:'Chưa thể kết luận kết quả nghề nghiệp; đối chiếu năng lực, tiến độ và điều kiện thực tế.'},
+ tai_chinh:{advance:'Chỉ cân nhắc phương án sau khi kiểm tra dòng tiền, hợp đồng và khả năng chịu lỗ.',caution:'Tránh mở rộng cam kết tiền bạc khi còn thiếu dữ liệu hoặc chưa kiểm soát rủi ro.',neutral:'Không suy ra lợi nhuận từ quẻ; cần số liệu và thẩm định độc lập.'},
+ hoc_tap:{advance:'Có thể tiến bước khi đã có nền tảng kiến thức và lịch ôn tập khả thi.',caution:'Cần củng cố phần chưa vững, tránh thi hoặc đổi hướng chỉ vì nóng vội.',neutral:'Kết quả học tập cần được đánh giá bằng bài kiểm tra và tiến bộ thực tế.'},
+ gia_dinh:{advance:'Có thể thúc đẩy hòa giải khi các bên sẵn sàng lắng nghe và tôn trọng nhau.',caution:'Tránh áp đặt hoặc tranh hơn thua; xác định vấn đề và giới hạn của từng người.',neutral:'Không quy kết thiện ác cho thành viên gia đình chỉ từ một lời quẻ.'},
+ suc_khoe:{advance:'Không xem dấu hiệu thuận là bằng chứng khỏi bệnh; tiếp tục chăm sóc và tư vấn y khoa.',caution:'Không suy diễn dấu hiệu hung thành chẩn đoán; nếu có triệu chứng hãy tìm hỗ trợ y tế.',neutral:'Quẻ không cung cấp dữ liệu lâm sàng hay tiên lượng sức khỏe.'},
+ di_chuyen:{advance:'Chỉ khởi hành khi lịch trình, giấy tờ và điều kiện an toàn đã được xác nhận.',caution:'Cần rà soát phương tiện, giấy tờ và rủi ro trước khi chuyển chỗ hoặc đi xa.',neutral:'Chưa thể suy ra chuyến đi thành bại; cần kiểm tra điều kiện thực tế.'},
+ tranh_chap:{advance:'Ưu tiên thương lượng trên cơ sở chứng cứ và nghĩa vụ rõ ràng.',caution:'Không leo thang tranh chấp khi hồ sơ, quyền lợi và hệ quả pháp lý chưa rõ.',neutral:'Không dự báo thắng thua tố tụng bằng quẻ; cần chứng cứ và tư vấn pháp lý.'},
+ tong_quan:{advance:'Có thể xem xét tiến hành bước nhỏ sau khi xác nhận điều kiện cần thiết.',caution:'Nên trì hoãn hành động không thể đảo ngược cho tới khi rõ rủi ro.',neutral:'Không có cơ sở từ khóa để kết luận cát hay hung; cần đọc toàn lời và bối cảnh.'}
+});
+function topicConditionReadingV120(evidence,topic){
+ const guide=TOPIC_ACTIONS_V120[topic.id]||TOPIC_ACTIONS_V120.tong_quan;
+ return evidence.map(item=>{
+  // Không suy luận chủ đề từ lời chưa có nguyên văn.
+  if(!String(item.raw||'').trim())return {label:item.label,kind:'missing',advice:'Chưa có nguyên văn của lời được chọn; tạm hoãn diễn giải điều kiện theo chủ đề.',evidenceText:'Thiếu nguyên văn',grounded:false};
+  const conditions=conditionalEvidenceV119(item.raw);
+  const hasWarning=conditions.some(c=>c.tone==='warning');
+  const hasFavorable=conditions.some(c=>c.tone==='favorable');
+  const kind=hasWarning&&hasFavorable?'mixed':hasWarning?'warning':hasFavorable?'favorable':'neutral';
+  const advice=kind==='mixed'?guide.caution+' '+guide.advance:kind==='warning'?guide.caution:kind==='favorable'?guide.advance:guide.neutral;
+  const evidenceText=conditions.length?conditions.map(c=>c.detail).join(' · '):'Không nhận diện được điều kiện tường minh';
+  return {label:item.label,kind,advice,evidenceText,grounded:true};
+ });
+}
+// V122: Interpret a recognized condition in the selected topic, without treating it as a forecast.
+// Each interpretation remains modern editorial guidance, not a classical quotation.
+const TOPIC_CONDITION_V122=Object.freeze({
+ tinh_duyen:{hold:'Chưa nên ép tiến triển tình cảm; xác nhận sự đồng thuận trước.',integrity:'Ưu tiên lời nói và hành động nhất quán trước khi cam kết.',risk:'Xem lại ranh giới và các tín hiệu thiếu tin cậy.',transition:'Không coi giai đoạn thuận ban đầu là bảo đảm quan hệ lâu dài.'},
+ cong_viec:{hold:'Tạm tránh mở rộng dự án hoặc nhận thêm trách nhiệm khi chưa đủ điều kiện.',integrity:'Giữ đúng thỏa thuận, trách nhiệm và tiêu chuẩn nghề nghiệp.',risk:'Kiểm tra nguồn lực, thẩm quyền và phương án dự phòng.',transition:'Cần đánh giá rủi ro sau giai đoạn khởi đầu thuận lợi.'},
+ tai_chinh:{hold:'Không vội giải ngân hoặc tăng vị thế khi dữ liệu còn thiếu.',integrity:'Đối chiếu hợp đồng, sổ sách và kỷ luật ngân sách.',risk:'Xem lại giới hạn thua lỗ và nghĩa vụ thanh toán.',transition:'Không lấy kết quả ban đầu để suy ra lợi nhuận về sau.'},
+ hoc_tap:{hold:'Chưa nên nhảy cấp độ hoặc đổi lộ trình khi kiến thức nền còn thiếu.',integrity:'Duy trì kế hoạch học và kiểm tra mức tiến bộ thực tế.',risk:'Rà soát phần kiến thức dễ sai trước kỳ đánh giá.',transition:'Tiến bộ ban đầu không bảo đảm kết quả cuối kỳ.'},
+ gia_dinh:{hold:'Tránh đẩy tranh luận lên cao khi chưa có đối thoại bình tĩnh.',integrity:'Giữ lời hứa và tôn trọng trách nhiệm giữa các thành viên.',risk:'Nhận diện nguồn bất đồng và giới hạn cần bảo vệ.',transition:'Hòa thuận nhất thời vẫn cần được duy trì bằng hành động.'},
+ suc_khoe:{hold:'Không dựa vào quẻ để trì hoãn khám hoặc điều trị cần thiết.',integrity:'Tiếp tục kế hoạch chăm sóc dựa trên tư vấn chuyên môn.',risk:'Đánh giá triệu chứng bằng y khoa, không bằng dấu hiệu quẻ.',transition:'Không suy ra diễn tiến bệnh từ trình tự cát–hung.'},
+ di_chuyen:{hold:'Cân nhắc hoãn khởi hành nếu giấy tờ, thời tiết hoặc an toàn chưa rõ.',integrity:'Tuân thủ lịch trình và các yêu cầu an toàn đã xác minh.',risk:'Kiểm tra đường đi, phương tiện và phương án thay thế.',transition:'Khởi hành thuận lợi không bảo đảm toàn bộ hành trình.'},
+ tranh_chap:{hold:'Tránh leo thang tranh chấp trước khi rà soát chứng cứ.',integrity:'Giữ hồ sơ trung thực và tuân thủ nghĩa vụ pháp lý.',risk:'Đánh giá hậu quả pháp lý với người có chuyên môn.',transition:'Lợi thế ban đầu không đồng nghĩa kết quả cuối cùng.'},
+ tong_quan:{hold:'Chưa nên tiến hành bước khó đảo ngược khi điều kiện chưa rõ.',integrity:'Giữ nguyên tắc và xác minh các cam kết.',risk:'Đánh giá trở ngại và phương án dự phòng.',transition:'Không suy từ thuận lợi ban đầu ra kết cục chắc chắn.'}
+});
+// V123: Keep simultaneous conditions, not only the first matching keyword.
+function topicSpecificConditionV122(raw,topicId){
+ const value=String(raw||'').trim();
+ if(!value)return {basis:'Thiếu nguyên văn',advice:'Tạm hoãn liên hệ theo chủ đề.',grounded:false};
+ const tokens=omenDetailV116(value);
+ const guide=TOPIC_CONDITION_V122[topicId]||TOPIC_CONDITION_V122.tong_quan;
+ const has=(pattern)=>tokens.some(t=>pattern.test(t.token));
+ if(!tokens.length)return {basis:'Không nhận diện được điều kiện bằng bộ từ khóa',advice:'Chỉ đọc nguyên văn và chú giải; không suy ra cát–hung từ sự vắng mặt từ khóa.',grounded:false};
+ const basis=[],advice=[];
+ const add=(b,a)=>{if(!basis.includes(b))basis.push(b);if(a&&!advice.includes(a))advice.push(a)};
+ const transition=has(/先吉後凶|先吉后凶|初吉終亂|初吉终乱/);
+ const actionWarning=has(/不利有攸往|不利涉大川|征凶|往凶|勿用/);
+ const integrity=has(/貞吉|贞吉|利貞|利贞/);
+ const risk=tokens.some(t=>t.tone==='warning');
+ const favorable=tokens.some(t=>t.tone==='favorable');
+ if(transition)add('Cổ văn nêu chuyển biến trước–sau',guide.transition);
+ if(actionWarning)add('Cổ văn cảnh báo một hành động cụ thể',guide.hold);
+ if(integrity)add('Cổ văn gắn dấu hiệu thuận với việc giữ chính',guide.integrity);
+ if(risk&&!transition&&!actionWarning)add('Cổ văn có dấu hiệu cảnh báo',guide.risk);
+ if(favorable&&!integrity)add('Cổ văn có dấu hiệu thuận', (TOPIC_ACTIONS_V120[topicId]||TOPIC_ACTIONS_V120.tong_quan).advance);
+ if(!basis.length)add('Cổ văn có dấu hiệu trung tính hoặc điều kiện chưa phân loại','Không đồng nhất vô cữu, hối vong hay hanh với cát; cần đọc toàn câu.');
+ if(risk&&favorable)add('Các dấu hiệu thuận và cảnh báo cùng xuất hiện','Không lấy riêng dấu hiệu thuận để phủ nhận điều kiện cảnh báo.');
+ return {basis:basis.join('; '),advice:advice.join(' '),grounded:true,mixed:risk&&favorable};
+}
+// V124: giữ riêng kết quả theo từng lời và từng điều kiện, kể cả khi nhiều hào động.
+// Không gán mức độ chắc chắn, không lấy chữ cát để triệt tiêu chữ hung.
+function multiLineConditionMatrixV124(evidence){
+ const rows=Array.isArray(evidence)?evidence:[];
+ return rows.map((item,index)=>{
+  const raw=String(item.raw||'').trim();
+  const conditions=raw?conditionalEvidenceV119(raw):[];
+  const favorable=conditions.filter(x=>x.tone==='favorable');
+  const warnings=conditions.filter(x=>x.tone==='warning');
+  const neutral=conditions.filter(x=>x.tone==='neutral');
+  const status=!raw?'Thiếu nguyên văn':favorable.length&&warnings.length?'Thuận và cảnh báo cùng tồn tại':warnings.length?'Có cảnh báo':favorable.length?'Có dấu hiệu thuận':neutral.length?'Chỉ có dấu hiệu trung tính':'Chưa nhận diện được dấu hiệu';
+  return {order:index+1,label:String(item.label||'Lời '+(index+1)),status,raw,conditions,
+   favorable:favorable.map(x=>x.detail),warnings:warnings.map(x=>x.detail),neutral:neutral.map(x=>x.detail),
+   editorial:String(item.comment||item.translation||'').trim(),grounded:!!raw};
+ });
+}
+// V125: cross-line evidence summary; never cancel opposing claims or treat absence as favorable.
+function multiLineCrossCheckV125(evidence){
+ const rows=multiLineConditionMatrixV124(evidence);
+ const missing=rows.filter(x=>!x.grounded);
+ const favorable=rows.filter(x=>x.favorable.length);
+ const warnings=rows.filter(x=>x.warnings.length);
+ const neutral=rows.filter(x=>x.neutral.length);
+ const unclassified=rows.filter(x=>x.grounded&&!x.conditions.length);
+ const mixed=rows.filter(x=>x.favorable.length&&x.warnings.length);
+ const opposing=favorable.length>0&&warnings.length>0;
+ const status=missing.length?'Thiếu nguyên văn — chưa thể tổng kết xu hướng':opposing?'Có điều kiện thuận và cảnh báo — không triệt tiêu nhau':warnings.length?'Có cảnh báo trong lời được chọn':favorable.length?'Có điều kiện thuận trong lời được chọn':neutral.length?'Chỉ có dấu hiệu trung tính hoặc chưa rõ':'Chưa có dấu hiệu được nhận diện';
+ return {rows,missing,favorable,warnings,neutral,unclassified,mixed,opposing,status};
+}
+function multiLineConditionHTMLV124(evidence){
+ const audit=multiLineCrossCheckV125(evidence);
+ const rows=audit.rows;
+ if(!rows.length)return '<p class="sub">Chưa có lời được chọn để đối chiếu.</p>';
+ return `<p><strong>Đối chiếu liên hào:</strong> ${esc(audit.status)}. ${rows.length} lời; ${audit.favorable.length} lời có dấu hiệu thuận; ${audit.warnings.length} lời có cảnh báo; ${audit.neutral.length} lời có dấu hiệu trung tính; ${audit.missing.length} lời thiếu nguyên văn.${audit.mixed.length?` ${audit.mixed.length} lời đồng thời có thuận và cảnh báo.`:""}</p>${audit.unclassified.length?`<p class="sub">${audit.unclassified.length} lời chưa nhận diện được cụm từ: không tự gán cát–hung.</p>`:""}<ol>${rows.map(x=>`<li><strong>${esc(x.label)} · ${esc(x.status)}</strong>${x.grounded?`<p lang="zh-Hant">${esc(x.raw)}</p>`:'<p>Thiếu nguyên văn; không kết luận.</p>'}${x.favorable.length?`<p><strong>Điều kiện thuận:</strong> ${esc(x.favorable.join('; '))}</p>`:''}${x.warnings.length?`<p><strong>Điều kiện cảnh báo:</strong> ${esc(x.warnings.join('; '))}</p>`:''}${x.neutral.length?`<p><strong>Điều kiện trung tính:</strong> ${esc(x.neutral.join('; '))}</p>`:''}${x.grounded&&!x.conditions.length?'<p class="sub">Chưa nhận diện được cụm từ; phải đọc nguyên văn.</p>':''}</li>`).join('')}</ol>`;
+}
 function conditionalConclusionV111(values,question){
- const d=deriveHexagram(values),topic=detectTopicV87(question);
+ const topic=detectTopicV87(question);
  const plan=selectClassicalPassages(values,readingSchool);
  const principal=plan.items.filter(x=>x.principal);
  const chosen=principal.length?principal:plan.items;
@@ -1999,17 +2177,90 @@ function conditionalConclusionV111(values,question){
   const draft=x.kind==='yaoci'?VIETNAMESE_DRAFT[x.hex]?.yaoci?.[x.line-1]:x.kind==='guaci'?VIETNAMESE_DRAFT[x.hex]?.guaci:null;
   return {label:`Quẻ ${x.hex}${x.line?' · hào '+x.line:''}`,raw,translation:String(draft?.translation||''),comment:String(draft?.comment||''),markers:textualOmenV87(raw)};
  });
- const missing=evidence.length===0||evidence.some(x=>!x.raw);
- const risks=evidence.filter(x=>x.markers.some(m=>m.includes('hung')||m.includes('lận')||m.includes('hối')));
- const favorable=evidence.filter(x=>x.markers.some(m=>m.includes('cát')||m.includes('không lỗi')));
- const quality=missing?'Chưa đủ nguyên văn để xác định xu hướng theo các lời được chọn.':risks.length&&favorable.length?'Các lời được chọn có cả dấu hiệu thuận và cảnh báo; phải đọc từng điều kiện, không triệt tiêu lẫn nhau.':risks.length?'Các lời được chọn có dấu hiệu cảnh báo; đây là ý nghĩa văn bản, không phải xác suất sự kiện tương lai.':favorable.length?'Các lời được chọn có dấu hiệu thuận; chỉ áp dụng trong điều kiện của lời hào, không bảo đảm thành công.':'Không có dấu hiệu cát–hung tường minh trong bộ nhận diện; không tự suy ra một phán quyết.';
- const primary=evidence[0];
- const point=primary?(primary.comment||primary.translation||'Chưa có chú giải biên tập cho lời được chọn.').slice(0,320):'Chưa có lời được chọn để luận.';
- const summary=missing?'Tạm hoãn kết luận cát–hung cho câu hỏi này.':`Đối với ${topic.name.toLocaleLowerCase('vi')}, trọng điểm từ ${primary.label} là: ${point}`;
+ const conditionMatrixV124=multiLineConditionHTMLV124(evidence);
+ const conflict=evidenceConflictV115(evidence);
+ const missing=evidence.length===0||conflict.missing.length>0;
+ const risks=evidence.filter(x=>omenDetailV116(x.raw).some(m=>m.tone==='warning'));
+ const favorable=evidence.filter(x=>omenDetailV116(x.raw).some(m=>m.tone==='favorable'));
+ const quality=missing?'Chưa đủ nguyên văn để xác định xu hướng theo các lời được chọn.':risks.length&&favorable.length?'Có cả dấu hiệu thuận và cảnh báo ở các lời được chọn; phải giữ nguyên điều kiện của từng lời.':risks.length?'Có dấu hiệu cảnh báo trong lời được chọn, không phải xác suất sự kiện tương lai.':favorable.length?'Có dấu hiệu thuận trong lời được chọn, không bảo đảm thành công.':'Không có dấu hiệu cát–hung tường minh trong bộ nhận diện; không tự suy phán quyết.';
+ const descriptions=evidence.filter(x=>x.raw).map(x=>({label:x.label,point:(x.comment||x.translation||'Chưa có chú giải biên tập cho lời này.').slice(0,260)}));
+ const summary=missing?'Tạm hoãn kết luận cát–hung: có lời được chọn thiếu nguyên văn.':descriptions.length?`Đối với ${topic.name.toLocaleLowerCase('vi')}, cần xét đồng thời ${descriptions.length} lời được chọn và điều kiện của từng lời; không lấy một hào thay thế toàn bộ.`:'Chưa có lời được chọn để luận.';
  const decision=topic.id==='suc_khoe'?'Không dùng quẻ để chẩn đoán hoặc thay đổi điều trị; tham khảo nhân viên y tế khi có triệu chứng.':topic.id==='tai_chinh'?'Không dùng quẻ làm căn cứ duy nhất để giao dịch hoặc đầu tư; kiểm tra số liệu và giới hạn rủi ro.':topic.id==='tranh_chap'?'Không xem quẻ là dự báo kết quả tố tụng; kiểm tra chứng cứ và tư vấn pháp lý phù hợp.':topic.action;
+ const conflictNote=conflict.mixed.length?`Trong cùng một lời có dấu hiệu vừa thuận vừa cảnh báo (${conflict.mixed.map(x=>x.label).join('; ')}); phải đọc đầy đủ câu và điều kiện, không chọn riêng chữ cát.`:conflict.opposing?'Các lời được chọn mang dấu hiệu khác chiều; không được loại bỏ lời bất lợi để chỉ giữ lời thuận.':'Không phát hiện dấu hiệu thuận và cảnh báo đối nghịch bằng bộ nhận diện từ khóa; điều này không có nghĩa cổ văn không có điều kiện.';
+ const notes=descriptions.map(x=>`<li><strong>${esc(x.label)}:</strong> ${esc(x.point)}</li>`).join('');
+ const conditionalNotes=evidence.map(x=>{
+  const parts=conditionalEvidenceV119(x.raw);
+  return `<li><strong>${esc(x.label)}:</strong> ${parts.length?parts.map(p=>esc(p.detail)).join(' · '):'Không nhận diện được cụm điều kiện bằng bộ từ khóa; cần đọc toàn câu.'}</li>`;
+ }).join('');
+ const topicConditions=topicConditionReadingV120(evidence,topic).map(x=>`<li><strong>${esc(x.label)}:</strong> ${esc(x.advice)} <span class="sub">(${esc(x.evidenceText)})</span></li>`).join('');
+ const topicLineInsights=evidence.map(x=>{
+  if(!String(x.raw||'').trim())return `<li><strong>${esc(x.label)}:</strong> Thiếu nguyên văn, không đưa ra luận điểm theo chủ đề.</li>`;
+  const editorial=String(x.comment||x.translation||'').trim();
+  const conditions=conditionalEvidenceV119(x.raw);
+  const premise=editorial?editorial.slice(0,300):'Chưa có chú giải biên tập; chỉ đối chiếu nguyên văn và điều kiện nhận diện.';
+  const conditionText=conditions.length?conditions.map(p=>p.detail).join('; '):'Chưa nhận diện được điều kiện bằng bộ từ khóa.';
+  const topicLink=topicSpecificConditionV122(x.raw,topic.id);
+  return `<li><strong>${esc(x.label)}:</strong> ${esc(premise)} <span class="sub">Điều kiện cổ văn: ${esc(conditionText)}. ${esc(topicLink.basis)} — ${esc(topicLink.advice)} (liên hệ biên tập cho ${esc(topic.name.toLocaleLowerCase('vi'))}, không phải dự báo).</span></li>`;
+ }).join('');
  const sources=evidence.map(x=>`<li><strong>${esc(x.label)}:</strong> ${x.markers.length?esc(x.markers.join(', ')):'Không có từ khóa cát–hung được nhận diện'}${x.raw?` · <span lang="zh-Hant">${esc(x.raw.slice(0,140))}</span>`:' · Thiếu nguyên văn'}</li>`).join('');
- return `<section class="interpret-narrative" aria-label="Kết luận có điều kiện V111"><h3>Kết luận theo câu hỏi · ${esc(topic.name)}</h3><p><strong>Nhận định:</strong> ${esc(summary)}</p><p><strong>Mức độ thuận – nghịch trong lời được chọn:</strong> ${esc(quality)}</p><p><strong>Điều cần đối chiếu thực tế:</strong> ${esc(topic.focus)}</p><p><strong>Hướng xử lý:</strong> ${esc(decision)}</p><p><strong>Căn cứ từng lời:</strong></p><ul>${sources}</ul><p class="sub">Kết luận biên tập có điều kiện, không phải lời cổ và không phải dự báo chắc chắn. Quẻ biến chỉ biểu thị phép biến hào trong mô hình đang sử dụng.</p></section>`;
+ return `<section class="interpret-narrative" aria-label="Kết luận có điều kiện V119"><h3>Kết luận theo câu hỏi · ${esc(topic.name)}</h3><p><strong>Nhận định:</strong> ${esc(summary)}</p><p><strong>Mức độ thuận – nghịch trong lời được chọn:</strong> ${esc(quality)}</p>${notes?`<p><strong>Luận điểm riêng của từng lời:</strong></p><ul>${notes}</ul>`:''}<p><strong>Điều kiện gắn với từng lời (phân tích từ ngữ):</strong></p><ul>${conditionalNotes}</ul><div class="interpret-line"><h4>Bảng đối chiếu điều kiện theo từng lời · V124</h4>${conditionMatrixV124}<p class="sub">Bảng giữ nguyên các điều kiện thuận, cảnh báo và trung tính của mỗi lời; không cộng điểm hay triệt tiêu điều kiện giữa các hào.</p></div><p><strong>Kiểm tra điều kiện và mâu thuẫn:</strong> ${esc(conflictNote)}</p><p><strong>Đối chiếu từng lời với câu hỏi (biên tập V121):</strong></p><ul>${topicLineInsights}</ul><p><strong>Ứng dụng điều kiện theo chủ đề:</strong></p><ul>${topicConditions}</ul><p><strong>Điều cần đối chiếu thực tế:</strong> ${esc(topic.focus)}</p><p><strong>Hướng xử lý:</strong> ${esc(decision)}</p><p><strong>Căn cứ từng lời:</strong></p><ul>${sources}</ul><p class="sub">Diễn giải biên tập có điều kiện, không phải lời cổ hoặc dự báo chắc chắn. Các lời được chọn không được tự động cộng/trừ để thành một điểm số cát hung.</p></section>`;
 }
+// V112: kiểm toán kết luận theo mẫu xác định, chỉ chạy theo yêu cầu.
+// Không coi khác biệt câu chữ là chứng nhận đúng cổ pháp.
+function readingAuditV112(){
+ const questions=['tình duyên','công việc','tài chính','gia đạo','sức khỏe','tranh chấp','học tập','tổng quan'];
+ const findings=[],seen=new Map(),covered=new Set();
+ let total=0,missing=0,duplicates=0,errors=0,wrongHex=0,wrongChanged=0;
+ // V113: HEX.bits là số nguyên 0–63, KHÔNG phải mảng sáu hào.
+ // Dựng trực tiếp từng hào từ bitmask, nên mọi quẻ được kiểm tra đúng cấu hình.
+ for(const hex of HEX){
+  const bits=hex.bits;
+  if(!Number.isInteger(bits)||bits<0||bits>63){
+   errors++;findings.push({kind:'invalid-bits',hex:hex.n,bits});continue;
+  }
+  const base=Array.from({length:6},(_,i)=>(bits&(1<<i))?7:8);
+  const configs=[base,...Array.from({length:6},(_,i)=>base.map((v,j)=>i===j?(v===7?9:6):v))];
+  for(let p=0;p<configs.length;p++){
+   const values=configs[p];
+   const expectedChanged=bits^(p===0?0:1<<(p-1));
+   for(const question of questions){
+    total++;
+    try{
+     const derived=deriveHexagram(values);
+     covered.add(derived.number);
+     if(derived.number!==hex.n){wrongHex++;if(findings.length<250)findings.push({kind:'wrong-hex',hex:hex.n,actual:derived.number,pattern:p});}
+     if(derived.changed!==expectedChanged){wrongChanged++;if(findings.length<250)findings.push({kind:'wrong-changed',hex:hex.n,pattern:p});}
+     const plan=selectClassicalPassages(values,readingSchool);
+     const principal=plan.items.filter(x=>x.principal);
+     const chosen=principal.length?principal:plan.items;
+     if(!chosen.length||chosen.some(x=>!selectedEvidenceV87(x).text)){
+      missing++;if(findings.length<250)findings.push({kind:'missing-evidence',hex:hex.n,pattern:p,question});
+     }
+     const html=conditionalConclusionV111(values,question);
+     if(!html.includes('Kết luận theo câu hỏi')||!html.includes('Căn cứ từng lời'))throw Error('Thiếu thành phần kết luận');
+     const normalized=html.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+     const key=question+'|'+normalized;
+     if(seen.has(key)){
+      duplicates++;if(findings.length<250)findings.push({kind:'duplicate',hex:hex.n,pattern:p,question,previous:seen.get(key)});
+     }else seen.set(key,`${hex.n}/${p}`);
+    }catch(e){errors++;if(findings.length<250)findings.push({kind:'error',hex:hex.n,pattern:p,question,message:String(e?.message||e)});}
+   }
+  }
+ }
+ return {version:APP_VERSION,total,expectedTotal:64*7*questions.length,coveredHexagrams:covered.size,missing,duplicates,errors,wrongHex,wrongChanged,findings,notes:'V113 sửa lỗi V112 dùng sai kiểu HEX.bits. Đã dựng cấu hình riêng cho từng quẻ và đối chiếu quẻ chủ/quẻ biến; trùng câu chữ không tự chứng minh sai học thuật.'};
+}
+globalThis.SICHING_READING_AUDIT_V112=readingAuditV112;
+function showReadingAuditV112(){
+ if(new URLSearchParams(location.search).get('readingaudit')!=='1')return;
+ const panel=document.createElement('section');panel.style.cssText='position:relative;z-index:9999;background:#111;color:#f6e6bd;padding:18px;margin:16px auto;max-width:900px;border:1px solid #a98743;border-radius:14px;font:14px/1.6 system-ui';
+ panel.innerHTML='<h2>V114 · Kiểm toán kết luận gieo quẻ</h2><p>Chạy theo yêu cầu, không làm chậm khởi động thông thường. Báo cáo kiểm tra tính đầy đủ và trùng lặp, không xác nhận dự đoán đúng.</p>';
+ const btn=document.createElement('button');btn.textContent='Chạy kiểm toán';btn.style.cssText='background:#c7a35a;color:#111;padding:12px;border-radius:9px;font-weight:bold';
+ const output=document.createElement('pre');output.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:50vh;overflow:auto';
+ btn.addEventListener('click',()=>{btn.disabled=true;output.textContent='Đang kiểm tra…';setTimeout(()=>{try{const r=readingAuditV112();output.textContent=JSON.stringify(r,null,2);const dl=document.createElement('button');dl.textContent='Xuất JSON';dl.style.cssText=btn.style.cssText;dl.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(r,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='siching-v114-reading-audit.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});panel.appendChild(dl)}catch(e){output.textContent='Lỗi kiểm toán: '+String(e)}finally{btn.disabled=false}},30)});
+ panel.append(btn,output);document.body.appendChild(panel);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',showReadingAuditV112);else showReadingAuditV112();
+
 function contextualReadingV86(values,question){
  const q=String(question||'').toLocaleLowerCase('vi').trim();
  const topic=detectTopicV87(question);
@@ -2469,9 +2720,60 @@ function verifyV109LineRevisions(){
     return raw.includes(token)&&Boolean(draft?.translation)&&Boolean(draft?.comment?.length>125);
   });
 }
+// V113: kiểm tra 64 bitmask quẻ không trùng và 448 cấu hình đúng quẻ chủ.
+function validateAuditFixturesV113(){
+ const unique=new Set(HEX.map(h=>h.bits));
+ if(unique.size!==64)throw Error('V113: trùng bitmask trong 64 quẻ');
+ for(const h of HEX){
+  for(let move=-1;move<6;move++){
+   const values=Array.from({length:6},(_,i)=>{
+    const yang=Boolean(h.bits&(1<<i));
+    return i===move?(yang?9:6):(yang?7:8);
+   });
+   const d=deriveHexagram(values);
+   if(d.number!==h.n||d.changed!==(h.bits^(move<0?0:1<<move)))throw Error('V113: sai cấu hình '+h.n+'/'+move);
+  }
+ }
+ return true;
+}
 function runIntegrityTests(){
   const results=[];
   const test=(name,fn)=>{try{if(!fn())throw Error('Sai kết quả');results.push({name,ok:true})}catch(err){results.push({name,ok:false,error:String(err.message||err)})}};
+   test('V125 liên hào giữ cảnh báo, không coi thiếu văn bản là cát',()=>{const a=multiLineCrossCheckV125([{label:'Một',raw:'貞吉，征凶'},{label:'Hai',raw:'無咎'},{label:'Ba',raw:''}]);return a.rows.length===3&&a.opposing&&a.mixed.length===1&&a.missing.length===1&&a.neutral.length===1&&a.status.includes('Thiếu nguyên văn')});
+  test('V124 nhiều lời giữ riêng điều kiện trái chiều và thiếu văn bản',()=>{const r=multiLineConditionMatrixV124([{label:'Hào 1',raw:'貞吉，征凶'},{label:'Hào 2',raw:'無咎'},{label:'Hào 3',raw:''}]);const html=multiLineConditionHTMLV124([{label:'Hào 1',raw:'貞吉，征凶'},{label:'Hào 2',raw:'無咎'}]);return r.length===3&&r[0].favorable.length===1&&r[0].warnings.length===1&&r[1].neutral.length===1&&!r[2].grounded&&html.includes('Điều kiện cảnh báo')&&html.includes('Điều kiện trung tính')});
+  test('V123 giữ đồng thời điều kiện thuận và cảnh báo',()=>{const a=topicSpecificConditionV122('貞吉，征凶','tai_chinh');const b=topicSpecificConditionV122('無咎','tai_chinh');const c=topicSpecificConditionV122('山川日月','tai_chinh');return a.mixed===true&&a.basis.includes('giữ chính')&&a.basis.includes('hành động')&&a.advice.includes('Không lấy riêng')&&b.grounded===true&&c.grounded===false});
+  test('V122 điều kiện khác nhau cho chủ đề và hành động',()=>{const a=topicSpecificConditionV122('貞吉，征凶','tinh_duyen');const b=topicSpecificConditionV122('貞吉，征凶','tai_chinh');const c=topicSpecificConditionV122('先吉後凶','cong_viec');const d=topicSpecificConditionV122('','cong_viec');return a.advice!==b.advice&&a.basis.includes('hành động')&&c.basis.includes('trước–sau')&&!d.grounded});
+  test('V121 thiếu nguyên văn phải hoãn lời khuyên chủ đề',()=>{const r=topicConditionReadingV120([{label:'Hào thiếu',raw:''}],{id:'tai_chinh'});return r.length===1&&r[0].kind==='missing'&&r[0].grounded===false&&r[0].advice.includes('tạm hoãn')});
+  test('V120 kết luận thay đổi theo chủ đề và giữ dấu hiệu trái chiều',()=>{const e=[{label:'Hào thử',raw:'貞吉，征凶'}];const a=topicConditionReadingV120(e,{id:'tinh_duyen'});const b=topicConditionReadingV120(e,{id:'tai_chinh'});return a.length===1&&a[0].kind==='mixed'&&a[0].advice!==b[0].advice&&a[0].evidenceText.includes('giữ chính')&&a[0].evidenceText.includes('chinh phạt')});
+  test('V119 giữ điều kiện riêng cho mỗi lời và không đồng nhất vô cữu với cát',()=>{
+   const a=conditionalEvidenceV119('貞吉，征凶');
+   const b=conditionalEvidenceV119('無咎');
+   const c=conditionalEvidenceV119('先吉後凶');
+   return a.length===2&&a.some(x=>x.detail.includes('giữ chính'))&&a.some(x=>x.detail.includes('chinh phạt'))&&b.length===1&&b[0].tone==='neutral'&&c.length===1&&c[0].detail.includes('trước cát, sau hung');
+  });
+  test('V118 nhận diện điều kiện ghép và phủ định, không đếm lặp',()=>{
+   const a=omenDetailV116('先吉後凶');
+   const b=omenDetailV116('初吉終亂');
+   const c=omenDetailV116('不利貞，无悔');
+   const d=omenDetailV116('不利涉大川，亨');
+   const e=omenDetailV116('無不利，無咎');
+   return a.length===1&&a[0].tone==='warning'&&b.length===1&&b[0].tone==='warning'&&c.length===2&&c[0].tone==='warning'&&c[1].tone==='neutral'&&d.length===2&&d[0].tone==='warning'&&d[1].tone==='neutral'&&e.length===2&&e[0].tone==='favorable';
+  });
+  test('V117 cụm lợi có điều kiện không bị nhận sai khi có phủ định',()=>{
+   const a=omenDetailV116('不利有攸往');
+   const b=omenDetailV116('利有攸往');
+   const c=omenDetailV116('無不利，無咎');
+   const d=omenDetailV116('不利涉大川');
+   const e=omenDetailV116('終吉，厲');
+   return a.length===1&&a[0].tone==='warning'&&b.length===1&&b[0].tone==='favorable'&&c.length===2&&c[0].tone==='favorable'&&c[1].tone==='neutral'&&d.length===1&&d[0].tone==='warning'&&e.length===2;
+  });
+  test('V116 phân biệt vô cữu, hối vong và cát có điều kiện',()=>{
+   const a=omenDetailV116('无咎悔亡');
+   const b=omenDetailV116('貞吉征凶');
+   const c=evidenceConflictV115([{label:'A',raw:'无咎',markers:textualOmenV87('无咎')}]);
+   return a.length===2&&a.every(x=>x.tone==='neutral')&&b.length===2&&b[0].tone==='favorable'&&b[1].tone==='warning'&&!c.opposing;
+  });
+  test('V115 phát hiện cát hung cùng lời và khác lời',()=>{const a=evidenceConflictV115([{label:'A',raw:'吉凶',markers:['cát trong nguyên văn','hung trong nguyên văn']}]);const b=evidenceConflictV115([{label:'A',raw:'吉',markers:['cát trong nguyên văn']},{label:'B',raw:'凶',markers:['hung trong nguyên văn']}]);return a.mixed.length===1&&a.opposing&&b.mixed.length===0&&b.opposing});
   test('V111 kết luận riêng có căn cứ và phân biệt chủ đề',()=>{const a=conditionalConclusionV111([7,7,7,7,7,7],'công việc');const b=conditionalConclusionV111([9,7,7,7,7,7],'công việc');const c=conditionalConclusionV111([7,7,7,7,7,7],'sức khỏe');return a.includes('Kết luận theo câu hỏi')&&a.includes('Căn cứ từng lời')&&a!==b&&c.includes('Không dùng quẻ để chẩn đoán');});
   test('V110 tổng hợp căn cứ riêng theo lời được chọn',()=>{const a=topicEvidenceSynthesisV110([7,7,7,7,7,7],'công việc');const b=topicEvidenceSynthesisV110([9,7,7,7,7,7],'công việc');return a.includes('Quẻ chủ và quẻ biến')&&a.includes('Điểm tựa luận giải')&&a!==b;});
   test('V109 tám chú giải quẻ 61–64 bám Hào từ',verifyV109LineRevisions);
