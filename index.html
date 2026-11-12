@@ -125,6 +125,30 @@ nav.bottom button[data-go="cast"].on > span{color:var(--yin-gold-light)!importan
 #cast .coin-inputs label{min-width:0;color:#f5d18c;font-weight:700;font-size:14px}
 #cast .coin-choice{width:100%;min-width:0;margin-top:9px;background:#0a0908;border:1px solid #ac8447;color:#fff0d3;border-radius:12px;padding:12px 4px;font-size:14px}
 @media(max-width:390px){#cast{padding-left:12px;padding-right:12px}#cast>.panel{padding:18px 13px}#cast .coin-inputs{gap:5px}#cast .coin-choice{font-size:12px}}
+
+/* CAST V220: polished compact hắc-kim mobile layout */
+#cast{padding:16px 16px 36px;background:radial-gradient(ellipse at 50% 0%,#392516 0%,#17110d 34%,#090807 85%);min-height:100dvh;color:#f7e4bd}
+#cast .top{display:flex;align-items:center;gap:14px;margin:6px 0 23px;padding:12px 0 18px;border-bottom:1px solid rgba(215,167,94,.24)}
+#cast .top h1{font-family:Georgia,serif;font-size:clamp(24px,6vw,34px);line-height:1.16;letter-spacing:-.5px;color:#f7d595;margin:0}
+#cast .top .back{width:46px;min-width:46px;height:46px;border-radius:15px;border:1px solid #9c7447;background:linear-gradient(145deg,#382719,#100d0a);color:#f4d39b;font-size:34px}
+#cast .panel{padding:21px 18px;border:1px solid #86633a;border-radius:23px;background:linear-gradient(145deg,#2b2018,#17120e 58%,#1c150f);box-shadow:inset 0 1px 0 #c19a634d,0 12px 35px #0006}
+#cast .panel>h2{font:700 clamp(24px,5.7vw,31px)/1.22 Georgia,serif;color:#f4d294;margin:0 0 12px}
+#cast .sub{color:#cbbba8;line-height:1.65;font-size:15px;margin:0 0 20px}
+#cast .field{display:block;font-size:16px;font-weight:700;color:#f1d6a9;margin:20px 0 16px}
+#cast #question{display:block;width:100%;height:108px;min-height:108px;margin-top:10px;padding:15px;border-radius:16px;border:1px solid #947048;background:#0c0b0a;color:#fff1d6;box-shadow:inset 0 2px 8px #0007;resize:vertical;font-size:17px;line-height:1.45}
+#cast #question::placeholder{color:#9b8c7c}
+#cast .panel>.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 22px}
+#cast .panel>.btnrow .btn{min-height:62px;width:100%;margin:0;padding:12px 8px;border-radius:15px;font-size:15px;font-weight:750;line-height:1.3;white-space:normal;box-shadow:none}
+#cast #toss{background:linear-gradient(155deg,#ffe4a0,#c28b3e);color:#211307;border:1px solid #ffdda0}
+#cast #auto{background:linear-gradient(145deg,#3b2a1b,#20160f);color:#f6d9a5;border:1px solid #a47a49}
+#cast #reset{grid-column:1/-1;min-height:54px;background:linear-gradient(145deg,#44221c,#25120f);color:#ffcfaa;border:1px solid #9f5342}
+#cast .cast-manual{margin-top:14px;padding:18px 14px;border-radius:19px;border:1px solid #806039;background:#17110c}
+#cast .cast-manual h3{font:700 23px/1.25 Georgia,serif;color:#f2cf8e;margin:0 0 10px}
+#cast .coin-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#cast .coin-inputs label{min-width:0;font-size:13px;color:#e9c995}
+#cast .coin-inputs select{width:100%;min-width:0;padding:11px 3px;background:#0d0b09;color:#f9e7c7;border:1px solid #a27a4c;border-radius:11px;font-size:13px}
+#cast button:active{transform:scale(.985)}
+@media(max-width:380px){#cast{padding-inline:12px}#cast .panel{padding:17px 13px}#cast .panel>.btnrow .btn{font-size:14px}}
 </style><style>
 #home .v72-hotspot{-webkit-tap-highlight-color:rgba(255,204,95,.24)}
 #home .v72-hotspot:active{background:rgba(255,193,73,.13)!important}
@@ -13342,4 +13366,21 @@ window.SICHING_AUDIT_MAIN_219317=function(){
  if(missing.length)issues.push({h:c.h,l:c.l,q:c.q,missing});
  }catch(e){issues.push({h:c.h,l:c.l,error:String(e)})}}
  return {version:'219.317',checked,issues,pass:checked===4&&issues.length===0,scope:'Main question-specific interpretation bridge; four targeted cases',limitations:'DOM text checks, not Safari/iPhone or scholarly source verification'};
-};})();</script></body></html>
+};})();</script>
+<script>
+/* Reset clears the entire question, including any restored browser form value. */
+(function(){
+ function clearQuestion(){
+  var q=document.getElementById('question');
+  if(q){q.value='';q.defaultValue='';q.dispatchEvent(new Event('input',{bubbles:true}));q.dispatchEvent(new Event('change',{bubbles:true}));}
+  document.querySelectorAll('#cast .coin-choice').forEach(function(sel){sel.value='3';});
+ }
+ document.addEventListener('click',function(e){
+  if(e.target.closest && e.target.closest('#reset')){
+   clearQuestion();
+   setTimeout(clearQuestion,0);
+  }
+ },true);
+})();
+</script>
+</body></html>
